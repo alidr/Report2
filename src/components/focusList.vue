@@ -51,6 +51,24 @@ export default {
 </script>
 <style scoped>
 @import '../common/focusList.css';
+.contentList{
+  padding: 15px 22px 0;
+}
+.contentListTop {
+    margin-left: 0;
+}
+.contentListBottom{
+  margin-left: 0;
+}
+.contentListBottom span:nth-child(1){
+  margin-left: 4px;
+}
+.contentListBottom span:nth-child(3){
+  margin-right: 4px;
+}
+.firstLine span{
+  margin-left: 14px;
+}
 
 </style>
 
