@@ -16,7 +16,6 @@ const EditUser = () =>import ('@/pages/admin_editUser')
 const EditCompany = () =>import ('@/pages/editCompany')
 const AnnounceStyle = () =>import ('@/pages/admin_announceStyle')
 
-
 export default [{
   path: '/demo',
   component: Demo,

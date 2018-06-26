@@ -27,7 +27,7 @@
       </div>
       <div class="msg_bottom">
         <router-link to="/announce" class="announce" v-if="annou">发布公告</router-link>
-        <router-link to="/addRouter" class="addUser" v-if="addUser">新建用户</router-link>
+        <router-link to="/addUser" class="addUser" v-if="addUser">新建用户</router-link>
         <router-link to="/addCompany" class="addCompany" v-if="action">新建公司</router-link>
         <router-link to="/appealHome" href="javascript:;" class="appeal" v-if="action">我要申诉</router-link>
       </div>
