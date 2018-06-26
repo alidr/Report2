@@ -1,8 +1,5 @@
 # company
 
-> ??????
-
-> 7891011
 
 ## Build Setup
 
