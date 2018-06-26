@@ -1,0 +1,318 @@
+<template>
+<!-- 竞品分析 -->
+  <div id="competeProductAnalysis">
+    <div class="date">
+      <p class="years">
+        <span :class="{active:years==2017}" @click="handleYear(2017)">2017年</span>
+        <span :class="{active:years==2018}" @click="handleYear(2018)">2018年</span>
+      </p>
+      <div class="months" ref="wrapper">
+        <ul>
+          <li  @click="handleMonth(item)" :class="{active:item == month}" v-for="(item,index) in months" :key="index">{{item}}月</li>
+        </ul>
+      </div>
+    </div>
+    <!-- 月份竞品分析 -->
+    <div class="model">
+      <div class="competition">
+        <div class="followDays">
+          <p>{{complete.Month}}月竞品分析数据</p>
+         </div>
+        <div class="competitionInfo" v-if="infoNull">
+          <p>
+            <span>精品销量</span>
+            <span>32892</span>
+          </p>
+          <p>
+            <span>竞品开工数</span>
+            <span>21212</span>
+          </p>
+          <p>
+            <span>竞品出样量</span>
+            <span>17288</span>
+          </p>
+        </div>
+        <div class="competitionNum" v-if="infoNull">
+          <p>门店数量&emsp;4</p>
+          <p>设计师数&emsp;78</p>
+        </div>
+         <div class="infoNull" v-if="!infoNull">
+          信息为空
+        </div>
+        <router-link to="/editCompete" id="button" v-if="show">编辑当前月份数据</router-link>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import qs from 'qs'
+import axios from "axios";
+import {mapGetters, mapMutations } from 'vuex'
+// import Bscroll from 'better-scroll'
+
+export default {
+  name: 'competeProductAnalysis',
+  data(){
+    const date = new Date()
+    return{
+      years:date.getFullYear(),
+      month:date.getMonth()+1,
+      months:[1,2,3,4,5,6,7,8,9,10,11,12],
+      ID:'',
+      complete:{
+         Month:'',
+        SaleCount:'',
+        WorkCount:'',
+        SampleCount:'',
+        ShopCount:'',
+        StylistCount:'',
+      },
+      infoNull:false,
+      show:false
+    }
+  },
+  created(){
+    this.ID = this.$route.query.id
+    this.getComplete(this.ID)
+    console.log(this.years)
+    this.showModel()
+  },
+  // mounted() {
+  //   this.$nextTick(() => {
+  //     this.scroll = new Bscroll(this.$refs.wrapper, {
+  //       scrollX: true,
+  //       scrollY: false,
+  //     })
+  //   })
+  // },
+  computed: {
+    ...mapGetters([
+      'AccessId'
+    ])
+  },
+  methods:{
+     //判断角色，显示对应的内容
+    showModel(){
+      if (this.AccessId==5) {
+        this.show = true
+
+      }else{
+        this.show=false
+      }
+    },
+    handleYear(num){
+      this.years = num
+      this.getComplete(this.ID, this.month,this.years)
+    },
+    handleMonth(num){
+      console.log(num)
+      this.month = num
+      console.log(num)
+      this.getComplete(this.ID, this.month,this.years)
+    },
+    //获取竞品信息
+    getComplete(ID,month,year){
+      axios({
+        url:this.getHost()+'/Company/CompanyAnalyzeByYM', 
+        method:'post',
+        data:qs.stringify({
+          UserId:getCookie('UserId'),
+          token:getCookie('token'),
+          Year:year,
+          Month:month,
+          CompanyID:ID
+        })
+      })
+      .then(res=>{
+        console.log(res)
+        if (res.data.Status===1) {
+           this.complete=res.data.Data
+          if (this.complete.Code ==1) {
+           this.infoNull = true
+          }else{
+            this.infoNull = false
+          }
+        }else if (res.data.Status<0) {
+          this.delCookie("UserId")
+          this.delCookie("token")
+          this.setAccessId('')
+          location.replace('/')
+        }
+        else{
+          this.getToast(res.data.Message,'warn')
+        }
+      })
+    },
+  }
+}
+</script>
+
+<style scoped>
+#competeProductAnalysis{
+  padding-top:15px;
+}
+.date{
+  background-color: #fff;
+  padding: 10px 15px 0;
+}
+.years{
+  padding-bottom:10px;
+  border-bottom: 1px solid #f0f0f0;
+}
+.years span{
+  padding:2px 10px;
+}
+.years span.active,.months li.active{
+  background-color: #F6EAD4;
+  color: #E2C78F;
+  border-radius: 4px;
+}
+
+.months{
+  position: relative;
+  height: 45px;
+  width: 100%;
+  background-color: #fff;
+  overflow: hidden;
+}
+.months ul{
+  position: absolute;
+  /* 临时改动 */
+  /* width: 570px; */
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* 临时改动 */
+  flex-wrap: wrap;
+}
+.months li{
+  width: 55px;
+  float: left;
+  text-align: center;
+}
+
+/* 月份竞品分析 */
+.model{
+  padding:0 10px;
+  box-sizing: border-box;
+}
+.competition{
+  background-color: #fff;
+  width: 100%;
+  border-radius: 4px;
+  padding:15px;
+  margin-top:10px;
+  box-sizing: border-box;
+}
+
+.followDays .month{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  background-color: #F6EAD4;
+  border-radius: 4px;
+  padding:0 10px;
+  height: 20px;
+  margin-left: 10px;
+}
+.competitionInfo{
+  display: flex;
+  padding: 10px;
+  border-top: 4px solid #f0f0f0;
+  border-bottom: 1px solid #f0f0f0;
+}
+.competitionInfo p{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  flex-grow: 1;
+  border-right: 1px solid #f0f0f0;
+}
+.competitionInfo p:last-child{
+  border: none;
+}
+.competitionInfo p span:first-child{
+  margin-bottom: 10px;
+}
+.competitionNum{
+  display: flex;
+  padding: 10px 0;
+}
+.competitionNum p{
+  height: 35px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+}
+.competitionNum p:first-child{
+  border-right: 1px solid #f0f0f0;
+}
+#button{
+  background-image: none;
+  border: 1px solid #BB9F61;
+  color: #BB9F61;
+}
+.followInfo{
+  padding-bottom: 15px;
+}
+.followDays{
+  display: flex;
+  align-items: center;
+  padding: 15px 0;
+}
+.followDays  p{
+  width: 0;
+  flex-grow: 1;
+  font-size: 16px;
+  font-weight: 500;
+  color: #4d4d4d;
+  display: flex;
+  align-items: center;
+}
+.followDays  p span{
+  font-size: 20px;
+  color: #BB9F61;
+}
+.followDays  a{
+  color: #BB9F61;
+}.followInfo{
+  padding-bottom: 15px;
+}
+.followDays{
+  display: flex;
+  align-items: center;
+  padding: 15px 0;
+}
+.followDays  p{
+  width: 0;
+  flex-grow: 1;
+  font-size: 16px;
+  font-weight: 500;
+  color: #4d4d4d;
+  display: flex;
+  align-items: center;
+}
+.followDays  p span{
+  font-size: 20px;
+  color: #BB9F61;
+}
+.followDays  a{
+  color: #BB9F61;
+}
+
+.infoNull{
+  color: #ccc;
+  font-size: 28px;
+  font-weight: 600;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  border-top: 4px solid #f0f0f0;
+}
+</style>

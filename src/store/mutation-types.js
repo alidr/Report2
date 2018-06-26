@@ -1,0 +1,1 @@
+export const SET_ACCESSID = 'SET_ACCESSID'

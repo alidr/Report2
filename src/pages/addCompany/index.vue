@@ -1,0 +1,177 @@
+<template>
+<!-- 新建家装公司 -->
+  <div id="addCompany">
+   <div class="companyInfo">
+     <div class="input" @click="showPicker">
+       <span>公司类型<i>*</i></span>
+       <input type="text" placeholder="请选择" readonly v-model="JobInfo" :job="jobId">
+       <i class="arrow"></i>
+     </div>
+     <div class="input">
+       <span>家装公司全称<i>*</i></span>
+       <input type="text" placeholder="请输入家装公司全称" v-model="companyName">
+      
+     </div>
+      <!-- <router-link to="/completeInformation"id="button">下一步</router-link> -->
+      <a href="javascript:;" id="button" @click="VerifyCompany">下一步</a>
+   </div>
+   
+  </div>
+</template>
+
+<script>
+import qs from 'qs'
+import axios from "axios";
+import { mapGetters, mapMutations } from 'vuex'
+export default {
+  name: 'addCompany',
+  data(){
+    return {
+      JobInfo:'',
+      jobId:0,
+      companyName:''
+    }
+  },
+  computed: {
+    ...mapGetters([
+      'AccessId'
+    ])
+  },
+  mounted () {
+    this.getPickerConfig()
+    localStorage.removeItem("companyStyle")
+    localStorage.removeItem("companyName")
+  },
+  methods:{
+    //公司分类Picker
+    getPickerConfig() {
+      axios({
+        url:this.getHost()+'/Notice/CompanyList', 
+        method:'post',
+        data:qs.stringify({
+          UserId:getCookie('UserId'),
+          token:getCookie('token')
+        })
+      })
+      .then(res=>{
+        if (res.data.Status===1) {
+          this.initPicker(res.data.Data.list)
+        }else if (res.data.Status<0) {
+          this.getToast(res.data.Message,'warn')
+          // this.delCookie("UserId")
+          // this.delCookie("token")
+          // this.setAccessId('')
+          // location.replace('/')
+        }
+        else{
+          this.getToast(res.data.Message,'warn')
+        }
+      })
+      
+    },
+    //配置分类picker
+    initPicker(data){
+      this.picker = this.$createPicker({
+        title: '公司分类',
+        alias: {
+          value: 'ID',
+          text: 'Name'
+        },
+        data: [data],
+        onSelect: (selectedVal, selectedIndex, selectedText) => {
+          this.LastInfo = ""
+          this.JobInfo = selectedText
+          this.jobId = selectedVal[0]
+        },
+        onCancel: () => {
+          this.getToast("取消选择",'correct')
+        }
+      })
+    },
+    //显示分类picker
+    showPicker () {
+      this.picker.show()
+    },
+    //检查公司
+    VerifyCompany(){
+      if (!this.JobInfo) {
+        this.getToast("请选择公司类型",'warn')
+        return
+      }else if (!this.companyName) {
+        this.getToast("请输入公司全称",'warn')
+        return
+      }
+      axios({
+        url:this.getHost()+'/Company/VerifyCompany', 
+        method:'post',
+        data:qs.stringify({
+          UserId:getCookie('UserId'),
+          token:getCookie('token'),
+          CategoryID:this.JobId,
+          Name:this.companyName
+        })
+      })
+      .then(res=>{
+        if (res.data.Status===1) {
+           if (res.data.Data.Code==1) {
+            //公司不存在 去完善公司信息
+            localStorage.setItem("companyStyle",this.jobId)
+            localStorage.setItem("companyName",this.companyName)
+            this.$router.push({path:"/completeInformation"})
+          }
+          //其他情况
+          if (this.AccessId==-1) {
+            if (res.data.Data.Code!=1) {
+              this.getToast("公司已存在，新建失败")
+            }
+          }else{
+            if (res.data.Data.Code==2) {
+              //洽谈中，签约中
+              this.$router.push({path:"/completeInformation"})
+            }else if (res.data.Data.Code==3) {
+              //已签约
+              this.$router.push({path:"/companyContract"})
+            }else if (res.data.Data.Code==0||res.data.Data.Code==-1) {
+              //code=0：已删除，已新建，Code=-1：已放弃
+              this.$router.push({path:"/giveUpCompany"})
+            }
+          }
+        }else if (res.data.Status<0) {
+          this.delCookie("UserId")
+          this.delCookie("token")
+          this.setAccessId('')
+          location.replace('/')
+        }
+        else{
+          this.getToast(res.data.Message,'warn')
+        }
+      })
+    },
+    ...mapMutations({
+      setAccessId: 'SET_ACCESSID'
+    })
+  }
+  
+}
+</script>
+
+<style scoped>
+@import '../../common/input.css';
+#addCompany{
+  padding-top: 10px;
+  box-sizing: border-box;
+  height: 100vh;
+}
+.companyInfo{
+  background-color: #fff;
+  height: 100%;
+  position: relative;
+}
+#button{
+  width: calc( 100% - 80px);
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%)
+}
+</style>
