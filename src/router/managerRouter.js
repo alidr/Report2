@@ -7,7 +7,11 @@ const UserList = () =>
   import ('@/pages/admin_UserList')
 const AppealManger = () =>
   import ('@/pages/manager_AppealManger')
-
+  const AddUser = () =>
+  import ('@/pages/admin_addUser')
+  const WaitGroup = () =>
+  import ('@/pages/dealer_waitGroup')
+  
 export default [
 {
   path: '/approvalCompany',
@@ -41,11 +45,32 @@ export default [
   meta: {
     title: '用户列表'
   },
-}, , {
+}, {
   path: '/appeal',
   component: Appeal,
   meta: {
     title: '申诉审批'
+  },
+},
+{
+  path: '/appeal',
+  component: Appeal,
+  meta: {
+    title: '申诉审批'
+  },
+},
+{
+  path: '/addUser',
+  component: AddUser,
+  meta: {
+    title: '添加用户'
+  },
+},
+{
+  path: '/waitGroup',
+  component: WaitGroup,
+  meta: {
+    title: '待审批小组'
   },
 },
 ]
