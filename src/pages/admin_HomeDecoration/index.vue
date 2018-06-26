@@ -18,7 +18,7 @@
         <input type="text" placeholder="请搜索公司名称关键词">
         <span>搜索</span>
       </div>
-      <div class="FilterConditions">
+      <div class="FilterConditions " >
         <div class="filter">
             <span class="filterResult">{{statusSelect}}</span>
             <span class="iconfont icon-xiaosanjiao icon" @click="maskStatus(0)"></span>
@@ -47,7 +47,7 @@
     </div>
    <!-- 公司列表 -->
    <div class="comList">
-      <focusList :list="List"></focusList>
+      <focusList :list="List" id="list"></focusList>
    </div>
   </div>
 </template>
@@ -189,10 +189,12 @@
       },
       maskStatus(index){
         if (this.hasMask[index] == true) {
+          
           this.hasMask[index] = false   
         }else{
             
             this.hasMask[index] = true
+
           }
         for (let i = 0; i < this.hasMask.length; i++) {
           
@@ -404,5 +406,6 @@
     width: 92%;
     margin: 0 auto;
   }
+  
 
 </style>
