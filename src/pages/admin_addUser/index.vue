@@ -214,7 +214,7 @@ export default {
           if (res.data.Status===1) {
             this.getToast("新建用户成功，跳转首页",'warn')
             setTimeout(() => {
-              this.$router.push({path:'/adminIndex'})
+              this.$router.push({path:'/home'})
             }, 2000);
           }else if (res.data.Status<0) {
             this.delCookie("UserId")
@@ -224,6 +224,9 @@ export default {
           }
           else{
             this.getToast(res.data.Message,'warn')
+            setTimeout(() => {
+              this.$router.push({path:'/addUser'})
+            }, 2000);
           }
         })
         .catch(res=>{
