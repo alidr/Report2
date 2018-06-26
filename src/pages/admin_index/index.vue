@@ -162,7 +162,7 @@ import {loginOut} from "../../utils/loginOut";
   .top .userMsg {
     width: 100%;
     overflow: hidden;
-    border-bottom: 1px solid rgba(177, 177, 177, 1);
+    border-bottom: 1px solid #F0F0F0;
     margin-bottom: 15px;
     padding-bottom: 18px;
   
@@ -254,6 +254,7 @@ import {loginOut} from "../../utils/loginOut";
     overflow: hidden;
     background:#E2C78F;
     border-radius: 8px;
+    background: linear-gradient(left, #E2C78F, #D5AE61);
     box-shadow: 0px 2px 10px rgba(223, 174, 72, 0.2);
   }
   .enter ul li:nth-child(2) {
@@ -271,6 +272,7 @@ import {loginOut} from "../../utils/loginOut";
     overflow: hidden;
     background:#D5AE61;
     border-radius: 8px;
+    background: linear-gradient(left, #E2C78F, #D5AE61);
     box-shadow: 0px 2px 10px rgba(223, 174, 72, 0.2);
   }
   .enter ul li:nth-child(2) a{
