@@ -10,10 +10,11 @@
     <div class="appealList">
       <ul>
         <li v-for="(item,index) in list" :key="index" @click="applyDetail(item.ID)">
-          <div class="up">
             <span>{{item.StatusName}}</span>
-            <p>{{item.CompanyName}} </p>
-            <b>业务员{{item.UserName}}</b>
+          
+          <div class="up">
+            <span class="CompanyName">{{item.CompanyName}} </span>
+            <span class="UserName">业务员{{item.UserName}}</span>
             <div class="upBtn">
               <button type="button" class="no" @click="noAllow(false,item.ID)">不通过</button>
               <button type="button" class="yes" @click="okAllow(true,item.ID)">审批通过</button>
@@ -157,29 +158,7 @@
     border: none
   }
 
-  /* .btn button:nth-child(3) {
-    font-size: 14px;
-    font-family: PingFangSC-Regular;
-    color: rgba(179, 179, 179, 1);
-    line-height: 29px;
-    text-align: center;
-    border: 1px solid #959595;
-    background: none;
-    padding: 0 10px;
-
-  }
-  .btn button:nth-child(4) {
-    font-size: 14px;
-    font-family: PingFangSC-Regular;
-    color: rgba(179, 179, 179, 1);
-    line-height: 29px;
-    text-align: center;
-    border: 1px solid #959595;
-    background: none;
-    padding: 0 10px;
-
-  } */
-
+  
   .appealList {
     width: 94%;
     margin: 0 auto;
@@ -196,14 +175,14 @@
   .appealList ul li .up {
     width: 100%;
     overflow: hidden;
-    border-bottom: 1px solid rgba(177, 177, 177, 1);
+    border-bottom: 1px solid #F0F0F0;
     padding-bottom: 8px;
     margin-bottom: 14px;
+    position: relative;
   }
 
-  .appealList ul li .up span {
-    float: left;
-    display: block;
+  .appealList ul li>span {
+    display: inline-block;
     height: 20px;
     border-radius: 3px;
     line-height: 20px;
@@ -212,20 +191,17 @@
     padding: 0 10px;
     font-size: 12px;
     color: rgba(191, 191, 191, 1);
-    margin-bottom: 10px;
+    margin-bottom: 6px;
   }
 
-  .appealList ul li .up p {
-    clear: both;
-    float: left;
+  .appealList ul li .up .CompanyName {
     font-size: 16px;
     font-family: PingFangSC-Regular;
     color: rgba(77, 77, 77, 1);
     line-height: 28px;
   }
 
-  .appealList ul li .up b {
-    float: left;
+  .appealList ul li .up .UserName {
     font-size: 16px;
     font-family: PingFangSC-Regular;
     color: rgba(77, 77, 77, 1);
@@ -234,10 +210,11 @@
   }
 
   .appealList ul li .up .upBtn {
-    float: right;
     display: flex;
     width: 40%;
     justify-content: space-between;
+    position: absolute;
+    top: 0;right: 0;
   }
 
   .appealList ul li .up .upBtn button {
@@ -249,12 +226,12 @@
     font-size: 12px;
   }
 
-  .appealList ul li .up .upBtn button:nth-child(1) {
+  .appealList ul li .up .upBtn .no {
     background: rgba(228, 228, 228, 1);
     color: rgba(178, 178, 178, 1);
   }
 
-  .appealList ul li .up .upBtn button:nth-child(2) {
+  .appealList ul li .up .upBtn .yes{
     background: rgba(226, 199, 143, 1);
     color: rgba(255, 255, 255, 1);
   }
@@ -265,16 +242,15 @@
   }
 
   .appealList ul li .down i {
-    float: left;
     font-style: normal;
     font-size: 12px;
     color: rgba(242, 111, 83, 1);
   }
 
   .appealList ul li .down a {
-    float: right;
     font-size: 12px;
     color: rgba(128, 128, 128, 1);
+    margin-left: 110px;
   }
 
 </style>

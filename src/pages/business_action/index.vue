@@ -25,7 +25,7 @@
                 <div class="unloadImgCon">
                   <div v-if="!image1">
                     <input type="file" @change="onFileChange1">
-                    <i>+</i>
+                    <i :style="note"></i>
                   </div>
                 </div>
               </div>
@@ -47,7 +47,7 @@
                 <div class="unloadImgCon">
                   <div v-if="!image2">
                     <input type="file" @change="onFileChange2">
-                    <i>+</i>
+                    <i :style="note"></i>
                   </div>
                 </div>
               </div>
@@ -69,7 +69,7 @@
                 <div class="unloadImgCon">
                   <div v-if="!image3">
                     <input type="file" @change="onFileChange3">
-                    <i>+</i>
+                    <i :style="note"></i>
                   </div>
                 </div>
               </div>
@@ -93,7 +93,13 @@ export default {
       CompanyID:'',
       image1:'',
       image2:'',
-      image3:''
+      image3:'',
+      note: {
+            backgroundImage: "url(" + require("./images/addimg_03.png") + ")",
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "28px auto",
+          },
+
     }
   },
   created(){
@@ -187,7 +193,7 @@ export default {
       .then(res=>{
         console.log(res)
         if (res.data.Status===1) {
-          this.getToast("操作成功，返回首页",'warn')
+          this.getToast("操作成功",'loading')
           setTimeout(() => {
             this.$router.push({
             path:"/home"
@@ -288,6 +294,7 @@ export default {
 .unloadImg{
   background-color: #fff;
   height: 80vh;
+  padding: 0 10px;
 }
 .unloadImg .title{
   border: none;
@@ -327,7 +334,14 @@ export default {
   position: absolute;
   bottom: 50px;
   left: 50%;
-  transform: translateX(-50%)
+  transform: translateX(-50%);
+  box-shadow: 0px 6px 10px rgba(223, 174, 72, 0.2);
+}
+.unloadImgCon i{
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+
 }
 </style>
 

@@ -12,13 +12,7 @@
           <button type="button"  class="zuzhang" v-show="zuzhangId === item.ID" @click="setZuZhang(item.ID)">组长</button>
           <img src="./del_03.png" alt="" @click="deleteMember(item.ID)">
         </li>
-        <!-- <li>
-          <p>02
-            <span>小张</span>
-          </p>
-          <button type="button">设置为组长</button>
-          <img src="./del_03.png" alt="">
-        </li> -->
+       
       </ul>
     </div>
     <button type="button" class="addMember" @click="addMember">＋添加组员</button>

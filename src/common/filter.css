@@ -4,13 +4,14 @@
   <span class="iconfont icon-xiaosanjiao icon"></span>
   </div> */
   .filter {
-    flex: 1;
+    flex:1;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 25px;
     margin-right: 15px;
     border: 1px solid #B6A079;
+    border-radius: 4px;
   }
 
   .filter span {

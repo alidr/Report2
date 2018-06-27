@@ -6,7 +6,7 @@
           <li v-for="(item,index) in list" :key="index">
             <p>{{item.Name}}</p>
             <div class="edit">
-              <img src="edit_03.png" alt="">
+              <img src="./edit_03.png" alt="">
               <span @click="editName(item.ID)">编辑岗位名称</span>
             </div>
           </li>
@@ -192,7 +192,8 @@ margin: 12px 12px 14px 0;
   display: block;
   width:10px;
   height:10px;
-  margin:6px;
+  margin-top: 9px;
+  margin-left: 8px;
 
 }
 .postList ul li .edit span{
