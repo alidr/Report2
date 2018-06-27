@@ -3,8 +3,8 @@
   <div id="competeProductAnalysis">
     <div class="date">
       <p class="years">
-        <span :class="{active:years==2017}" @click="handleYear(2017)">2017年</span>
         <span :class="{active:years==2018}" @click="handleYear(2018)">2018年</span>
+        <span :class="{active:years==2019}" @click="handleYear(2019)">2019年</span>
       </p>
       <div class="months" ref="wrapper">
         <ul>
@@ -78,21 +78,13 @@ export default {
     console.log(this.years)
     this.showModel()
   },
-  // mounted() {
-  //   this.$nextTick(() => {
-  //     this.scroll = new Bscroll(this.$refs.wrapper, {
-  //       scrollX: true,
-  //       scrollY: false,
-  //     })
-  //   })
-  // },
   computed: {
     ...mapGetters([
       'AccessId'
     ])
   },
-  methods:{
-    editCompete(){
+  methods: {
+     editCompete(){
       this.$router.push({
         path:'/editCompete',
         query:{
@@ -102,35 +94,6 @@ export default {
           }
       })
     },
-     //判断角色，显示对应的内容
-    showModel(){
-      if (this.AccessId==5) {
-        this.show = true
-
-      }else{
-        this.show=false
-      }
-    },
-    created() {
-      this.ID = this.$route.query.id
-      this.getComplete(this.ID)
-      console.log(this.years)
-      this.showModel()
-    },
-    // mounted() {
-    //   this.$nextTick(() => {
-    //     this.scroll = new Bscroll(this.$refs.wrapper, {
-    //       scrollX: true,
-    //       scrollY: false,
-    //     })
-    //   })
-    // },
-    computed: {
-      ...mapGetters([
-        'AccessId'
-      ])
-    },
-    methods: {
       //判断角色，显示对应的内容
       showModel() {
         if (this.AccessId == 5) {
@@ -184,7 +147,6 @@ export default {
       },
     }
   }
-}
 </script>
 
 <style scoped>
@@ -244,6 +206,7 @@ export default {
     width: 55px;
     float: left;
     text-align: center;
+
   }
 
   /* 月份竞品分析 */
