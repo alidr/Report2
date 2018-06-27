@@ -322,8 +322,13 @@ export default {
   height: 80px;
 }
 .file img{
-  width: 100%;
+  width: 80px;
+  height: 80px;
 }
+.mission_img{
+    width: 80px;
+    height: 80px;
+  }
 #button{
   width: calc(100% - 60px);
   position: absolute;

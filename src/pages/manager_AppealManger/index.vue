@@ -19,13 +19,28 @@
             </div>
           </div>
           <div class="down">
-            <i>查看相似公司</i>
+            <i @click.stop="showListMask(true,item.CompanyID)">查看相似公司</i>
             <a href="javascript:;">
               <span>查看申诉详情>></span>
             </a>
           </div>
         </li>
       </ul>
+    </div>
+       <!-- 遮罩 -->
+    <div id="mask" v-if="listmask" @click="showListMask(false)">
+      <div class="maskContain">
+        <ul>
+          <li>
+            <span class="name">公司名称 </span>
+            <span>相似度</span>
+          </li>
+          <li v-for="(item,index) in similadList" :key="index">
+            <span class="name">{{item.Name}} </span>
+            <span>{{item.Rate}}%</span>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 </template>
@@ -38,13 +53,51 @@
     data() {
       return {
         list:[],
-        style:1
+        style:1,
+        similadList:'',
+        listmask:false
       }
     },
     created(){
       this.getList(1)
     },
     methods:{
+      showListMask(bool,id){
+        this.listmask = bool
+        if (bool) {
+          console.log(id);
+          
+          this.getSimilarList(id)
+        }
+      },
+      getSimilarList(id){
+        axios({
+        url:this.getHost()+'/Approval/GetLikeness', 
+        method:'post',
+        data:qs.stringify({
+          UserId:getCookie('UserId'),
+          token:getCookie('token'),
+          CompanyID:id
+          })
+        })
+        .then(res=>{
+          console.log(res)
+          if (res.data.Status===1) {
+            this.similadList = res.data.Data
+          }else if (res.data.Status<0) {
+            this.getToast("登录失效，请重新登录",'warn')
+            setTimeout(() => {
+              this.delCookie("UserId")
+              this.delCookie("token")
+              this.setAccessId('')
+              location.replace('/')
+            }, 2000);
+          }
+          else{
+            this.getToast(res.data.Message,'warn')
+          }
+        })
+      },
       getList(TypeID){
         axios({
         url:this.getHost()+'/Approval/GetFollowList', 
@@ -93,7 +146,7 @@
           console.log(res)
           if (res.data.Status===1) {
             this.getToast("操作成功",'warn')
-            this.getList("")
+            this.getList(this.style)
           }else if (res.data.Status<0) {
             this.getToast("登录失效，请重新登录",'warn')
             setTimeout(() => {
@@ -124,6 +177,21 @@
 </script>
 
 <style scoped>
+@import '../../common/mask.css';
+  .maskContain li{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 1px solid #f0f0f0;
+    padding: 10px 0;
+  }
+  .maskContain li:last-child{
+    border-bottom: none;
+  }
+  .name{
+    width: 0;
+    flex-grow: 1;
+  }
 
 .btn {
     width: 58%;

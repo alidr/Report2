@@ -14,6 +14,8 @@ const WaitGroup = () =>
   import ('@/pages/dealer_waitGroup')
 const UserList = () =>
   import ('@/pages/admin_UserList')
+const MyGroup = () =>
+  import ('@/pages/business_myGroup')
 
 export default [{
     path: '/demo',
@@ -71,5 +73,11 @@ export default [{
      meta: {
        title: '用户列表'
      },
-   },
+   }, {
+     path: '/myGroup',
+     component: MyGroup,
+     meta: {
+       title: '我的小组'
+     },
+   }
 ]

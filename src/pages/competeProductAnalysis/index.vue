@@ -20,26 +20,26 @@
          </div>
         <div class="competitionInfo" v-if="infoNull">
           <p>
-            <span>精品销量</span>
-            <span>32892</span>
+            <span>竞品销量</span>
+            <span>{{complete.SaleCount}}</span>
           </p>
           <p>
             <span>竞品开工数</span>
-            <span>21212</span>
+            <span>{{complete.WorkCount}}</span>
           </p>
           <p>
             <span>竞品出样量</span>
-            <span>17288</span>
+            <span>{{complete.SampleCount}}</span>
           </p>
         </div>
         <div class="competitionNum" v-if="infoNull">
-          <p>门店数量&emsp;4</p>
-          <p>设计师数&emsp;78</p>
+          <p>门店数量&emsp;{{complete.ShopCount}}</p>
+          <p>设计师数&emsp;{{complete.StylistCount}}</p>
         </div>
          <div class="infoNull" v-if="!infoNull">
           信息为空
         </div>
-        <router-link to="/editCompete" id="button" v-if="show">编辑当前月份数据</router-link>
+        <a href="javascript:;" id="button" v-if="show" @click="editCompete">编辑当前月份数据</a>
       </div>
     </div>
   </div>
@@ -92,6 +92,16 @@ export default {
     ])
   },
   methods:{
+    editCompete(){
+      this.$router.push({
+        path:'/editCompete',
+        query:{
+          id:this.ID,
+          month:this.month,
+          year:this.years
+          }
+      })
+    },
      //判断角色，显示对应的内容
     showModel(){
       if (this.AccessId==5) {

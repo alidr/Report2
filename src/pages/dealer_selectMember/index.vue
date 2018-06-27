@@ -3,8 +3,8 @@
     <div class="SalesmanList">
       <div class="top">
         <div class="search">
-          <input type="text" placeholder="请输入业务员姓名或手机号">
-          <span>搜索</span>
+          <input type="text" placeholder="请输入业务员姓名或手机号" v-model="memberName">
+          <span @click="getList">搜索</span>
         </div>
       </div>
       <div class="everSales">
@@ -12,7 +12,7 @@
           <li v-for="(item,index) in list" :key="index">
             <p>{{item.Name}}</p>
             <b>手机号 {{item.Mobile}}</b>
-            <span @click="select(item,index)" :class="{active:isActive[index]}" ></span>
+            <span @click="select(item,index)" :class="{active:item.isActive}" ></span>
           </li>
         </ul>
       </div>
@@ -23,14 +23,21 @@
 <script>
 import qs from 'qs'
 import axios from "axios";
+import { mapGetters, mapMutations } from 'vuex'
 
 export default {
   name: 'selectMember',
+  computed: {
+    ...mapGetters([
+      'DealerSelectedMember'
+    ])
+  },
   data(){
     return{
       list:[],
-      isActive:[],
-      idList:[]
+      // isActive:[],
+      idList:[],
+      memberName:''
     }
   },
   created(){
@@ -46,6 +53,16 @@ export default {
   },
 
   methods:{
+    isMemberSelect() {
+      this.list.forEach(listItem => {
+        this.DealerSelectedMember.forEach(item => {
+          if (item.ID === listItem.ID) {
+            listItem.isActive = true
+          }
+        })
+      })
+      this.list = this.list.slice()
+    },
     getList(){
       axios({
         url:this.getHost()+'/UserInfo/GetUserList', 
@@ -53,21 +70,23 @@ export default {
         data:qs.stringify({
           UserId:getCookie('UserId'),
           token:getCookie('token'),
-          Keyword:""
+          Keyword:this.memberName
         })
       })
       .then(res=>{
         console.log(res)
-        if (res.data.Status===1) {
-          this.list=res. data.Data.list
+        if (res.data.Status === 1) {
+          this.list = res.data.Data.list
           //判断成员列表是否存在于本地列表
-          for (let i = 0; i < this.list.length; i++) {
-            this.isActive.push(false)
-            if (this.contains(this.idList,this.list[i].ID)) {
-              this.isActive[i]= true
-            }
-          }
-          this.isActive =this.isActive.slice()
+          console.log(this.list, this.DealerSelectedMember);
+          this.isMemberSelect()
+          // for (let i = 0; i < this.list.length; i++) {
+          //   this.isActive.push(false)
+          //   if (this.contains(this.idList,this.list[i].ID)) {
+          //     this.isActive[i] = true
+          //   }
+          // }
+          // this.isActive =this.isActive.slice()
           
         }else if (res.data.Status<0) {
           this.getToast("登录失效，请重新登录",'warn')
@@ -84,13 +103,30 @@ export default {
       })
     },
     select(item,index){
-      if (!this.isActive[index]) {
-        this.idList.push(item)
-        localStorage.setItem("select",JSON.stringify(this.idList))
-        this.$router.push({
-          path:"/newGroup"
-        })
+      console.log(item)
+      let list = this.DealerSelectedMember.slice()
+      // 已选[], 判断重不重复，不重复push
+      let isDup = false
+      list.forEach(arrItem => {
+        if (item.ID === arrItem.ID) {
+          isDup = true
+        }
+      })
+      if (!isDup) {
+        list.push(item)
       }
+      this.setDealerSelectedMember(list)
+      this.isMemberSelect()
+      this.$router.push({
+        path:"/newGroup"
+        })
+      // if (!this.isActive[index]) {
+      //   this.idList.push(item)
+      //   localStorage.setItem("select",JSON.stringify(this.idList))
+      //   this.$router.push({
+      //     path:"/newGroup"
+      //   })
+      // }
     },
     contains(arr, obj) {  
       var i = arr.length;  
@@ -101,6 +137,9 @@ export default {
       }  
       return false;  
     },
+    ...mapMutations({
+      setDealerSelectedMember: 'SET_DEALERSELECTEDMEMBER'
+    })
   }
 }
 

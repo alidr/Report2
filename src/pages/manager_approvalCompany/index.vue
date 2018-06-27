@@ -35,7 +35,7 @@
               <p>{{item.Name}}</p>
             </div>
             <div class="listBottom">
-              <i @click="showListMask(true,item.ID)">查看相似公司</i>
+              <i @click="showListMask(true,item.CompanyID)">查看相似公司</i>
               <!-- 
               <p>{{item.Content}}</p>
               <b>小A</b> -->
@@ -158,7 +158,7 @@
             UserId:getCookie('UserId'),
             token:getCookie('token'),
             List:this.idList,
-            Agree:false,
+            IsAgree:false,
             AuditReason:this.giveUpReason
           })
         })
@@ -293,7 +293,7 @@
             UserId:getCookie('UserId'),
             token:getCookie('token'),
             List:this.idList,
-            Agree:true,
+            IsAgree:true,
             AuditReason:''
           })
         })

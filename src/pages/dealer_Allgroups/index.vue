@@ -11,10 +11,10 @@
     <div class="groupList">
       <ul>
         <li v-for="(item,index) in list" :key="index">
-          <div class="left">
             <span>{{item.StatusName}}</span>
+          <div class="left">
             <i></i>
-            <b>{{item.StatusName}}</b>
+            <span>{{item.StatusName}}</span>
           </div>
           <div class="right">
             <i></i>
@@ -22,11 +22,12 @@
               <span>{{item.Name}}{{item.Mobile}}</span>
             </p>
             <b>该小组组员{{item.Count}}人，共跟进{{item.TotalCount}}个家装公司</b>
-            <router-link to='/'>
+            
+          </div>
+          <a href="javascript:;" @click="groupList(item.ID)">
               <button type="button">详情</button>
 
-            </router-link>
-          </div>
+          </a>
         </li>
       </ul>
     </div>
@@ -36,6 +37,7 @@
 <script>
 import qs from 'qs'
 import axios from "axios";
+import { mapGetters, mapMutations } from 'vuex'
 
   export default {
     name: 'allgroups',
@@ -43,6 +45,10 @@ import axios from "axios";
       return{
         list:[]
       }
+    },
+    created(){
+      this.getList()
+      this.setDealerSelectedMember([])
     },
     methods:{
       getList(){
@@ -72,7 +78,19 @@ import axios from "axios";
             this.getToast(res.data.Message,'warn')
           }
         })
-      }
+      },
+      groupList(id){
+        this.$router.push({
+          path:'/myGroup',
+          query:{
+            id:id,
+            style:1
+          }
+        })
+      },
+      ...mapMutations({
+        setDealerSelectedMember: 'SET_DEALERSELECTEDMEMBER'
+      })
     }
   }
 
@@ -91,11 +109,14 @@ import axios from "axios";
     overflow: hidden;
     padding-top: 14px;
     margin-bottom: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center
   }
 
   .top p {
-    float: left;
-    display: block;
+    /* float: left; */
+    /* display: block; */
     width: 60%;
     height: 24px;
     background: rgba(223, 222, 221, 1);
@@ -105,10 +126,13 @@ import axios from "axios";
     line-height: 24px;
     padding-left: 14px;
     margin-top: 2px;
+    flex-grow: 1;
+    width: 0;
+    margin-right: 15px;
   }
 
   .top a button {
-    float: right;
+    /* float: right; */
     height: 28px;
     background: rgba(226, 199, 143, 1);
     border-radius: 3px;
@@ -129,20 +153,23 @@ import axios from "axios";
   .groupList ul li {
     width: 100%;
     overflow: hidden;
-    padding: 4px 10px 20px 0;
+    padding:20px 10px 10px;
     background: white;
     border-radius: 4px;
     margin-bottom: 10px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box
   }
 
   .groupList ul li .left {
-    float: left;
+    /* float: left; */
     overflow: hidden;
     margin-right: 10px;
   }
 
-  .groupList ul li .left>span {
-    float: left;
+  .groupList ul li>span {
     display: block;
     height: 20px;
     background: rgba(246, 234, 212, 1);
@@ -154,10 +181,12 @@ import axios from "axios";
     color: rgba(187, 159, 97, 1);
     line-height: 20px;
     text-align: center;
+    position: absolute;
+    top: 2px;
+    left: 0;
   }
 
-  .groupList ul li .left b {
-    clear: both;
+  .groupList ul li .left span {
     font-size: 16px;
     font-family: PingFangSC-Light;
     color: rgba(102, 102, 102, 1);
@@ -167,29 +196,24 @@ import axios from "axios";
   }
 
   .groupList ul li .left i {
-    clear: both;
-    display: block;
-    float: left;
+    display: inline-block;
     width: 6px;
     height: 6px;
     background: rgba(235, 232, 228, 1);
     border-radius: 50%;
     line-height: 10px;
     margin-top: 6px;
-    margin-right: 6px;
-    margin-left: 14px;
-
   }
 
   .groupList ul li .right {
-
     overflow: hidden;
-    padding-top: 14px;
-    margin-right: 10px;
+    border-left: 1px solid #f0f0f0;
+    padding: 0 10px;
+    flex-grow: 1;
+    width: 0;
   }
 
-  .groupList ul li .right i::after {
-    float: left;
+  /* .groupList ul li .right i::after {
     content: "";
     display: block;
     width: 1px;
@@ -198,10 +222,10 @@ import axios from "axios";
     margin-right: 8px;
     margin-top: 6px;
 
-  }
+  } */
 
   .groupList ul li .right p {
-    float: left;
+    /* float: left; */
     font-size: 12px;
     font-family: PingFangSC-Regular;
     color: rgba(102, 102, 102, 1);
@@ -209,14 +233,14 @@ import axios from "axios";
   }
 
   .groupList ul li .right b {
-    float: left;
+    /* float: left; */
     font-size: 12px;
     font-family: PingFangSC-Light;
     color: rgba(179, 179, 179, 1);
     font-weight: normal;
   }
 
-  .groupList ul li .right a>button {
+  .groupList ul li a>button {
     width: 30px;
     height: 30px;
     background: rgba(226, 199, 143, 1);

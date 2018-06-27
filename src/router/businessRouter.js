@@ -13,7 +13,7 @@ const Action = () => import('@/pages/business_action')
 const ApprovalRecord = () => import('@/pages/busniess_ApprovalRecord')
 const EditCompete = () => import('@/pages/busniess_editCompete')
 const MyGroup = () => import('@/pages/business_myGroup')
-const CompanyFollow = () => import ('@/pages/CompanyFollow')
+const CompanyFollow = () =>import ('@/pages/admin_CompanyFollow')
 const CompanyContract = () =>import ('@/pages/busniess_companyContract')
 const GiveUpCompany = () =>import ('@/pages/busniess_giveUpCompany')
 

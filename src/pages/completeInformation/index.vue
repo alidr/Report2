@@ -38,15 +38,32 @@
         <span>备注说明</span>
         <input type="text" placeholder="请输入备注说明" v-model="other"> 
       </div>
-      <div class="input uploadImg">
-        <span>门头照</span>
-        <div class="img"><cube-upload
-            action="//jsonplaceholder.typicode.com/photos/"
-            max=1
-            :simultaneous-uploads="1"
-            @files-added="filesAdded" />
-        </div>   
-      </div>
+      
+    <div class="Material">
+        <p class="title">门头照</p>
+        <div class="file">
+            <span class="mission_img">
+              <span class="mui-icon mui-icon-plusempty file">
+                <div class="vue-upload-img-multiple">
+                <div v-if="image!=''">
+                  <ul>
+                    <img class="img" :src="image"  />
+                    <a href="javascript:void(0);" >
+                      <span id="close" @click='delImage'>X</span>
+                    </a>
+                  </ul>
+                </div>
+                <div class="unloadImgCon">
+                  <div v-if="!image" class="unloadImg">
+                    <input type="file" @change="onFileChange">
+                    <i>+</i>
+                  </div>
+                </div>
+              </div>
+            </span>
+          </span>
+        </div>
+    </div>
     </div>
     <a href="javascript:;" id="button" @click="commitInfo">完成添加</a>
   </div>
@@ -69,7 +86,8 @@ export default {
       comPersonTel:'',
       comPersonArea:'',
       other:'',
-      areaId:''
+      areaId:'',
+      image: '',
     }
   },
    computed: {
@@ -81,23 +99,27 @@ export default {
     this.initPicker()
   },
   methods:{
-    //上传图片
-    filesAdded(files) {
-      let hasIgnore = false
-      const maxSize = 1 * 1024 * 1024 // 1M
-      for (let k in files) {
-        const file = files[k]
-        if (file.size > maxSize) {
-          file.ignore = true
-          hasIgnore = true
-        }
-      }
-      hasIgnore && this.$createToast({
-        type: 'warn',
-        time: 1000,
-        txt: 'You selected >1M files'
-      }).show()
+    onFileChange:function (e) {
+        var dom=e.currentTarget;
+          var files = e.target.files || e.dataTransfer.files;
+          if (!files.length) return;
+        this.createImage(files);
+          
     },
+    createImage (file) {
+          var vm = this;
+          var reader = null;
+            reader = new window.FileReader();
+            reader.readAsDataURL(file[0]);
+            reader.onload = function (e) {
+                    vm.image=e.target.result;
+                    console.log(e.target.result)
+            }
+    },
+    delImage() {
+          this.image = "";
+    },
+    
     //配置分类picker
     initPicker(){
       this.picker = this.$createCascadePicker({
@@ -177,6 +199,59 @@ export default {
 
 <style scoped>
   @import '../../common/input.css';
+
+  #close{
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, .5);
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color:#fff;
+  font-size: 12px;
+}
+  .Material{
+  padding: 15px;
+  box-sizing: border-box;
+  height: 45vh;
+  /* margin-bottom: 30px; */
+  background-color: #fff;
+  display: flex;
+}
+.Material .title{
+  width: 0;
+  flex-grow: 1;
+}
+.file{
+  width: 80px;
+  height: 80px;
+  position: relative;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f0f0f0;
+}
+.file input{
+  opacity: 0;
+  position: absolute;
+  top:0;
+  z-index: 9;
+  width: 80px;
+  height: 80px;
+}
+.file img{
+  width: 80px;
+  height: 80px;
+}
+.mission_img{
+    width: 80px;
+    height: 80px;
+  }
   #completeInformation{
     /* height: 100%;
     overflow: hidden; */
@@ -211,7 +286,8 @@ export default {
   }
   .img{
     position: absolute;
-    right: 10px;
+    right: 0px;
+    top:0px;
   }
   
 </style>

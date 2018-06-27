@@ -233,7 +233,12 @@ export default {
   height: 80px;
 }
 .file img{
-  width: 100%;
+  width: 80px;
+  height: 80px;
+}
+.mission_img{
+  width: 80px;
+  height: 80px;
 }
 #close{
   width: 20px;

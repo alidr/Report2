@@ -11,7 +11,7 @@
           </p>
           <p class="person">业务员 {{data.UName}}</p>
         </div>
-        <div class="topIcon">
+        <div class="topIcon" v-if="show">
           <span @click="showMask(true)">
             <img src="./Settings.png" alt="">
           </span>
@@ -150,7 +150,7 @@
     <div class="competition">
       <div class="followDays">
         <p>竞品分析 <span class="month">{{complete.Month}}月</span></p>
-        <a href="javascript:;" @click="allMonth">所有月份>></a>
+        <a href="javascript:;" @click="allMonth" v-if="show">所有月份>></a>
       </div>
       <div class="competitionInfo" v-if="infoNull">
         <p>
@@ -173,7 +173,7 @@
       <div class="infoNull" v-if="!infoNull">
           信息为空
       </div>
-      <router-link to="/editCompete"  id="button" v-if="show">编辑当前月份数据</router-link>
+      <a href="javascrit:;" id="button" v-if="show" @click="editCompete">编辑当前月份数据</a>
     </div>
     <!-- 直营店信息 -->
     <div class="shopInfo">
@@ -327,15 +327,18 @@ export default {
       shopList:[],
       edit:false,
       afterUpload:true,
-      addShopMask:false
+      addShopMask:false,
+      stylePlay:''
     }
   },
   created(){
     localStorage.removeItem("companyId")
+    this.stylePlay = this.$route.query.stylePlay||""
     this.ID = this.$route.query.id
     this.showModel()
     this.getTimeLine(this.ID)
     this.getComplete(this.ID)   
+    
   },
   computed: {
     ...mapGetters([
@@ -428,7 +431,7 @@ export default {
     },
     //判断是否为业务员
     showModel(){
-      if (this.AccessId==5) {
+      if (this.AccessId==5&&this.stylePlay == '') {
         //show业务员独有的部分
         this.show = true
       }else{
@@ -467,9 +470,9 @@ export default {
     addFollow(){
       this.$router.push({
         path: '/action',
-        // query: {
-        //   id: num
-        // }
+        query: {
+          id:this.ID
+        }
       })
     },
     //获取基础信息
@@ -526,10 +529,10 @@ export default {
           //    this.lookShop = true
           // }
           //业务员
-          if (this.AccessId ==5 ||this.AccessId==-1){
+          if ((this.AccessId ==5&&this.stylePlay=="") ||this.AccessId==-1){
             this.edit = true
           }
-          if (this.AccessId ==5) {
+          if (this.AccessId ==5&&this.stylePlay=="") {
              if (this.data.IsShowLook) {
               this.applyshou = false
             }else{
@@ -681,7 +684,19 @@ export default {
     editCompany(id){
       this.$router.push({
         path:'/editCompany',
-        query:{id:id}
+        query:{
+          id:id
+          }
+      })
+    },
+    //
+    editCompete(){
+      this.$router.push({
+        path:'/editCompete',
+        query:{
+          id:this.ID,
+          month:this.complete.Month
+          }
       })
     },
     getImg(src){

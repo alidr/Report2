@@ -1,17 +1,16 @@
 <template>
   <!-- 新建小组 -->
+    <!-- 新建小组 -->
   <div class="newGroup">
     <div class="memberGroup">
+        <span>选择组员</span>
       <ul>
-        <li>
-          <a href="javascript:;">
-            <span>选择组员</span>
-          </a>
-        </li>
-        <li v-for="(item,index) in list" :key="index">
-          <p>01 {{item.Name}}</p>
-          <button type="button">设置为组长</button>
-          <img src="./del_03.png" alt="">
+        <li v-for="(item,index) in DealerSelectedMember" :key="index">
+          <p>{{index+1}}
+            <span>{{item.Name}}</span></p>
+          <button type="button" v-show="zuzhangId !== item.ID" @click="setZuZhang(item.ID)">设置为组长</button>
+          <button type="button"  class="zuzhang" v-show="zuzhangId === item.ID" @click="setZuZhang(item.ID)">组长</button>
+          <img src="./del_03.png" alt="" @click="deleteMember(item.ID)">
         </li>
         <!-- <li>
           <p>02
@@ -25,31 +24,150 @@
     <button type="button" class="addMember" @click="addMember">＋添加组员</button>
     <div class="bottom">
       <div class="title">申请说明</div>
-      <textarea name="" id="" cols="30" rows="10" placeholder="请输入小组申请说明"></textarea>
+      <textarea name="" id="" cols="30" rows="6" placeholder="请输入小组申请说明" v-model="detail"></textarea>
     </div>
-    <button type="button" class="submit">提交审核</button>
+    <button type="button" class="submit" @click="commit">提交审核</button>
   </div>
 </template>
 
 <script>
+  import { mapGetters, mapMutations } from 'vuex'
+  import qs from 'qs'
+  import axios from "axios";
+
   export default {
     name: 'newGroup',
+    data(){
+      return{
+        detail:'',
+        memberList:[],
+      }
+    },
+    computed: {
+      zuzhangId() {
+        let zuzhang = this.DealerSelectedMember.filter(item => {
+          return item.isZuZhang
+        })
+        if (zuzhang.length) {
+          return zuzhang[0].ID
+        } else {
+          return null
+        }
+      },
+      ...mapGetters([
+        'DealerSelectedMember'
+      ])
+    },
     created(){
-      this.list =JSON.parse( localStorage.getItem("select"))
+
+      
     },
     methods:{
+      commit(){
+      if (this.DealerSelectedMember.length==0) {
+        this.getToast("请选择组员",'warn')
+        return
+      }else{
+        console.log(this.memberList);
+        this.memberList = []
+        this.DealerSelectedMember.forEach(item => {
+            this.memberList.push({
+              "UserId":item.ID,
+              "IsHead":item.isZuZhang
+            })
+        });
+      }
+      if (!this.detail) {
+        this.getToast("请输入申请理由",'warn')
+        return
+      }
+      axios({
+        url:this.getHost()+'/UserInfo/GroupUserSave', 
+        method:'post',
+        data:qs.stringify({
+          UserId:getCookie('UserId'),
+          token:getCookie('token'),
+          Reason:this.detail,
+          itemList:this.memberList
+        })
+      })
+      .then(res=>{
+        console.log(res)
+        if (res.data.Status===1) {
+          this.detail = ""
+          this.setDealerSelectedMember([])
+          this.getToast("创建成功",'warn')
+          setTimeout(() => {
+            this.$router.push({
+              path:'/allgroups'
+            })
+          }, 2000);
+        }else if (res.data.Status<0) {
+          this.getToast("登录失效，请重新登录",'warn')
+          setTimeout(() => {
+            this.delCookie("UserId")
+            this.delCookie("token")
+            this.setAccessId('')
+            location.replace('/')
+          }, 2000);
+        }
+        else{
+          this.getToast(res.data.Message,'warn')
+        }
+      })
+      
+      },
+      setZuZhang(id) {
+        let list = this.DealerSelectedMember.slice()
+        list = list.map(item => {
+          item.isZuZhang = item.ID === id
+          return item
+        })
+        this.setDealerSelectedMember(list)
+      },
       addMember(){
         this.$router.push({
           path:"/selectMember"
         })
-      }
+      },
+      deleteMember(ID){
+        let list = this.DealerSelectedMember.slice()
+        list = list.filter(item => {
+          return item.ID !== ID
+        })
+        if (ID === this.zuzhang) {
+          this.zuzhang = null
+        }
+        this.setDealerSelectedMember(list)
+        // for (let i = 0; i < this.list.length; i++) {
+        //   if (this.list[i].ID==ID) {
+        //     this.list.splice(i)
+        //   }
+        // }
+        // this.list = this.list.slice()
+        // localStorage.setItem("select",JSON.stringify(this.list))
+
+        // setTimeout(() => {
+        //   this.getList()
+        //   this.list = this.list.slice()
+        // // this.list = JSON.parse(localStorage.getItem("select"))
+        // console.log(JSON.parse(localStorage.getItem("select")));
+        // }, 1000);
+        // // this.$router.go(0)
+      },
+      ...mapMutations({
+        setDealerSelectedMember: 'SET_DEALERSELECTEDMEMBER'
+      })
     }
   }
 
 </script>
 
 <style scoped>
-  .newGroup {
+  .zuzhang{
+  background-image:  -webkit-gradient(linear, left top, right top, from(#E2C78F), to(#D5AE61))
+  }
+ .newGroup {
     width: 100%;
     overflow: hidden;
   }
@@ -69,11 +187,17 @@
   .memberGroup ul li {
     border-top: 1px solid #B1B1B1;
     height: 46px;
+    font-size: 14px;
+    font-family: PingFangSC-Regular;
+    color: rgba(77, 77, 77, 1);
+    line-height: 46px;
+    display: flex;
+    align-items: center;
 
   }
 
   .memberGroup ul li button {
-    float: left;
+
     display: block;
     border-radius: 4px;
     padding: 0 12px;
@@ -86,64 +210,39 @@
   }
 
   .memberGroup ul li img {
-    float: left;
+
     display: block;
     width: 30px;
     height: 30px;
     margin-top: 8px;
   }
-
-  .memberGroup ul li:nth-child(1) {
-    border: none;
-
+  .memberGroup ul li p {
+    flex-grow: 1;
+    width: 0;
   }
-  .memberGroup ul li:nth-child(1) a{
-      display: block;
+  .memberGroup ul li p span{
+    display: inline-block;
+    margin-left: 15px;
   }
-  .memberGroup ul li:nth-child(1) a span{
-    font-size: 14px;
-    font-family: PingFangSC-Medium;
-    color: rgba(128, 128, 128, 1);
+  .memberGroup>span {
+    width: 96%;
+    display: inline-block;
+    margin: 0 auto;
     line-height: 46px;
-  }
-
-  .memberGroup ul li:nth-child(2) {
     font-size: 14px;
     font-family: PingFangSC-Regular;
     color: rgba(77, 77, 77, 1);
-    line-height: 46px;
+    padding-left:15px;
+    box-sizing: border-box;
   }
 
-  .memberGroup ul li:nth-child(2) p {
-    float: left;
-    margin-right: 163px;
-  }
 
-  .memberGroup ul li:nth-child(2) button {
+  /* .memberGroup ul li button {
     background: #E2C78F;
-  }
+  } */
 
-  .memberGroup ul li:nth-child(3) {
-    font-size: 14px;
-    font-family: PingFangSC-Regular;
-    color: rgba(77, 77, 77, 1);
-    line-height: 40px;
 
-  }
-
-  .memberGroup ul li:nth-child(3) p span {
-    font-size: 14px;
-    font-family: PingFangSC-Regular;
-    color: #CCCCCC;
-    line-height: 46px;
-
-  }
-
-  .memberGroup ul li:nth-child(3) p {
-    float: left;
-    margin-right: 163px;
-  }
-
+  
   .newGroup .addMember {
     display: block;
     width: 100%;
@@ -159,10 +258,10 @@
 
   .bottom {
     padding: 0 16px;
-    height: 320px;
+    height: 300px;
     margin: 0 auto;
     background: white;
-    margin-bottom: 30px
+    margin-bottom: 15px
   }
 
   .bottom .title {
@@ -177,6 +276,8 @@
   .bottom textarea {
     padding-top: 14px;
     padding-left: 4px;
+    width: 100%;
+    text-indent: 1em;
   }
 
   .bottom textarea::placeholder {
@@ -198,6 +299,7 @@
     font-family: PingFangSC-Regular;
     color: rgba(255, 255, 255, 1);
     line-height: 40px;
+    margin-bottom: 15px;
   }
 
 </style>

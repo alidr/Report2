@@ -1,16 +1,12 @@
-const Appeal = () =>
-  import ('@/pages/dealer_Appeal')
+const Appeal = () =>import ('@/pages/dealer_Appeal')
 const ApprovalCompany = () =>import ('@/pages/manager_approvalCompany')
 const CompanyContract = () =>import ('@/pages/manager_companyContract')
 const GiveUpCompany = () =>import ('@/pages/manager_giveUpCompany')
-const UserList = () =>
-  import ('@/pages/admin_UserList')
-const AppealManger = () =>
-  import ('@/pages/manager_AppealManger')
-  const AddUser = () =>
-  import ('@/pages/admin_addUser')
-  const WaitGroup = () =>
-  import ('@/pages/dealer_waitGroup')
+const UserList = () =>import ('@/pages/admin_UserList')
+const AppealManger = () =>import ('@/pages/manager_AppealManger')
+const AddUser = () =>import ('@/pages/admin_addUser')
+const WaitGroup = () =>import ('@/pages/dealer_waitGroup')
+const GroupMember = () =>import ('@/pages/manager_GroupMember')
   
 export default [
 {
@@ -71,6 +67,13 @@ export default [
   component: WaitGroup,
   meta: {
     title: '待审批小组'
+  },
+},
+{
+  path: '/groupMember',
+  component: GroupMember,
+  meta: {
+    title: '小组详情'
   },
 },
 ]

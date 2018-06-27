@@ -16,14 +16,17 @@
             <p>所有状态</p>
             <span></span>
           </li>
-
+          <li>
+            <p>组员</p>
+            <span></span>
+          </li>
         </ul>
 
       </div>
     </div>
     <div class="companyList">
       <ul>
-        <li v-for="(item,index) in list" :key="index">
+        <li v-for="(item,index) in list" :key="index" @click="companyDetail(item.ID)">
           <a href="javascript:;">
             <div class="listTop">
               <span v-if="item.IsEmphasis">
@@ -32,14 +35,14 @@
               <b>剩余保护期：{{item.EndDate}}天</b>
             </div>
             <div class="listMid">
-              <span :class="{active:checkBoxs[index]}" @click="check(index,item.ID)"></span>
+              <span :class="{active:checkBoxs[index]}" v-if="select" @click="check(index,item.ID)"></span>
               <button type="button">{{item.StatusName}}</button>
               <p>{{item.Name}}</p>
             </div>
             <div class="listBottom">
-              <i>2018/11/01</i>
+              <i>{{item.CreateDate}}</i>
               <p>{{item.Content}}</p>
-              <b>小A</b>
+              <b>{{item.UserName}}</b>
             </div>
           </a>
 
@@ -47,7 +50,7 @@
       </ul>
     </div>
 
-    <footer>
+    <footer v-if="selected">
       <span :class="{active:checkAllBox}" @click="checkAll(list)"></span>
       <p>已选择
         <b>{{idList.length}}</b>个家装公司</p>
@@ -59,6 +62,7 @@
 <script>
   import qs from 'qs'
   import axios from "axios";
+  import { mapGetters, mapMutations } from 'vuex'
   export default {
     name: 'CompanyFollow',
     data(){
@@ -67,13 +71,62 @@
         checkBoxs:[],
         checkAllBox:false,
         idList:[],
+        selected:true
       }
     },
     created(){
       localStorage.removeItem("CompanyID")
-      this.getList()
+      if (this.AccessId==-1) {
+        this.getList()
+      }else if (this.AccessId==5){
+        this.getMyMember()
+        this.selected = false
+      } 
+    },
+     computed: {
+      ...mapGetters([
+        'AccessId'
+      ])
     },
     methods:{
+      companyDetail(id){
+        this.$router.push({
+          path:'/companyDetail',
+          query:{
+            id:id,
+            stylePlay:1
+          }
+        })
+      },
+      getMyMember(){
+        axios({
+          url:this.getHost()+'/UserInfo/GetUserCompanyList', 
+          method:'post',
+          data:qs.stringify({
+            UserId:getCookie('UserId'),
+            token:getCookie('token'),
+            Status:"",
+            CategoryID:'',
+            keyword:'',
+            SaleID:'',
+            // Page:1
+          })
+        })
+        .then(res=>{
+          console.log(res)
+          if (res.data.Status===1) {
+            this.list  = res.data.Data.list          
+          }else if (res.data.Status<0) {
+            this.delCookie("UserId")
+            this.delCookie("token")
+            this.setAccessId('')
+            location.replace('/')
+          }
+          else{
+            this.getToast(res.data.Message,'warn')
+          }
+        })
+      },
       getList(){
         axios({
           url:this.getHost()+'/Admin/WaitFollowList', 

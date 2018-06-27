@@ -82,6 +82,8 @@ export default {
           this.LastInfo = ""
           this.JobInfo = selectedText
           this.jobId = selectedVal[0]
+          console.log(this.jobId);
+          
         },
         onCancel: () => {
           this.getToast("取消选择",'correct')
@@ -94,20 +96,22 @@ export default {
     },
     //检查公司
     VerifyCompany(){
-      if (!this.JobInfo) {
+      if (!this.jobId) {
         this.getToast("请选择公司类型",'warn')
         return
       }else if (!this.companyName) {
         this.getToast("请输入公司全称",'warn')
         return
       }
+      console.log(this.jobId);
+      
       axios({
         url:this.getHost()+'/Company/VerifyCompany', 
         method:'post',
         data:qs.stringify({
           UserId:getCookie('UserId'),
           token:getCookie('token'),
-          CategoryID:this.JobId,
+          CategoryID:this.jobId,
           Name:this.companyName
         })
       })
