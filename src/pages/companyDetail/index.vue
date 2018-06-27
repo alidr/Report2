@@ -2,6 +2,7 @@
 <!-- 公司详情 -->
   <div id="companyDetail"> 
     <!-- 家装公司基础信息 -->
+    <div class="contetn">
     <div class="basicInfo">
       <div class="basicInfoTop">
         <div class="basic">
@@ -74,7 +75,7 @@
       </div>
       <p class="uploadAuthorized">
         <span class="round" :class="{'active':btnActive}"><i :class="{'active':btnActive}">1</i></span>
-        <span class="statusDetail" :class="{'active':btnActive}">洽谈成功，申请签约</span>
+        <span class="statusDetail" :class="{'active':btnActive}">洽谈成功，申请授权</span>
         <a href="javascript:;" class="applyBtn" :class="{'active':btnActive}" v-if="applyshou" @click="applyAuthorized(1)">申请授权</a>
         <a href = "javascript:;" class="applyBtn active"  v-if="!applyshou" @click="applyAuthorized(2)">查看授权凭证</a>
         <!-- <span class="applyStatus active" >审核通过</span> -->
@@ -98,7 +99,7 @@
 
       <p class="applyAuthorized">
         <span class="round" :class="{'active':btn3Active}"><i :class="{'active':btn3Active}">3</i></span>
-        <span class="statusDetail" :class="{'active':btn3Active}" >上传签约合同</span>
+        <span class="statusDetail" :class="{'active':btn3Active}" >签约成功，上传合同</span>
         <a href="javascript:;" class="applyBtn" :class="{'active':btn3Active}" v-if="applyhe" @click="uploadContract(2)">上传签约合同</a>
 
 
@@ -127,7 +128,7 @@
         <div class="followTimeDetail" v-for="(item,index) in timeList" :key="index" v-show="index<isExtendTimeLine" >
           <p class="Date">
             <span>{{item.CreateDate}}</span>
-            <span>跟进人：{{item.UserName}}</span>
+            <span class="personText">跟进人 {{item.UserName}}</span>
             <i @click="deleteTimeLine(item.ID)"><img src="./delete.png" alt=""></i>
           </p>
           <p class="detail">{{item.Content}}</p>
@@ -194,7 +195,7 @@
         <span class="upload" v-if="ShopListShow" @click="addShop(true)">添加直营门店</span>
       </div>
     </div>
-
+  </div>
     <!-- 遮罩 -->
     <div id="mask" v-show="isShowMask">
       <div class="maskContain" v-if="nav">
@@ -919,10 +920,14 @@ export default {
   width: auto;
 }
 #companyDetail{
-  padding: 15px;
-  box-sizing: border-box;
+  width: 100%;
 }
 /* 基础信息 */
+.contetn{
+  padding: 15px;
+  box-sizing: border-box;
+  
+}
 .basicInfo,.followInfo,.followTime,.competition,.shopInfo{
   background-color: #fff;
   width: 100%;
@@ -1010,13 +1015,21 @@ export default {
 .basicInfoBottom p span{
   display: inline-block;
   margin-right: 10px;
+  
 }
 .basicInfoBottom p :nth-child(2){
   display: flex;
   width: 60px;
 }
 .color{
-  color: #4d4d4d;
+  color: rgb(83, 78, 78);
+}
+.color.active{
+  color: #FFFFFF;
+  padding: 0 20px;
+  line-height:24px;
+  background:rgba(226,199,143,1);
+  border-radius:4px;
 }
 #expend{
   display: flex;
@@ -1157,6 +1170,7 @@ export default {
   width: 0;
   flex-grow: 1;
   margin-left: 5px;
+  font-weight: 600;
 }
 .followTimeDetail .Date i{
   display: flex;
@@ -1173,11 +1187,11 @@ export default {
   text-overflow: ellipsis;
   color: #999;
 }
-.timeLineImg{
+/* .timeLineImg{
   display: flex;
   justify-content: center;
   align-items: center
-}
+} */
 .timeLineImg img{
   width: 80px;
   height: 80px;

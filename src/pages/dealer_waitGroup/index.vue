@@ -88,22 +88,23 @@
     border-radius: 4px;
     margin-bottom: 15px;
     padding-bottom: 18px;
+    position: relative;
   }
 
 
 
   .waitGroupList ul li .listTop {
-    clear: both;
     width: 92%;
     overflow: hidden;
     margin: 0 auto;
     border-bottom: 1px solid #B1B1B1;
     padding-bottom: 10px;
+    padding-top: 20px;
+    display: flex;
+    justify-content: space-between;
   }
 
   .waitGroupList ul li .listTop p {
-    clear: both;
-    float: left;
     font-size: 14px;
     font-family: PingFangSC-Regular;
     color: rgba(51, 51, 51, 1);
@@ -120,14 +121,16 @@
     line-height: 24px;
     text-align: center;
     color: #FBF7EE;
+    position: absolute;
+    top:0;left: 0;
 
   }
 
   .upBtn {
-    float: right;
     display: flex;
     width: 40%;
     justify-content: space-between;
+   
   }
 
   .upBtn button {
@@ -139,12 +142,12 @@
     font-size: 12px;
   }
 
-  .upBtn button:nth-child(1) {
+  .upBtn .no {
     background: rgba(228, 228, 228, 1);
     color: rgba(178, 178, 178, 1);
   }
 
-  .upBtn button:nth-child(2) {
+  .upBtn .yes {
     background: rgba(226, 199, 143, 1);
     color: rgba(255, 255, 255, 1);
   }
@@ -166,25 +169,24 @@
 
 
   .waitGroupList ul li .listBottom {
+    display: flex;
     width: 92%;
     overflow: hidden;
     margin: 0 auto;
     padding-top: 10px;
+    justify-content: space-between;
   }
 
 
   .waitGroupList ul li .listBottom a {
-    float: right;
     font-size: 12px;
     color: rgba(128, 128, 128, 1);
   }
 
   .waitGroupList ul li .listBottom i {
-    float: left;
     font-style: normal;
     font-size: 12px;
     color: rgba(102, 102, 102, 1);
-    margin-right: 20px;
   }
 
 </style>

@@ -39,7 +39,7 @@
       </div>
     </div>
     <div class="btn">
-      <a href="javascript:;" id="button" @click="commitUserInfo">确认添加</a>
+      <a href="javascript:;" id="button" @click="commitUserInfo">确认保存</a>
       <!-- <router-link to="/adminIndex" id="button">取消</router-link> -->
     </div>
   </div>

@@ -7,19 +7,23 @@
         <span>搜索</span>
       </div>
       <div class="classList">
-        <ul>
-          <li>
-            <p>全部类型</p>
-            <span></span>
-          </li>
-          <li>
-            <p>所有状态</p>
-            <span></span>
-          </li>
-
-        </ul>
-
+          <div class="filter">
+              <span class="filterResult">{{AllSelect}}</span>
+              <span class="iconfont icon-xiaosanjiao icon" @click="maskStatus(0)"></span>
+          </div>
+          <div class="filter">
+            <span class="filterResult">{{StatesSelect}}</span>
+            <span class="iconfont icon-xiaosanjiao icon" @click="maskStatus(1)"></span>
+        </div>
       </div>
+      <!-- <ul class="selectListStatus" v-show="hasMask[0]">
+          <li v-for="(item,index) in Status" :key="index" :class="{active:index==AllHasActive}" @click="AllHasActive(index,item.name)">{{item.name}}</li>
+          <div class="mask"></div>
+        </ul>
+        <ul class="selectListStyle" v-show="hasMask[1]">
+          <li v-for="(item,index) in Style" :key="index" :class="{active:index==StatesHasActive}" @click="StatesHasActive(index,item.name)">{{item.name}}</li>
+          <div class="mask"></div>
+        </ul> -->
     </div>
     <div class="companyList">
       <ul>
@@ -67,6 +71,32 @@
         checkBoxs:[],
         checkAllBox:false,
         idList:[],
+        All:[{
+          id:'',
+          name:'全部岗位'
+        },{
+          id:1,
+          name:'传统公司'
+        },
+        {
+          id:2,
+          name:'XXXX'
+        }],
+        // 所有状态
+        States:[{
+          id:1,
+          name:'已放弃'
+        },{
+          id:2,
+          name:'已删除'
+        },{
+          id:3,
+          name:'已新建'
+        }],
+        AllHasActive:0,
+        AllSelect:"全部类型",
+        StatesHasActive:0,
+        StatesSelect:"所有状态",
       }
     },
     created(){
@@ -172,13 +202,41 @@
             path:'/SalesmanList'
           })
         }
-      }
+      },
+      maskStatus(index){
+        if (this.hasMask[index] == true) {
+          
+          this.hasMask[index] = false   
+        }else{
+            
+            this.hasMask[index] = true
+
+          }
+        for (let i = 0; i < this.hasMask.length; i++) {
+          
+          if (index==i) {
+            continue
+          }
+          this.hasMask[i] = false
+        }
+        this.Mask = this.hasMask[index]?true:false
+      },
+      AllHasActive(index,name){
+      this.AllHasActive = index
+      this.AllSelect = name
+      },
+      StatesHasActive(index,name){
+        this.StatesHasActive = index
+        this.StatesSelect = name
+      },
+
     }
   }
 
 </script>
 
 <style scoped>
+  @import '../../common/filter.css';
   .CompanyFollow {
     width: 100%;
     overflow: hidden;
@@ -234,59 +292,15 @@
     overflow: hidden;
     margin: 0 auto;
     padding-top: 22px;
-  }
-
-  .top .classList ul {
-    width: 100%;
-    overflow: hidden;
     display: flex;
-    justify-content: space-between
+    justify-content: space-between;
+  }
+  .top .classList .filter{
+    margin-right: 0;
+    width: 42%;
+    flex: none;
   }
 
-  .top .classList ul li {
-    width: 40%;
-    height: 24px;
-    overflow: hidden;
-    position: relative;
-  }
-
-  .top .classList ul li p {
-    display: block;
-    width: 74%;
-    height: 22px;
-    border: 1px solid rgba(182, 160, 121, 1);
-    ;
-    border-radius: 4px;
-    font-size: 12px;
-    line-height: 22px;
-    padding-left: 6px;
-
-  }
-
-  .top .classList ul li span {
-    width: 20%;
-    height: 24px;
-    position: absolute;
-    top: 0;
-    right: 2px;
-    background: rgba(182, 160, 121, 1);
-    border-radius: 0px 4px 4px 0px;
-  }
-
-  .top .classList ul li span::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    margin: auto;
-    width: 0;
-    height: 0;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-top: 5px solid white;
-  }
 
   .companyList {
     width: 92%;

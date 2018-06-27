@@ -12,6 +12,7 @@ import AnnounceList from "@/pages/AnnounceList";
 import CompeteProductAnalysis from "@/pages/competeProductAnalysis";
 import MessageCenter from "@/pages/messageCenter";
 import AppealDetails from "@/pages/manager_appealDetails"
+import Announce from "@/pages/Announce"
 
 Vue.use(Router)
 
@@ -65,6 +66,13 @@ let router = new Router({
     }, {
       path: '/announceList',
       component: AnnounceList,
+      meta: {
+        title: '公告栏'
+      }
+    },
+    {
+      path: '/announce',
+      component: Announce,
       meta: {
         title: '公告栏'
       }

@@ -7,21 +7,18 @@
         <span>搜索</span>
       </div>
       <div class="classList">
-        <ul>
-          <li>
-            <p>全部类型</p>
-            <span></span>
-          </li>
-          <li>
-            <p>全部类型</p>
-            <span></span>
-          </li>
-          <li>
-            <p>所有状态</p>
-            <span></span>
-          </li>
-
-        </ul>
+        <div class="filter">
+          <span class="filterResult">{{AllManager}}</span>
+          <span class="iconfont icon-xiaosanjiao icon" @click="maskStatus(0)"></span>
+        </div>
+        <div class="filter">
+          <span class="filterResult">{{AllSalesman}}</span>
+          <span class="iconfont icon-xiaosanjiao icon" @click="maskStatus(0)"></span>
+        </div>
+        <div class="filter">
+          <span class="filterResult">{{newApply}}</span>
+          <span class="iconfont icon-xiaosanjiao icon" @click="maskStatus(0)"></span>
+        </div>
 
       </div>
     </div>
@@ -49,13 +46,14 @@
 
     <footer>
       <span :class="{active:checkAllBox}" @click="checkAll(list)"></span>
-      <p>已选择
+      <p>已选
         <b>{{idList.length}}</b>个家装公司</p>
+      <button type="button" @click="noAllow(true)" class="noAllow">不通过</button>
       <button type="button" @click="distribution">审批通过</button>
-      <button type="button" @click="noAllow(true)" class="noAllow">审批不通过</button>
+
     </footer>
 
-        <!-- 遮罩 -->
+    <!-- 遮罩 -->
     <div id="mask" v-if="isShowMask">
       <div class="maskContain">
         <p class="title">审批不通过原因</p>
@@ -69,7 +67,7 @@
       </div>
     </div>
 
-        <!-- 遮罩 -->
+    <!-- 遮罩 -->
     <div id="mask" v-if="listmask" @click="showListMask(false)">
       <div class="maskContain">
         <ul>
@@ -82,6 +80,7 @@
             <span>{{item.Rate}}%</span>
           </li>
         </ul>
+        <button type="button" @click="showListMask(false)" class="close">关闭</button>
       </div>
     </div>
   </div>
@@ -90,257 +89,309 @@
 <script>
   import qs from 'qs'
   import axios from "axios";
-  import { mapGetters, mapMutations } from 'vuex'
+  import {
+    mapGetters,
+    mapMutations
+  } from 'vuex'
   export default {
     name: 'CompanyFollow',
-    data(){
-      return{
-        list:[],
-        checkBoxs:[],
-        checkAllBox:false,
-        idList:[],
-        isShowMask:false,
-        giveUp:false,
-        giveUpReason:'',
-        similadList:'',
-        listmask:false
+    data() {
+      return {
+        list: [],
+        checkBoxs: [],
+        checkAllBox: false,
+        idList: [],
+        isShowMask: false,
+        giveUp: false,
+        giveUpReason: '',
+        similadList: '',
+        listmask: false,
+        AllManager: [{
+          id: '',
+          name: '全部经销商'
+        }, {
+          id: 1,
+          name: '经销商'
+        }, {
+          id: 2,
+          name: '经销商'
+        }, {
+          id: 3,
+          name: '经销商'
+        }],
+        AllSalesman: [{
+          id: '',
+          name: '业务员'
+        }, {
+          id: 1,
+          name: '业务员'
+        }, {
+          id: 2,
+          name: '业务员'
+        }, {
+          id: 3,
+          name: '业务员'
+        }],
+        newApply: [{
+          id: '',
+          name: '最新申请'
+        }, {
+          id: 1,
+          name: '最新申请'
+        }, {
+          id: 2,
+          name: '最新申请'
+        }, {
+          id: 3,
+          name: '最新申请'
+        }],
+        AllManagerHasActive: 0,
+        AllManager: "全部经销商",
+        AllSalesmanHasActive: 0,
+        AllSalesman: "业务员",
+        newApplyHasActive: 0,
+        newApply: "最新申请",
       }
     },
-    created(){
+    created() {
       localStorage.removeItem("CompanyID")
       this.getList()
     },
-    methods:{
-      showListMask(bool,id){
+    methods: {
+      showListMask(bool, id) {
         this.listmask = bool
         if (bool) {
           console.log(id);
-          
+
           this.getSimilarList(id)
         }
       },
-      getSimilarList(id){
+      getSimilarList(id) {
         axios({
-        url:this.getHost()+'/Approval/GetLikeness', 
-        method:'post',
-        data:qs.stringify({
-          UserId:getCookie('UserId'),
-          token:getCookie('token'),
-          CompanyID:id
+            url: this.getHost() + '/Approval/GetLikeness',
+            method: 'post',
+            data: qs.stringify({
+              UserId: getCookie('UserId'),
+              token: getCookie('token'),
+              CompanyID: id
+            })
           })
-        })
-        .then(res=>{
-          console.log(res)
-          if (res.data.Status===1) {
-            this.similadList = res.data.Data
-          }else if (res.data.Status<0) {
-            this.getToast("登录失效，请重新登录",'warn')
-            setTimeout(() => {
-              this.delCookie("UserId")
-              this.delCookie("token")
-              this.setAccessId('')
-              location.replace('/')
-            }, 2000);
-          }
-          else{
-            this.getToast(res.data.Message,'warn')
-          }
-        })
+          .then(res => {
+            console.log(res)
+            if (res.data.Status === 1) {
+              this.similadList = res.data.Data
+            } else if (res.data.Status < 0) {
+              this.getToast("登录失效，请重新登录", 'warn')
+              setTimeout(() => {
+                this.delCookie("UserId")
+                this.delCookie("token")
+                this.setAccessId('')
+                location.replace('/')
+              }, 2000);
+            } else {
+              this.getToast(res.data.Message, 'warn')
+            }
+          })
       },
-      giveUpFollow(){
+      giveUpFollow() {
         if (!this.giveUpReason) {
-          this.getToast("请输入审核理由",'warn')
-        }else{
+          this.getToast("请输入审核理由", 'warn')
+        } else {
           axios({
-          url:this.getHost()+'/Approval/AuditCompany', 
-          method:'post',
-          data:qs.stringify({
-            UserId:getCookie('UserId'),
-            token:getCookie('token'),
-            List:this.idList,
-            Agree:false,
-            AuditReason:this.giveUpReason
-          })
-        })
-        .then(res=>{
-          console.log(res)
-          if (res.data.Status===1) {
-            this.getToast("审批成功",'correct')
-            this.getList()
-            this.noAllow(false)
-          }else if (res.data.Status<0) {
-            this.getToast("登录失效，请重新登录",'warn')
-            setTimeout(() => {
-              this.delCookie("UserId")
-              this.delCookie("token")
-              this.setAccessId('')
-              location.replace('/')
-            }, 2000);
-          }
-          else{
-            this.getToast(res.data.Message,'warn')
-          }
-        })
+              url: this.getHost() + '/Approval/AuditCompany',
+              method: 'post',
+              data: qs.stringify({
+                UserId: getCookie('UserId'),
+                token: getCookie('token'),
+                List: this.idList,
+                Agree: false,
+                AuditReason: this.giveUpReason
+              })
+            })
+            .then(res => {
+              console.log(res)
+              if (res.data.Status === 1) {
+                this.getToast("审批成功", 'correct')
+                this.getList()
+                this.noAllow(false)
+              } else if (res.data.Status < 0) {
+                this.getToast("登录失效，请重新登录", 'warn')
+                setTimeout(() => {
+                  this.delCookie("UserId")
+                  this.delCookie("token")
+                  this.setAccessId('')
+                  location.replace('/')
+                }, 2000);
+              } else {
+                this.getToast(res.data.Message, 'warn')
+              }
+            })
         }
       },
-      noAllow(bool){
-         if (this.idList.length==0) {
-          this.getToast("请选择要审核的公司",'warn')
+      noAllow(bool) {
+        if (this.idList.length == 0) {
+          this.getToast("请选择要审核的公司", 'warn')
           return
-        }else{
-          
+        } else {
+
           this.isShowMask = bool
         }
-        
+
       },
-      getList(){
+      getList() {
         axios({
-          url:this.getHost()+'/Approval/GetAuditCompanyList', 
-          method:'post',
-          data:qs.stringify({
-            UserId:getCookie('UserId'),
-            token:getCookie('token'),
-            DealerID:'',
-            SaleID:'',
-            Sort:'',
-            Keyword:''
+            url: this.getHost() + '/Approval/GetAuditCompanyList',
+            method: 'post',
+            data: qs.stringify({
+              UserId: getCookie('UserId'),
+              token: getCookie('token'),
+              DealerID: '',
+              SaleID: '',
+              Sort: '',
+              Keyword: ''
+            })
           })
-        })
-        .then(res=>{
-          console.log(res)
-          if (res.data.Status===1) {
-            this.list  = res.data.Data.list
-            for (let i = 0; i < this.list.length; i++) {
-              this.checkBoxs.push(false)
-              
-            } 
-            console.log(this.checkBoxs);
-                      
-          }else if (res.data.Status<0) {
-            this.delCookie("UserId")
-            this.delCookie("token")
-            this.setAccessId('')
-            location.replace('/')
-          }
-          else{
-            this.getToast(res.data.Message,'warn')
-          }
-        })
+          .then(res => {
+            console.log(res)
+            if (res.data.Status === 1) {
+              this.list = res.data.Data.list
+              for (let i = 0; i < this.list.length; i++) {
+                this.checkBoxs.push(false)
+
+              }
+              console.log(this.checkBoxs);
+
+            } else if (res.data.Status < 0) {
+              this.delCookie("UserId")
+              this.delCookie("token")
+              this.setAccessId('')
+              location.replace('/')
+            } else {
+              this.getToast(res.data.Message, 'warn')
+            }
+          })
       },
-      check(index,id){
+      check(index, id) {
         console.log(index)
         if (this.checkBoxs[index]) {
-          this.checkBoxs[index]=false
+          this.checkBoxs[index] = false
           this.checkAllBox = false
-          for (let i = 0; i <  this.idList.length; i++) {
-          if (this.idList[i]==id) {
-            this.idList.splice(i)
+          for (let i = 0; i < this.idList.length; i++) {
+            if (this.idList[i] == id) {
+              this.idList.splice(i)
             }
           }
 
           for (let i = 0; i < this.checkBoxs.length; i++) {
-          if (this.checkBoxs[i]) {
-             this.checkAllBox = true
+            if (this.checkBoxs[i]) {
+              this.checkAllBox = true
+            }
           }
-        }
-          
-        }else{
-          this.checkBoxs[index]=true
+
+        } else {
+          this.checkBoxs[index] = true
           this.idList.push(id)
           this.checkAllBox = true
-        } 
+        }
 
         this.idList = this.idList.slice()
         this.checkBoxs = this.checkBoxs.slice()
         console.log(this.idList);
-        
+
 
       },
-      checkAll(list){
-        
+      checkAll(list) {
+
         if (this.checkAllBox) {
           console.log(111)
-          this.checkAllBox =false
+          this.checkAllBox = false
           console.log(this.checkBoxs);
           this.idList = this.idList.splice()
-          for (let i = 0; i <list.length; i++) {
-            this.checkBoxs[i]= false
+          for (let i = 0; i < list.length; i++) {
+            this.checkBoxs[i] = false
           }
           this.checkBoxs = this.checkBoxs.slice()
-        }else{
+        } else {
           console.log(222);
-          
+
           this.checkAllBox = true
           for (let i = 0; i < list.length; i++) {
             this.checkBoxs[i] = true
             this.idList.push(list[i].ID)
           }
-           this.checkBoxs = this.checkBoxs.slice()
-           this.idList = this.idList.slice()
-           console.log(this.checkBoxs);
+          this.checkBoxs = this.checkBoxs.slice()
+          this.idList = this.idList.slice()
+          console.log(this.checkBoxs);
         }
         console.log(this.idList);
 
       },
-      distribution(){
-        if (this.idList.length==0) {
-          this.getToast("请选择要审核的公司",'warn')
-        }else{
+      distribution() {
+        if (this.idList.length == 0) {
+          this.getToast("请选择要审核的公司", 'warn')
+        } else {
           axios({
-          url:this.getHost()+'/Approval/AuditCompany', 
-          method:'post',
-          data:qs.stringify({
-            UserId:getCookie('UserId'),
-            token:getCookie('token'),
-            List:this.idList,
-            Agree:true,
-            AuditReason:''
-          })
-        })
-        .then(res=>{
-          console.log(res)
-          if (res.data.Status===1) {
-            this.getToast("审批成功",'correct')
-            this.getList()
-          }else if (res.data.Status<0) {
-            this.getToast("登录失效，请重新登录",'warn')
-            setTimeout(() => {
-              this.delCookie("UserId")
-              this.delCookie("token")
-              this.setAccessId('')
-              location.replace('/')
-            }, 2000);
-          }
-          else{
-            this.getToast(res.data.Message,'warn')
-          }
-        })
+              url: this.getHost() + '/Approval/AuditCompany',
+              method: 'post',
+              data: qs.stringify({
+                UserId: getCookie('UserId'),
+                token: getCookie('token'),
+                List: this.idList,
+                Agree: true,
+                AuditReason: ''
+              })
+            })
+            .then(res => {
+              console.log(res)
+              if (res.data.Status === 1) {
+                this.getToast("审批成功", 'correct')
+                this.getList()
+              } else if (res.data.Status < 0) {
+                this.getToast("登录失效，请重新登录", 'warn')
+                setTimeout(() => {
+                  this.delCookie("UserId")
+                  this.delCookie("token")
+                  this.setAccessId('')
+                  location.replace('/')
+                }, 2000);
+              } else {
+                this.getToast(res.data.Message, 'warn')
+              }
+            })
         }
       },
       ...mapMutations({
-      setAccessId: 'SET_ACCESSID'
-    })
+        setAccessId: 'SET_ACCESSID'
+      })
     }
   }
 
 </script>
 
 <style scoped>
-@import '../../common/mask.css';
-  .maskContain li{
+  @import '../../common/mask.css';
+  @import '../../common/filter.css';
+  .maskContain ul{
+    margin-bottom: 22px;
+  }
+  .maskContain li {
     display: flex;
     justify-content: center;
     align-items: center;
     border-bottom: 1px solid #f0f0f0;
-    padding: 10px 0;
+    padding: 8px 0;
+    font-size: 12px;
   }
-  .maskContain li:last-child{
+
+  .maskContain li:last-child {
     border-bottom: none;
   }
-  .name{
+
+  .name {
     width: 0;
     flex-grow: 1;
   }
+
   .CompanyFollow {
     width: 100%;
     overflow: hidden;
@@ -396,59 +447,16 @@
     overflow: hidden;
     margin: 0 auto;
     padding-top: 22px;
-  }
-
-  .top .classList ul {
-    width: 100%;
-    overflow: hidden;
     display: flex;
-    justify-content: space-between
+    justify-content: space-between;
   }
 
-  .top .classList ul li {
-    width: 40%;
-    height: 24px;
-    overflow: hidden;
-    position: relative;
+  .top .classList .filter {
+    margin-right: 0;
+    width: 30%;
+    flex: none;
   }
 
-  .top .classList ul li p {
-    display: block;
-    width: 74%;
-    height: 22px;
-    border: 1px solid rgba(182, 160, 121, 1);
-    ;
-    border-radius: 4px;
-    font-size: 12px;
-    line-height: 22px;
-    padding-left: 6px;
-
-  }
-
-  .top .classList ul li span {
-    width: 20%;
-    height: 24px;
-    position: absolute;
-    top: 0;
-    right: 2px;
-    background: rgba(182, 160, 121, 1);
-    border-radius: 0px 4px 4px 0px;
-  }
-
-  .top .classList ul li span::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    margin: auto;
-    width: 0;
-    height: 0;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-top: 5px solid white;
-  }
 
   .companyList {
     width: 92%;
@@ -535,12 +543,15 @@
     position: relative;
     margin-right: 14px;
   }
-  .companyList ul li a .listMid span.active{
+
+  .companyList ul li a .listMid span.active {
     border: 1px solid rgba(226, 199, 143, 1);
   }
-  .companyList ul li a .listMid span.active::before{
+
+  .companyList ul li a .listMid span.active::before {
     background: rgba(226, 199, 143, 1);
   }
+
   .companyList ul li a .listMid span::before {
     content: '';
     width: 14px;
@@ -618,10 +629,11 @@
     position: fixed;
     bottom: 0;
     left: 0;
+    display: flex;
+    justify-content: space-between;
   }
 
   footer span {
-    float: left;
     display: block;
     width: 16px;
     height: 16px;
@@ -630,15 +642,17 @@
     border: 1px solid #ccc;
     position: relative;
     margin-top: 19px;
-    margin-left: 10px;
-    margin-right: 10px;
+    margin-left: 38px;
   }
-  footer span.active{
-     border: 1px solid rgba(226, 199, 143, 1);
+
+  footer span.active {
+    border: 1px solid rgba(226, 199, 143, 1);
   }
-  footer span.active::before{
+
+  footer span.active::before {
     background: rgba(226, 199, 143, 1);
   }
+
   footer span::before {
     content: '';
     width: 14px;
@@ -656,32 +670,45 @@
   }
 
   footer p {
-    float: left;
     font-size: 16px;
     font-family: PingFangSC-Regular;
     color: rgba(255, 255, 255, 1);
     line-height: 55px;
-    margin-right: 8px;
+    padding-left: 12px;
   }
 
   footer button {
-    float: right;
-    height: 40px;
-    /* background: rgba(212, 212, 212, 1); */
+    height: 33px;
     border-radius: 4px;
     background: #E2C78F;
     font-size: 14px;
     font-family: PingFangSC-Regular;
     color: rgba(255, 255, 255, 1);
-    line-height: 40px;
+    line-height: 33px;
     text-align: center;
-    margin-top: 8px;
+    margin-top: 10px;
     padding: 0 8px;
     margin-right: 8px;
   }
-   footer .noAllow{
-     background-color: #f0f0f0;
-     color: #ccc;
-   }
+
+  footer .noAllow {
+    background-color: #f0f0f0;
+    color: #ccc;
+    margin-left: 24px;
+  }
+
+  .close {
+    display: block;
+    padding: 0 24px;
+    font-size: 13px;
+    font-family: PingFangSC-Regular;
+    color: rgba(152, 152, 152, 1);
+    background:rgba(237,236,235,1);
+    border-radius:2px;
+    line-height: 34px;
+    text-align: center;
+    margin: 0 auto;
+
+  }
 
 </style>

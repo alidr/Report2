@@ -129,6 +129,7 @@ export default {
 
 <style scoped>
 @import '../../common/input.css';
+@import '../../common/filter.css';
 #Announce{
   padding: 15px;
   box-sizing: border-box;
@@ -152,6 +153,7 @@ export default {
   width: 100%;
   font-size: 14px;
 }
+
 .title{
   height: 40px;
   background-color: #fff;
