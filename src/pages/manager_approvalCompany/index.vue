@@ -198,7 +198,6 @@
           this.getToast("请输入审核理由", 'warn')
         } else {
           axios({
-<<<<<<< HEAD
           url:this.getHost()+'/Approval/AuditCompany', 
           method:'post',
           data:qs.stringify({
@@ -228,36 +227,6 @@
             this.getToast(res.data.Message,'warn')
           }
         })
-=======
-              url: this.getHost() + '/Approval/AuditCompany',
-              method: 'post',
-              data: qs.stringify({
-                UserId: getCookie('UserId'),
-                token: getCookie('token'),
-                List: this.idList,
-                Agree: false,
-                AuditReason: this.giveUpReason
-              })
-            })
-            .then(res => {
-              console.log(res)
-              if (res.data.Status === 1) {
-                this.getToast("审批成功", 'correct')
-                this.getList()
-                this.noAllow(false)
-              } else if (res.data.Status < 0) {
-                this.getToast("登录失效，请重新登录", 'warn')
-                setTimeout(() => {
-                  this.delCookie("UserId")
-                  this.delCookie("token")
-                  this.setAccessId('')
-                  location.replace('/')
-                }, 2000);
-              } else {
-                this.getToast(res.data.Message, 'warn')
-              }
-            })
->>>>>>> 1fd1e8fb96e3c302f81179141e32c20286e49821
         }
       },
       noAllow(bool) {
@@ -363,7 +332,6 @@
           this.getToast("请选择要审核的公司", 'warn')
         } else {
           axios({
-<<<<<<< HEAD
           url:this.getHost()+'/Approval/AuditCompany', 
           method:'post',
           data:qs.stringify({
@@ -392,35 +360,6 @@
             this.getToast(res.data.Message,'warn')
           }
         })
-=======
-              url: this.getHost() + '/Approval/AuditCompany',
-              method: 'post',
-              data: qs.stringify({
-                UserId: getCookie('UserId'),
-                token: getCookie('token'),
-                List: this.idList,
-                Agree: true,
-                AuditReason: ''
-              })
-            })
-            .then(res => {
-              console.log(res)
-              if (res.data.Status === 1) {
-                this.getToast("审批成功", 'correct')
-                this.getList()
-              } else if (res.data.Status < 0) {
-                this.getToast("登录失效，请重新登录", 'warn')
-                setTimeout(() => {
-                  this.delCookie("UserId")
-                  this.delCookie("token")
-                  this.setAccessId('')
-                  location.replace('/')
-                }, 2000);
-              } else {
-                this.getToast(res.data.Message, 'warn')
-              }
-            })
->>>>>>> 1fd1e8fb96e3c302f81179141e32c20286e49821
         }
       },
       ...mapMutations({

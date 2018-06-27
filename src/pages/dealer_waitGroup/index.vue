@@ -220,11 +220,7 @@ import axios from "axios";
   }
 
   .waitGroupList ul li .listTop p {
-<<<<<<< HEAD
     font-size: 12px;
-=======
-    font-size: 14px;
->>>>>>> 1fd1e8fb96e3c302f81179141e32c20286e49821
     font-family: PingFangSC-Regular;
     color: rgba(51, 51, 51, 1);
     line-height: 28px;
@@ -306,7 +302,6 @@ import axios from "axios";
     font-style: normal;
     font-size: 12px;
     color: rgba(102, 102, 102, 1);
-<<<<<<< HEAD
   }
 
   .reason{
@@ -316,8 +311,6 @@ import axios from "axios";
     text-overflow:ellipsis;
     white-space:nowrap;
     margin-left: 10px;
-=======
->>>>>>> 1fd1e8fb96e3c302f81179141e32c20286e49821
   }
 
 </style>

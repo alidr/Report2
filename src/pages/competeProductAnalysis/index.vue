@@ -46,10 +46,9 @@
 </template>
 
 <script>
-<<<<<<< HEAD
 import qs from 'qs'
 import axios from "axios";
-import {mapGetters, mapMutations } from 'vuex'
+import {mapGetters, mapMutations } from 'vuex';
 // import Bscroll from 'better-scroll'
 
 export default {
@@ -110,35 +109,6 @@ export default {
 
       }else{
         this.show=false
-=======
-  import qs from 'qs'
-  import axios from "axios";
-  import {
-    mapGetters,
-    mapMutations
-  } from 'vuex'
-  // import Bscroll from 'better-scroll'
-
-  export default {
-    name: 'competeProductAnalysis',
-    data() {
-      const date = new Date()
-      return {
-        years: date.getFullYear(),
-        month: date.getMonth() + 1,
-        months: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-        ID: '',
-        complete: {
-          Month: '',
-          SaleCount: '',
-          WorkCount: '',
-          SampleCount: '',
-          ShopCount: '',
-          StylistCount: '',
-        },
-        infoNull: false,
-        show: false
->>>>>>> 1fd1e8fb96e3c302f81179141e32c20286e49821
       }
     },
     created() {
@@ -214,7 +184,7 @@ export default {
       },
     }
   }
-
+}
 </script>
 
 <style scoped>

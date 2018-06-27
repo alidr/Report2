@@ -7,23 +7,6 @@
         <span>搜索</span>
       </div>
       <div class="classList">
-<<<<<<< HEAD
-        <ul>
-          <li>
-            <p>全部类型</p>
-            <span></span>
-          </li>
-          <li>
-            <p>所有状态</p>
-            <span></span>
-          </li>
-          <li>
-            <p>组员</p>
-            <span></span>
-          </li>
-        </ul>
-
-=======
           <div class="filter">
               <span class="filterResult">{{AllSelect}}</span>
               <span class="iconfont icon-xiaosanjiao icon" @click="maskStatus(0)"></span>
@@ -32,7 +15,6 @@
             <span class="filterResult">{{StatesSelect}}</span>
             <span class="iconfont icon-xiaosanjiao icon" @click="maskStatus(1)"></span>
         </div>
->>>>>>> 1fd1e8fb96e3c302f81179141e32c20286e49821
       </div>
       <!-- <ul class="selectListStatus" v-show="hasMask[0]">
           <li v-for="(item,index) in Status" :key="index" :class="{active:index==AllHasActive}" @click="AllHasActive(index,item.name)">{{item.name}}</li>
@@ -90,9 +72,6 @@
         checkBoxs:[],
         checkAllBox:false,
         idList:[],
-<<<<<<< HEAD
-        selected:true
-=======
         All:[{
           id:'',
           name:'全部岗位'
@@ -119,7 +98,6 @@
         AllSelect:"全部类型",
         StatesHasActive:0,
         StatesSelect:"所有状态",
->>>>>>> 1fd1e8fb96e3c302f81179141e32c20286e49821
       }
     },
     created(){
