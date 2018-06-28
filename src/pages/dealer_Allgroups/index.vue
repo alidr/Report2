@@ -30,6 +30,7 @@
           </a>
         </li>
       </ul>
+      <empty v-if='emptyFlag'></empty>
     </div>
   </div>
 </template>
@@ -37,14 +38,19 @@
 <script>
 import qs from 'qs'
 import axios from "axios";
-import { mapGetters, mapMutations } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex';
+import empty from '../../components/empty'
 
   export default {
     name: 'allgroups',
     data(){
       return{
-        list:[]
+        list:[],
+        emptyFlag:false
       }
+    },
+    components:{
+      empty
     },
     created(){
       this.getList()
@@ -65,6 +71,11 @@ import { mapGetters, mapMutations } from 'vuex'
           console.log(res)
           if (res.data.Status===1) {
             this.list = res.data.Data.list
+            if (this.list == '') {
+                this.emptyFlag = true
+              } else {
+                this.emptyFlag = false
+              }
           }else if (res.data.Status<0) {
             this.getToast("登录失效，请重新登录",'warn')
             setTimeout(() => {

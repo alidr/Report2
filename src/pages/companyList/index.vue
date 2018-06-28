@@ -41,6 +41,7 @@
     <div class="list">
       <companyFilter v-if="admin" :list="List"></companyFilter>
       <focusList v-if="!admin" :list = "List"></focusList>
+      <empty v-if='emptyFlag'></empty>
     </div>
     <div class="bottom" v-if="admin">
       <span class="round"><b></b></span>
@@ -56,17 +57,20 @@ import focusList from '../../components/focusList';
 
 import qs from 'qs'
 import axios from "axios";
+import empty from '../../components/empty'
 
 export default {
   name: 'companyList',
   components:{
     focusList,
-    companyFilter
+    companyFilter,
+    empty
   },
   data(){
     return{
       admin:false,
       List:[],
+      emptyFlag:false,
       Mask:false,
       // 公司状态列表
       Status:[{
@@ -195,6 +199,11 @@ export default {
         console.log(res)
         if (res.data.Status===1) {
           this.List = res.data.Data.list
+          if (this.list == '') {
+                this.emptyFlag = true
+              } else {
+                this.emptyFlag = false
+              }
         }else if (res.data.Status<0) {
           this.getToast("登录失效，请重新登录",'warn')
           setTimeout(() => {

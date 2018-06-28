@@ -49,6 +49,7 @@
 
         </li>
       </ul>
+      <emoty v-if='emptyFlag'></emoty>
     </div>
 
     <footer v-if="selected">
@@ -64,6 +65,7 @@
   import qs from 'qs'
   import axios from "axios";
   import { mapGetters, mapMutations } from 'vuex'
+  import empty from '../../components/empty'
   export default {
     name: 'CompanyFollow',
     data(){
@@ -73,6 +75,7 @@
         checkAllBox:false,
         idList:[],
         selected:false,
+        emptyFlag:false,
         All:[{
           id:'',
           name:'全部岗位'
@@ -95,11 +98,14 @@
           id:3,
           name:'已新建'
         }],
-        AllHasActive:0,
+        // AllHasActive:0,
         AllSelect:"全部类型",
-        StatesHasActive:0,
+        // StatesHasActive:0,
         StatesSelect:"所有状态",
       }
+    },
+    components:{
+      empty
     },
     created(){
       localStorage.removeItem("CompanyID")
@@ -171,10 +177,16 @@
           console.log(res)
           if (res.data.Status===1) {
             this.list  = res.data.Data.list
+            if (this.list == '') {
+                this.emptyFlag = true
+              } else {
+                this.emptyFlag = false
+              }
             for (let i = 0; i < this.list.length; i++) {
               this.checkBoxs.push(false)
               
             } 
+            
             console.log(this.checkBoxs);
                       
           }else if (res.data.Status<0) {
@@ -253,32 +265,32 @@
           })
         }
       },
-      maskStatus(index){
-        if (this.hasMask[index] == true) {
+      // maskStatus(index){
+      //   if (this.hasMask[index] == true) {
           
-          this.hasMask[index] = false   
-        }else{
+      //     this.hasMask[index] = false   
+      //   }else{
             
-            this.hasMask[index] = true
+      //       this.hasMask[index] = true
 
-          }
-        for (let i = 0; i < this.hasMask.length; i++) {
+      //     }
+      //   for (let i = 0; i < this.hasMask.length; i++) {
           
-          if (index==i) {
-            continue
-          }
-          this.hasMask[i] = false
-        }
-        this.Mask = this.hasMask[index]?true:false
-      },
-      AllHasActive(index,name){
-      this.AllHasActive = index
-      this.AllSelect = name
-      },
-      StatesHasActive(index,name){
-        this.StatesHasActive = index
-        this.StatesSelect = name
-      },
+      //     if (index==i) {
+      //       continue
+      //     }
+      //     this.hasMask[i] = false
+      //   }
+      //   this.Mask = this.hasMask[index]?true:false
+      // },
+      // AllHasActive(index,name){
+      // this.AllHasActive = index
+      // this.AllSelect = name
+      // },
+      // StatesHasActive(index,name){
+      //   this.StatesHasActive = index
+      //   this.StatesSelect = name
+      // },
 
     }
   }

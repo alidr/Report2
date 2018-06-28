@@ -29,6 +29,7 @@
           </div>
         </li>
       </ul>
+      <empty v-if='emptyFlag'></empty>
     </div>
 
     <div id="mask" v-if="isShowMask">
@@ -49,18 +50,23 @@
 <script>
   import qs from 'qs'
   import axios from "axios";
-  import { mapGetters, mapMutations } from 'vuex'
+  import { mapGetters, mapMutations } from 'vuex';
+  import empty from '../../components/empty'
   export default {
     name: 'appeal',
     data() {
       return {
         list:[],
+        emptyFlag:false,
         style:'',
         btn:true,
         isShowMask:false,
         giveUpReason:'',
         Id:''
       }
+    },
+    components:{
+      empty
     },
      computed: {
     ...mapGetters([
@@ -88,6 +94,11 @@
           console.log(res)
           if (res.data.Status===1) {
             this.list = res.data.Data.list
+            if (this.list == '') {
+                this.emptyFlag = true
+              } else {
+                this.emptyFlag = false
+              }
           }else if (res.data.Status<0) {
             this.getToast("登录失效，请重新登录",'warn')
             setTimeout(() => {

@@ -35,9 +35,11 @@
     <!-- 最新公告 -->
     <div class="home_newAnnounce">
       <i></i>
-      <div>
-        <p class="time">{{oneAnnounce.CreateDate}}</p>
+      <div class="annouText">
+        <p class="time" >{{oneAnnounce.CreateDate}}</p>
         <p class="announceMsg">{{oneAnnounce.Content}}</p>
+        <p v-if='oneAnnounceFlag' class="annouEmpty">暂无公告</p>
+        
       </div>
       <router-link to="/announceList" class="more">更多</router-link>
     </div>
@@ -99,6 +101,8 @@ export default {
         CreateDate:'',
         Content:''
       },
+      oneAnnounceFlag:false,
+      // annouTextFlag:true,
       buniess:false,
       applyList:[],
       addUser:false,
@@ -192,6 +196,7 @@ export default {
     //获取单挑公告
     getOneAnnounce(){
       axios({
+        
         url:this.getHost()+'/Home/LatestNiotice', 
         method:'post',
         data:qs.stringify({
@@ -203,6 +208,8 @@ export default {
         console.log(res)
         if (res.data.Status===1) {
           this.oneAnnounce = res.data.Data
+          console.log(this.oneAnnounce)
+         
         }else if (res.data.Status<0) {
           this.getToast("登录失效，请重新登录",'warn')
           setTimeout(() => {
@@ -213,7 +220,8 @@ export default {
           }, 2000);
         }
         else{
-          this.getToast(res.data.Message,'warn')
+            this.oneAnnounceFlag=true
+         
         }
       })
       
@@ -456,7 +464,7 @@ export default {
   margin:0 5px 0 10px
   
 }
-.home_newAnnounce>div{
+.home_newAnnounce .annouText{
   width: 0;
   flex-grow: 1;
   border-left: 1px solid #f0efef;
@@ -487,4 +495,12 @@ export default {
   overflow: hidden;
 }
 
+
+/* 暂无公告 */
+.annouEmpty{
+    color: #ccc;
+    font-size: 28px;
+    font-weight: 600;
+    text-align: center;
+}
 </style>

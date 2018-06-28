@@ -23,6 +23,7 @@
           <p><a href="javascript:;" to="/companyDetail" @click="companyDetail(item.SourceID)">点击进入公司详情页>></a></p>
         </div>
       </div>
+      <empty v-if='emptyFlag'></empty>
       <!-- <div class="lookMore">
         <a href="javascript:;">查看全部</a>
       </div> -->
@@ -34,15 +35,18 @@
 import qs from 'qs'
 import axios from "axios";
 import appealHisList from "../../components/appealHisList";
+import empty from '../../components/empty'
 export default {
   name: 'messageCenter',
   data(){
     return{
-        list:[]
+        list:[],
+        emptyFlag:false
       }
   },
   components:{
-    appealHisList
+    appealHisList,
+    empty
   },
   created(){
     this.getList()
@@ -61,6 +65,11 @@ export default {
         console.log(res)
         if (res.data.Status===1) {
           this.list = res.data.Data.list
+          if (this.list == '') {
+                this.emptyFlag = true
+              } else {
+                this.emptyFlag = false
+              }
         }else if (res.data.Status<0) {
           this.getToast("登录失效，请重新登录",'warn')
           setTimeout(() => {

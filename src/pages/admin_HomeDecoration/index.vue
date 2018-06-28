@@ -157,6 +157,11 @@
             console.log(res)
             if (res.data.Status === 1) {
               this.List = res.data.Data.list
+              if (this.list == '') {
+                this.emptyFlag = true
+              } else {
+                this.emptyFlag = false
+              }
             } else if (res.data.Status < 0) {
               this.delCookie("UserId")
               this.delCookie("token")
