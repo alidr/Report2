@@ -31,11 +31,11 @@
       </div>
       <div class="input">
         <span>密码</span>
-        <input type="password" placeholder="请输入密码" v-model="password" maxlength="8">
+        <input type="password" placeholder="******" v-model="password" maxlength="8">
       </div>
       <div class="input">
         <span>确认密码</span>
-        <input type="password" placeholder="请输入确认密码" v-model="rePassword" maxlength="8">
+        <input type="password" placeholder="******" v-model="rePassword" maxlength="8">
       </div>
     </div>
     <div class="btn">
@@ -48,6 +48,7 @@
 <script>
 import qs from 'qs'
 import axios from "axios";
+import { mapGetters, mapMutations } from 'vuex'
 export default {
   data(){
     return{
@@ -64,6 +65,11 @@ export default {
       group:'',
       id:''
     }
+  },
+   computed: {
+    ...mapGetters([
+      'AccessId'
+    ])
   },
   mounted () {
     this.id =this.$route.query.id
@@ -131,7 +137,11 @@ export default {
           if (res.data.Status===1) {
             this.getToast("编辑用户成功，跳转首页",'warn')
             setTimeout(() => {
-              this.$router.push({path:'/adminIndex'})
+              if (this.AccessId==-1) {
+                this.$router.push({path:'/adminIndex'})
+              }else{
+                this.$router.push({path:'/home'})
+              }  
             }, 2000);
           }else if (res.data.Status<0) {
             this.delCookie("UserId")

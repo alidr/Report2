@@ -32,7 +32,7 @@
               <p>{{item.Name}}</p>
             </div>
             <div class="listBottom">
-              <i @click="showListMask(true,item.CompanyID)">查看相似公司</i>
+              <i @click="showListMask(true,item.ID)">查看相似公司</i>
               <!-- 
               <p>{{item.Content}}</p>
               <b>小A</b> -->

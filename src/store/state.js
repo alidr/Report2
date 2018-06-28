@@ -3,7 +3,8 @@ import initRoutes from './initRoutes'
 
 const state = {
   AccessId: storeLocal.get('AccessId') || '',
-  DealerSelectedMember: storeSession.get('DealerSelectedMember') || []
+  DealerSelectedMember: storeSession.get('DealerSelectedMember') || [],
+  BusninessCompanyInfo: storeSession.get('BusninessCompanyInfo') || []
 }
 
 

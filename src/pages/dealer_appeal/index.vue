@@ -16,8 +16,9 @@
             <span class="CompanyName">{{item.CompanyName}} </span>
             <span class="UserName">业务员{{item.UserName}}</span>
             <div class="upBtn">
-              <button type="button" class="no" @click="noAllow(false,item.ID)">不通过</button>
-              <button type="button" class="yes" @click="okAllow(true,item.ID)">审批通过</button>
+              <button type="button" class="no" @click.stop="isAllow(false,item.ID)" v-if="btn">不通过</button>
+              <button type="button" class="yes" @click.stop="isAllow(true,item.ID)"
+              v-if="btn">审批通过</button>
             </div>
           </div>
           <div class="down">
@@ -35,16 +36,26 @@
 <script>
   import qs from 'qs'
   import axios from "axios";
+  import { mapGetters, mapMutations } from 'vuex'
   export default {
     name: 'appeal',
     data() {
       return {
         list:[],
-        style:''
+        style:'',
+        btn:true
       }
+    },
+     computed: {
+    ...mapGetters([
+      'AccessId'
+      ])
     },
     created(){
       this.getList("")
+      if (this.AccessId == 4) {
+        this.btn =false
+      }
     },
     methods:{
       getList(TypeID){
@@ -109,6 +120,8 @@
         })
       },
       applyDetail(id){
+        console.log(id);
+        
         this.$router.push({
           path:'/appealDetails',
           query:{

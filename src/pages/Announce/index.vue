@@ -3,7 +3,8 @@
   <div id="Announce">
     <div class="input">
         <span>公告类型</span>
-        <input type="text" placeholder="请输入通告类型" v-model="anstyle">
+        <input type="text" placeholder="请选择通告类型" v-model="JobInfo" 
+        :jobId = "jobId" @click="showPicker">
     </div> 
     <div class="announceDetail">
       <p class="title">公告详情</p>
@@ -36,13 +37,67 @@ export default {
       anstyle:'',
       anDetail:'',
       idList:[],
+      JobInfo:'',
+      JobId:'',
     }
   },
   created(){
     this.getData()
+    this.getPickerConfig()
   },
 
   methods:{
+    //公司分类Picker
+    getPickerConfig() {
+      axios({
+        url:this.getHost()+'/Notice/NoticeTypeList', 
+        method:'post',
+        data:qs.stringify({
+          UserId:getCookie('UserId'),
+          token:getCookie('token')
+        })
+      })
+      .then(res=>{
+        if (res.data.Status===1) {
+          this.initPicker(res.data.Data.list)
+        }else if (res.data.Status<0) {
+          this.getToast(res.data.Message,'warn')
+          this.delCookie("UserId")
+          this.delCookie("token")
+          this.setAccessId('')
+          location.replace('/')
+        }
+        else{
+          this.getToast(res.data.Message,'warn')
+        }
+      })
+      
+    },
+    //配置分类picker
+    initPicker(data){
+      this.picker = this.$createPicker({
+        title: '公告类型',
+        alias: {
+          value: 'ID',
+          text: 'Name'
+        },
+        data: [data],
+        onSelect: (selectedVal, selectedIndex, selectedText) => {
+          this.LastInfo = ""
+          this.JobInfo = selectedText
+          this.jobId = selectedVal[0]
+          console.log("this.jobId",this.jobId);
+          
+        },
+        onCancel: () => {
+          this.getToast("取消选择",'correct')
+        }
+      })
+    },
+    //显示分类picker
+    showPicker () {
+      this.picker.show()
+    },
     getActive(idx,id){
       if (!this.isActive[idx]) {
         this.idList.push(id)
@@ -87,8 +142,10 @@ export default {
       })
     },
     commitAn(){
-      if (!this.anstyle) {
-        this.getToast("请输入公告类型",'warn')
+      console.log(this.jobId);
+      
+      if (!this.jobId) {
+        this.getToast("请选择公告类型",'warn')
         return
       }else if (!this.anDetail) {
          this.getToast("请输入公告详情",'warn')
@@ -100,7 +157,7 @@ export default {
         data:qs.stringify({
           UserId:getCookie('UserId'),
           token:getCookie('token'),
-          TypeID:this.anstyle,
+          TypeID:this.jobId,
           Content:this.anDetail,
           JobID:this.idList,
         })

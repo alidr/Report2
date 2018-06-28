@@ -10,6 +10,10 @@ const mutations = {
   [types.SET_DEALERSELECTEDMEMBER](state, DealerSelectedMember) {
     storeSession.set('DealerSelectedMember', DealerSelectedMember)
     state.DealerSelectedMember = DealerSelectedMember
+  },
+  [types.SET_BUSNINESSCOMPANYINFO](state, BusninessCompanyInfo) {
+    storeSession.set('BusninessCompanyInfo', BusninessCompanyInfo)
+    state.BusninessCompanyInfo = BusninessCompanyInfo
   }
 }
 

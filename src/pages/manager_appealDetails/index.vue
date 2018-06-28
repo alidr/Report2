@@ -18,7 +18,7 @@
           <p>公司实际地址</p>
           <span>{{data.PCAName}}{{data.Address}}</span>
         </li>
-        <li>
+        <li v-if="data.Day">
           <p>延期申诉天数</p>
           <span>{{data.Day}}</span>
         </li>
@@ -37,7 +37,7 @@
       <h5>相关凭证</h5>
       <ul>
         <li>
-          <img :src="data.TypeName" alt="">
+          <img :src="getImgHost()+data.SateImage" alt="" @click="getImg(data.SateImage)">
         </li>
       </ul>
     </div>
@@ -60,30 +60,30 @@
     <div class="progress">
       <ul>
         <li>
-          <span></span>
-          <p>xxxx公司正在接洽中</p>
-          <i></i>
+          <span class="active"></span>
+          <p>{{data.CompanyName}}正在{{data.CompanyStatus}}</p>
+          <i :class="{active:data.Status>=1}"></i>
         </li>
         <li>
-          <span></span>
+          <span :class="{active:data.Status>=1}"></span>
           <p>洽谈中</p>
-          <i></i>
+          <i :class="{active:data.Status>=2}"></i>
         </li>
         <li>
-          <span></span>
-          <p>洽谈成功</p>
-          <i></i>
-        </li>
-        <li>
-          <span></span>
+          <span :class="{active:data.Status>=2}"></span>
           <p>签约中</p>
+          <i :class="{active:data.Status>2}"></i>
+        </li>
+        <li>
+          <span :class="{active:data.Status>2}"></span>
+          <p>签约成功</p>
         </li>
       </ul>
 
 
     </div>
 
-    <div class="record">
+    <div class="record" v-if="data.List.length>0">
       <h5>申诉记录</h5>
       <ul>
         <li v-for="(item,index) in data.List" :key="index">
@@ -93,9 +93,15 @@
         </li>
       </ul>
     </div>
-    <div class="recordNull">
+    <div class="recordNull" v-if="data.List.length==0">
       <h5>申诉记录</h5>
       <p>该申诉还未审核</p>
+    </div>
+
+    <div id="mask" v-show="isImgMask" @click="hideImgMask">
+      <div class="img" v-if="isShowImg">
+        <img :src="getImgHost()+src" alt="">
+      </div>
     </div>
 
   </div>
@@ -125,14 +131,26 @@ export default {
           DealerName:'',
           SaleName:'',
           List:'',
-        }
+          
+        },
+        isImgMask:false,
+        isShowImg:false
       }
     },
     created(){
-      this.Id = this.$router.query.id
+      this.Id = this.$route.query.id
       this.getInfo()
     },
     methods:{
+      hideImgMask(){
+      this.isImgMask = false
+      },
+      getImg(src){
+        this.src = src
+        console.log(this.src);
+        this.isImgMask = true
+        this.isShowImg = true
+      },
       getInfo(){
         axios({
         url:this.getHost()+'/Approval/GetSateDetailById', 
@@ -167,6 +185,14 @@ export default {
 </script>
 
 <style scoped>
+@import '../../common/mask.css';
+
+#mask .img{
+  width: 80%;
+}
+#mask .img img{
+  width: 100%;
+}
   .appealDetails {
     width: 100%;
     overflow: hidden;
@@ -192,7 +218,7 @@ export default {
   .details ul li {
     width: 94%;
     margin: 0 auto;
-    border-top: 1px solid #B1B1B1;
+    border-top: 1px solid #f0f0f0;
     overflow: hidden;
   }
 
@@ -235,7 +261,7 @@ export default {
   .reason .title {
     width: 94%;
     margin: 0 auto;
-    border-bottom: 1px solid #B1B1B1;
+    border-bottom: 1px solid #f0f0f0;
     overflow: hidden;
   }
 
@@ -330,7 +356,7 @@ export default {
   .message ul li {
     width: 94%;
     margin: 0 auto;
-    border-top: 1px solid #B1B1B1;
+    border-top: 1px solid #f0f0f0;
     overflow: hidden;
   }
 
@@ -372,10 +398,15 @@ export default {
     width: 16px;
     height: 16px;
     border-radius: 50%;
-    border: 1px solid rgba(226, 199, 143, 1);
     position: relative;
     margin-bottom: 2px;
-
+    border: 1px solid #ccc;
+  }
+  .progress ul li span.active{
+    border: 1px solid rgba(226, 199, 143, 1);
+  }
+  .progress ul li span.active::before{
+    background: rgba(226, 199, 143, 1);
   }
 
   .progress ul li span::before {
@@ -383,7 +414,7 @@ export default {
     width: 14px;
     height: 14px;
     border-radius: 50%;
-    background: rgba(226, 199, 143, 1);
+    background: #ccc;
     position: absolute;
     top: 0;
     bottom: 0;
@@ -416,10 +447,11 @@ export default {
     clear: both;
     display: block;
     height: 34px;
-    border-left: 2px dotted #e2c78f;
+    border-left: 2px dotted #ccc;
     margin-left: 8px;
-   
-
+  }
+  .progress ul li i.active{
+    border-left: 1px dotted #e2c78f;
   }
 
   .record {
@@ -446,16 +478,14 @@ export default {
 
   .record ul {
     width: 94%;
-    border-top: 1px solid #e2c78f;
-    border-left: 1px solid #e2c78f;
-    border-right: 1px solid #e2c78f;
+    border: 1px solid #e2c78f;
     margin: 0 auto;
   }
 
   .record ul li {
     width: 94%;
     margin: 0 auto;
-    border-bottom: 1px solid #B1B1B1;
+    border-bottom: 1px solid #f0f0f0;
     overflow: hidden;
     padding-top: 10px;
     padding-bottom: 12px;
@@ -512,7 +542,7 @@ export default {
     line-height: 34px;
     font-weight: normal;
     line-height: 38px;
-    border-bottom: 1px solid #B1B1B1;
+    border-bottom: 1px solid #f0f0f0;
 
   }
 

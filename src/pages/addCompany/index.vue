@@ -34,13 +34,15 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'AccessId'
+      'AccessId',
+      'BusninessCompanyInfo'
     ])
   },
   mounted () {
     this.getPickerConfig()
     localStorage.removeItem("companyStyle")
     localStorage.removeItem("companyName")
+    this.setBusninessCompanyInfo([])
   },
   methods:{
     //公司分类Picker
@@ -126,18 +128,32 @@ export default {
           //其他情况
           if (this.AccessId==-1) {
             if (res.data.Data.Code!=1) {
-              this.getToast("公司已存在，新建失败")
+              this.getToast("公司已存在，新建失败",'warn')
             }
           }else{
             if (res.data.Data.Code==2) {
               //洽谈中，签约中
-              this.$router.push({path:"/completeInformation"})
+              this.setBusninessCompanyInfo(res.data.Data)
+              console.log(this.BusninessCompanyInfo);
+              
+              // sessionStorage.setItem('data2',JSON.stringify(res.data.Data))
+              this.$router.push({path:"/giveUpCompany"})
             }else if (res.data.Data.Code==3) {
               //已签约
-              this.$router.push({path:"/companyContract"})
-            }else if (res.data.Data.Code==0||res.data.Data.Code==-1) {
-              //code=0：已删除，已新建，Code=-1：已放弃
+              this.setBusninessCompanyInfo(res.data.Data)
               this.$router.push({path:"/giveUpCompany"})
+
+            }else if (res.data.Data.Code==0||res.data.Data.Code==-1) { 
+              this.$router.push({
+                path:"/companyContract",
+                query:{
+                  CategoryID:this.jobId,
+                  Name:this.companyName
+                }
+              })
+              
+              //  this.setBusninessCompanyInfo(res.data.Data)
+              //code=0：已删除，已新建，Code=-1：已放弃
             }
           }
         }else if (res.data.Status<0) {
@@ -152,7 +168,8 @@ export default {
       })
     },
     ...mapMutations({
-      setAccessId: 'SET_ACCESSID'
+      setAccessId: 'SET_ACCESSID',
+      setBusninessCompanyInfo:'SET_BUSNINESSCOMPANYINFO'
     })
   }
   

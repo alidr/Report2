@@ -108,7 +108,7 @@
       ])
     },
     created() {
-      if (this.AccessId == -1 || this.AccessId == 3) {
+      if (this.AccessId == -1 || this.AccessId == 3||this.AccessId == 2) {
         //管理员
         this.getList()
         this.isShow = true

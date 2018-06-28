@@ -1,13 +1,16 @@
 const Appeal = () =>import ('@/pages/dealer_Appeal')
 const ApprovalCompany = () =>import ('@/pages/manager_approvalCompany')
 const CompanyContract = () =>import ('@/pages/manager_companyContract')
-const GiveUpCompany = () =>import ('@/pages/manager_giveUpCompany')
+const GiveUpCompany = () =>
+  import ('@/pages/busniess_giveUpCompany')
 const UserList = () =>import ('@/pages/admin_UserList')
 const AppealManger = () =>import ('@/pages/manager_AppealManger')
 const AddUser = () =>import ('@/pages/admin_addUser')
+const EditUser = () =>
+  import ('@/pages/admin_editUser')
 const WaitGroup = () =>import ('@/pages/dealer_waitGroup')
 const GroupMember = () =>import ('@/pages/manager_GroupMember')
-  
+
 export default [
 {
   path: '/approvalCompany',
@@ -76,5 +79,13 @@ export default [
     title: '小组详情'
   },
 },
+
+  {
+    path: '/editUser',
+    component: EditUser,
+    meta: {
+      title: '编辑用户'
+    },
+  },
 ]
 

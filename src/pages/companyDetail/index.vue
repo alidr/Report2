@@ -12,8 +12,8 @@
           </p>
           <p class="person">业务员 {{data.UName}}</p>
         </div>
-        <div class="topIcon" v-if="show">
-          <span @click="showMask(true)">
+        <div class="topIcon">
+          <span @click="showMask(true)" v-if="edit">
             <img src="./Settings.png" alt="">
           </span>
           <span>
@@ -988,7 +988,7 @@ export default {
   font-size: 12px;
 }
 .topIcon{
-  width: 80px;
+  /* width: 80px; */
   display: flex;
   justify-content: center;
   align-items: center;

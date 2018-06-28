@@ -36,7 +36,7 @@
               <b>剩余保护期：{{item.EndDate}}天</b>
             </div>
             <div class="listMid">
-              <span :class="{active:checkBoxs[index]}" v-if="select" @click="check(index,item.ID)"></span>
+              <span :class="{active:checkBoxs[index]}" v-if="selected" @click="check(index,item.ID)"></span>
               <button type="button">{{item.StatusName}}</button>
               <p>{{item.Name}}</p>
             </div>
