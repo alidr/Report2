@@ -5,7 +5,7 @@ const CompleteInformation = () => import ('@/pages/completeInformation')
 const Announce = () => import ('@/pages/Announce')
 const AdminPost = () => import ('@/pages/admin_post')
 const CompanyClassList = () =>  import ('@/pages/admin_CompanyClassList')
-const HomeDecoration = () => import ('@/pages/admin_HomeDecoration')
+// const HomeDecoration = () => import ('@/pages/admin_HomeDecoration')
 const SalesmanList = () => import ('@/pages/SalesmanList')
 const CompanyFollow = () => import ('@/pages/admin_CompanyFollow')
 const UserList = () => import ('@/pages/admin_UserList')
@@ -58,13 +58,7 @@ export default [{
   meta: {
     title: '公司分类管理'
   },
-}, {
-  path: '/HomeDecoration',
-  component: HomeDecoration,
-  meta: {
-    title: '家装公司管理'
-  },
-}, {
+},{
   path: '/editCompany',
   component: EditCompany,
   meta: {

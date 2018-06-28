@@ -16,6 +16,8 @@ const UserList = () =>
   import ('@/pages/admin_UserList')
 const MyGroup = () =>
   import ('@/pages/business_myGroup')
+const SalesmanList = () =>
+  import ('@/pages/SalesmanList')
 
 export default [{
     path: '/demo',
@@ -79,5 +81,11 @@ export default [{
      meta: {
        title: '我的小组'
      },
-   }
+   } ,{
+     path: '/SalesmanList',
+     component: SalesmanList,
+     meta: {
+       title: '业务员列表'
+     },
+   },
 ]

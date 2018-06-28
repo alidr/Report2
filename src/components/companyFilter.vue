@@ -1,22 +1,22 @@
 <template>
     <div>
-      <div class="contentList" v-for="(item,index) in msgList" :key="index" @click="jump(1)">
+      <div class="contentList" v-for="(item,index) in list" :key="index" @click="jump(item.ID)">
         <div class="contentListTop">
           <p class="firstLine">
-            <span>洽谈中</span>
-            <span>剩余保护期:5天</span>
+            <span>{{item.StatusName}}</span>
+            <span>剩余保护期:{{item.EndDate}}天</span>
           </p>
           <p class="twoLine">
             <a href="javascript:;" class="round"><b></b></a>
-            <a href="javascript:;" class="name">家装公司名称</a>
+            <a href="javascript:;" class="name">{{item.Name}}</a>
             <!-- <a href="javascript:;" class="btn">+行动</a> -->
           </p>
-          <i></i>
+          <i v-if="item.IsEmphasis||IsEmphasis"></i>
         </div>
         <div class="contentListBottom">
-          <span>2018/11/11</span>
-          <span>到公司拜访了一下王经理 拷贝</span>
-          <span>小A</span>
+           <span>{{item.CreateDate}}</span>
+          <span>{{item.Content}}</span>
+          <span>{{item.UserName}}</span>
         </div>
       </div>
     </div> 
@@ -25,9 +25,10 @@
 
 <script>
 export default {
+  props:['list',"IsEmphasis"],
   data(){
     return{
-      msgList:[1,1,1,1,1],
+      
     }
   },
   methods:{

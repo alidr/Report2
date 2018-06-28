@@ -57,7 +57,7 @@
           </router-link>
         </li>
         <li>
-          <router-link to="./HomeDecoration">
+          <router-link to="./companyList">
             <div class="img">
               <img src="./admin3.png" alt="">
             </div>

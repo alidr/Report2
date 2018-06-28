@@ -5,7 +5,7 @@ import Login from '@/pages/login'
 import NotFound from '@/pages/notFound'
 import Home from '@/pages/home'
 import AccountManagement from '@/pages/accountManagement'
-import CompanyList from '@/pages/companyList'
+import CompanyList from '@/pages/admin_HomeDecoration'
 import CompanyDetail from '@/pages/companyDetail'
 import ModifyPsd from '@/pages/modifyPsd'
 import AnnounceList from "@/pages/AnnounceList";

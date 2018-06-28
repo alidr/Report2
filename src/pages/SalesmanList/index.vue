@@ -3,8 +3,8 @@
   <div class="SalesmanList">
     <div class="top">
       <div class="search">
-        <input type="text" placeholder="请输入业务员姓名或手机号">
-        <span>搜索</span>
+        <input type="text" placeholder="请输入业务员姓名或手机号" v-model="keyword">
+        <span @click="getList()">搜索</span>
       </div>
     </div>
     <div class="everSales">
@@ -16,7 +16,7 @@
         </li>
       </ul>
     </div>
-
+     <empty v-if='emptyFlag'></empty>
     <!-- 账号管理遮罩 -->
     <div id="mask" v-if="hasMask">
       <div class="maskContain">
@@ -27,12 +27,14 @@
         </div>
       </div>
     </div>
+
   </div>
 </template>
 
 <script>
 import qs from 'qs'
 import axios from "axios";
+import empty from "../../components/empty"
 export default {
   name: 'SalesmanList',
   data(){
@@ -40,11 +42,18 @@ export default {
       list:[],
       isActive:false,
       id:'',
-      hasMask:false
+      hasMask:false,
+      style:'',
+      keyword:'',
+      emptyFlag: false,
     }
   },
   created(){  
+    this.style = this.$route.query.style||''
     this.getList()
+  },
+  components:{
+    empty
   },
   methods:{
     getList(){
@@ -54,13 +63,18 @@ export default {
         data:qs.stringify({
           UserId:getCookie('UserId'),
           token:getCookie('token'),
-          keyword:''
+          keyword:this.keyword
         })
       })
       .then(res=>{
         console.log(res)
         if (res.data.Status===1) {
           this.list = res.data.Data.list
+          if (this.list.length==0) {
+            this.emptyFlag = true
+          }else{
+            this.emptyFlag = false
+          }
         }else if (res.data.Status<0) {
           this.delCookie("UserId")
           this.delCookie("token")
@@ -96,9 +110,16 @@ export default {
           if (res.data.Status===1) {
             this.hasMask =false
             this.getToast("操作成功",'warn')
-            this.$router.push({
+            if (this.style==1) {
+                this.$router.push({
+                path:'/companyList'
+              })
+            }else{
+              this.$router.push({
               path:'/CompanyFollow'
-            })
+              })
+            }
+            
           }else if (res.data.Status<0) {
             this.delCookie("UserId")
             this.delCookie("token")

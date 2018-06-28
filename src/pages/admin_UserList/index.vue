@@ -1,22 +1,30 @@
 <template>
   <!-- 用户列表管理 -->
   <div class="UserList">
-    <div class="top">
+    <div class="top companyTop">
       <div class="search">
-        <input type="text" placeholder="请搜索公司名称关键词">
-        <span>搜索</span>
+        <input type="text" placeholder="请搜索姓名/组织名称/手机号" v-model="Keyword">
+        <span @click="getList()">搜索</span>
       </div>
       <button type="button" v-if="isShow" @click="addUser">添加</button>
       <div class="classList">
         <div class="filter">
-          <span class="filterResult">{{AllpostSelect}}</span>
+          <span class="filterResult">{{statusSelect}}</span>
           <span class="iconfont icon-xiaosanjiao icon" @click="maskStatus(0)"></span>
         </div>
         <div class="filter">
-          <span class="filterResult">{{TimeSelect}}</span>
-          <span class="iconfont icon-xiaosanjiao icon" @click="maskStatus(0)"></span>
+          <span class="filterResult">{{styleSelect}}</span>
+          <span class="iconfont icon-xiaosanjiao icon" @click="maskStatus(1)"></span>
         </div>
-      </div>
+      </div> 
+      <ul class="selectListStatus" v-show="hasMask[0]">
+        <li v-for="(item,index) in Status" :key="index" :class="{active:index==statusHasActive}" @click="statusListActive(index,item.Name,item.ID)">{{item.Name}}</li>
+        <div class="mask"></div>
+      </ul>
+      <ul class="selectListStyle" v-show="hasMask[1]">
+        <li v-for="(item,index) in Style" :key="index" :class="{active:index==styleHasActive}" @click="styleListActive(index,item.Name,item.ID)">{{item.Name}}</li>
+        <div class="mask"></div>
+      </ul>
     </div>
     <div class="UserListAll">
       <ul>
@@ -62,47 +70,32 @@
     name: 'UserList',
     data() {
       return {
-        JobId: '',
-        Sort: '',
+        TypeID: '',
+        StatusID: '',
         Keyword: '',
         list: [],
         isShow: false,
-        emptyFlag:false,
-        // 全部岗位
-        Allpost: [{
-          id: '',
-          name: '全部岗位'
-        }, {
-          id: 1,
-          name: '管理员'
-        }, {
-          id: 2,
-          name: '分公司总经理'
-        }, {
-          id: 3,
-          name: '部门经理'
-        }, {
-          id: 4,
-          name: '区域经理'
-        }, {
-          id: 5,
-          name: '经销商'
-        }, {
-          id: 6,
-          name: '业务员'
-        }],
-        // 新建时间顺序
-        Time: [{
-          id: 1,
-          name: '新建时间顺序'
-        }, {
-          id: 2,
-          name: '新建时间逆序'
-        }],
-        AllpostHasActive: 0,
-        AllpostSelect: "全部岗位",
-        TimeHasActive: 0,
-        TimeSelect: "新建时间顺序",
+         Mask: false,
+        // 公司状态列表
+        Status: [],
+        // 公司类型列表
+        Style: [{
+          ID:false,
+          Name:'时间逆序'
+        },{
+          ID:true,
+          Name:'时间顺序'
+        },
+        ],
+        hasMask: [false, false],
+        // hasStatusMask:false,
+        // hasStyleMask:false,
+        // hasPersonMask:false,
+        statusHasActive: 0,
+        statusSelect: "全部岗位",
+        styleHasActive: 0,
+        styleSelect: "时间排序",
+        emptyFlag: false,
       }
     },
     components:{
@@ -122,10 +115,86 @@
         //经销商
         this.getBusiness()
       }
-
+      this.getStyleList()
 
     },
     methods: {
+      getStyleList(){
+        axios({
+          url:this.getHost()+'/Notice/JobInfo', 
+          method:'post',
+          data:qs.stringify({
+            UserId:getCookie('UserId'),
+            token:getCookie('token')
+          })
+        })
+        .then(res=>{
+          console.log(res)
+          if (res.data.Status===1) {
+            this.Status = res.data.Data.list
+            this.Status.unshift({
+                ID: '',
+                Name: '全部岗位'
+            })
+          }else if (res.data.Status<0) {
+            this.getToast("登录失效，请重新登录",'warn')
+            setTimeout(() => {
+              this.delCookie("UserId")
+              this.delCookie("token")
+              this.setAccessId('')
+              location.replace('/')
+            }, 2000);
+          }
+          else{
+            this.getToast(res.data.Message,'warn')
+          }
+        })
+      },
+      maskStatus(index) {
+        console.log(index);
+        console.log(this.hasMask[index]);
+        
+        if (this.hasMask[index] == true) {
+          
+          this.hasMask[index] = false
+        } else {
+          this.hasMask=[false,false]
+          this.hasMask[index] = true
+
+        }
+        this.Mask = this.hasMask[index] ? true : false
+      },
+
+      statusListActive(index, name,id) {
+        this.statusHasActive = index
+        this.statusSelect = name
+        this.hasMask[0] = false
+        this.StatusID = id
+        if (this.AccessId == -1 || this.AccessId == 3||this.AccessId == 2) {
+        //管理员
+        this.getList()
+        this.isShow = true
+      } else if (this.AccessId == 4) {
+        //经销商
+        this.getBusiness()
+      }
+      
+      },
+      styleListActive(index, name,id) {
+        this.styleHasActive = index
+        this.styleSelect = name
+        this.hasMask[1] = false
+        this.TypeID=id
+       if (this.AccessId == -1 || this.AccessId == 3||this.AccessId == 2) {
+        //管理员
+        this.getList()
+        this.isShow = true
+      } else if (this.AccessId == 4) {
+        //经销商
+        this.getBusiness()
+      }
+             
+      },
       getList() {
         // console.log(222)
         axios({
@@ -135,14 +204,19 @@
               UserId: getCookie('UserId'),
               token: getCookie('token'),
               Keyword: this.Keyword,
-              JobId: this.JobId,
-              Sort: this.Sort,
+              JobId: this.StatusID,
+              Sort: this.TypeID,
             })
           })
           .then(res => {
             console.log(res)
             if (res.data.Status === 1) {
               this.list = res.data.Data.list
+                 if (this.list == '') {
+                this.emptyFlag = true
+              } else {
+                this.emptyFlag = false
+              }
             } else if (res.data.Status < 0) {
               this.delCookie("UserId")
               this.delCookie("token")
@@ -165,8 +239,8 @@
               UserId: getCookie('UserId'),
               token: getCookie('token'),
               Keyword: this.Keyword,
-              JobId: this.JobId,
-              Sort: this.Sort,
+              JobId: this.StatusID,
+              Sort: this.TypeID,
             })
           })
           .then(res => {
@@ -244,7 +318,14 @@
             console.log(res)
             if (res.data.Status === 1) {
               this.getToast("删除成功", 'warn')
-              this.getList()
+               if (this.AccessId == -1 || this.AccessId == 3||this.AccessId == 2) {
+                //管理员
+                this.getList()
+                this.isShow = true
+              } else if (this.AccessId == 4) {
+                //经销商
+                this.getBusiness()
+              }
             } else if (res.data.Status < 0) {
               this.delCookie("UserId")
               this.delCookie("token")

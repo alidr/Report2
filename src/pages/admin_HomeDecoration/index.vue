@@ -15,8 +15,8 @@
         </button>
       </div>
       <div class="search">
-        <input type="text" placeholder="请搜索公司名称关键词">
-        <span>搜索</span>
+        <input type="text" placeholder="请搜索公司名称关键词" v-model="keyword">
+        <span @click="getList">搜索</span>
       </div>
       <div class="FilterConditions ">
         <div class="filter">
@@ -33,22 +33,50 @@
         </div>
       </div>
       <ul class="selectListStatus" v-show="hasMask[0]">
-        <li v-for="(item,index) in Status" :key="index" :class="{active:index==statusHasActive}" @click="statusListActive(index,item.name)">{{item.name}}</li>
+        <li v-for="(item,index) in Status" :key="index" :class="{active:index==statusHasActive}" @click="statusListActive(index,item.Name,item.ID)">{{item.Name}}</li>
         <div class="mask"></div>
       </ul>
       <ul class="selectListStyle" v-show="hasMask[1]">
-        <li v-for="(item,index) in Style" :key="index" :class="{active:index==styleHasActive}" @click="styleListActive(index,item.name)">{{item.name}}</li>
+        <li v-for="(item,index) in Style" :key="index" :class="{active:index==styleHasActive}" @click="styleListActive(index,item.Name,item.ID)">{{item.Name}}</li>
         <div class="mask"></div>
       </ul>
       <ul class="selectListPerson" v-show="hasMask[2]">
-        <li v-for="(item,index) in Person" :key="index" :class="{active:index==personHasActive}" @click="personListActive(index,item.name)">{{item.name}}</li>
+        <li v-for="(item,index) in Person" :key="index" :class="{active:index==personHasActive}" @click="personListActive(index,item.Name,item.ID)">{{item.Name}}</li>
         <div class="mask"></div>
       </ul>
     </div>
     <!-- 公司列表 -->
     <div class="comList">
-      <focusList :list="List" id="list"></focusList>
+      <focusList :list="List" id="list" v-if="!admin"></focusList>
+       <!-- <companyFilter v-if="admin" :list="List"></companyFilter> -->
       <empty v-if='emptyFlag'></empty>
+      <div>
+      <div class="contentList" v-for="(item,index) in List" :key="index"  v-if="admin" @click="jump(item.ID)">
+        <div class="contentListTop">
+          <p class="firstLine">
+            <span>{{item.StatusName}}</span>
+            <span>剩余保护期:{{item.EndDate}}天</span>
+          </p>
+          <p class="twoLine">
+            <a href="javascript:;" class="round" :class="{'active':checkBoxs[index]}" @click.stop="check(index,item.ID)"><b :class="{'active':checkBoxs[index]}"></b></a>
+            <a href="javascript:;" class="name">{{item.Name}}</a>
+            <!-- <a href="javascript:;" class="btn">+行动</a> -->
+          </p>
+          <i v-if="item.IsEmphasis"></i>
+        </div>
+        <div class="contentListBottom">
+           <span>{{item.CreateDate}}</span>
+          <span>{{item.Content}}</span>
+          <span>{{item.UserName}}</span>
+        </div>
+      </div>
+    </div>
+    </div>
+
+     <div class="bottom" v-if="admin">
+      <span class="round" :class="{active:checkAllBox}" @click="checkAll(List)"><b :class="{active:checkAllBox}"></b></span>
+      <span class="content">已选择{{idList.length}}个家装公司</span>
+      <span class="btn" @click="distribution">分配业务员</span>
     </div>
   </div>
 </template>
@@ -57,11 +85,14 @@
   import qs from 'qs'
   import axios from "axios";
   import focusList from "../../components/focusList";
+  import companyFilter from '../../components/companyFilter';
   import empty from "../../components/empty"
+  import { mapGetters, mapMutations } from 'vuex'
   export default {
     name: 'HomeDecoration',
     data() {
       return {
+        admin:false,
         keyword: '',
         StatusID: '',
         TypeID: '',
@@ -77,46 +108,22 @@
         Mask: false,
         // 公司状态列表
         Status: [{
-          id: '',
-          name: '全部状态'
+          ID: '',
+          Name: '全部状态'
         }, {
-          id: 1,
-          name: '洽谈中'
+          ID: 1,
+          Name: '洽谈中'
         }, {
-          id: 2,
-          name: '签约中'
+          ID: 2,
+          Name: '签约中'
         }, {
-          id: 3,
-          name: '已签约'
+          ID: 3,
+          Name: '已签约'
         }],
         // 公司类型列表
-        Style: [{
-          id: 1,
-          name: '传统公司'
-        }, {
-          id: 2,
-          name: '整装公司'
-        }, {
-          id: 3,
-          name: '地产家装'
-        }, {
-          id: 4,
-          name: '家装'
-        }],
+        Style: [],
         // 业务员
-        Person: [{
-          id: 1,
-          name: '小明'
-        }, {
-          id: 2,
-          name: '小红'
-        }, {
-          id: 3,
-          name: '小绿'
-        }, {
-          id: 4,
-          name: '小黄'
-        }],
+        Person: [],
         hasMask: [false, false, false],
         // hasStatusMask:false,
         // hasStyleMask:false,
@@ -124,22 +131,177 @@
         statusHasActive: 0,
         statusSelect: "全部状态",
         personHasActive: 0,
-        personSelect: "全部类型",
+        personSelect: "全部组员",
         styleHasActive: 0,
-        styleSelect: "全部组员",
+        styleSelect: "全部类型",
+
+        // list:[],
+        checkBoxs:[],
+        checkAllBox:false,
+        idList:[],
       }
 
     },
-
+     computed: {
+    ...mapGetters([
+      'AccessId'
+      ])
+    },
     components: {
       focusList,
-      empty
+      empty,
+      companyFilter
     },
     created() {
+      this.getStyleList()
+      this.getPersonList()
       this.getList()
       this.getTotalData()
+      if (this.AccessId == -1||this.AccessId == 4) {
+        this.admin = true
+      }
     },
     methods: {
+       distribution(){
+        if (this.idList.length==0) {
+          this.getToast("请选择要分配的公司",'warn')
+        }else{
+          localStorage.setItem("CompanyID",JSON.stringify(this.idList))
+          this.$router.push({
+            path:'/SalesmanList',
+            query:{
+              style:1
+            }
+          })
+        }
+      },
+      check(index,id){
+        console.log(index)
+        if (this.checkBoxs[index]) {
+          this.checkBoxs[index]=false
+          this.checkAllBox = false
+          for (let i = 0; i <  this.idList.length; i++) {
+          if (this.idList[i]==id) {
+            this.idList.splice(i)
+            }
+          }
+
+          for (let i = 0; i < this.checkBoxs.length; i++) {
+          if (this.checkBoxs[i]) {
+             this.checkAllBox = true
+          }
+        }
+          
+        }else{
+          this.checkBoxs[index]=true
+          this.idList.push(id)
+          this.checkAllBox = true
+        } 
+
+        this.idList = this.idList.slice()
+        this.checkBoxs = this.checkBoxs.slice()
+        console.log(this.idList);
+        
+
+      },
+      checkAll(List){
+        
+        if (this.checkAllBox) {
+          console.log(111)
+          this.checkAllBox =false
+          console.log(this.checkBoxs);
+          this.idList = this.idList.splice()
+          for (let i = 0; i <List.length; i++) {
+            this.checkBoxs[i]= false
+          }
+          this.checkBoxs = this.checkBoxs.slice()
+        }else{
+          console.log(222);
+          
+          this.checkAllBox = true
+          for (let i = 0; i < List.length; i++) {
+            this.checkBoxs[i] = true
+            this.idList.push(List[i].ID)
+          }
+           this.checkBoxs = this.checkBoxs.slice()
+           this.idList = this.idList.slice()
+           console.log(this.checkBoxs);
+        }
+        console.log(this.idList);
+
+      },
+      jump(num){
+        this.$router.push({
+          path: '/companyDetail',
+          query: {
+            id: num
+          }
+        })
+      },
+      getStyleList(){
+        axios({
+          url:this.getHost()+'/Notice/CompanyList', 
+          method:'post',
+          data:qs.stringify({
+            UserId:getCookie('UserId'),
+            token:getCookie('token')
+          })
+        })
+        .then(res=>{
+          console.log(res)
+          if (res.data.Status===1) {
+            this.Style = res.data.Data.list
+            this.Style.unshift({
+                ID: '',
+                Name: '全部类型'
+            })
+          }else if (res.data.Status<0) {
+            this.getToast("登录失效，请重新登录",'warn')
+            setTimeout(() => {
+              this.delCookie("UserId")
+              this.delCookie("token")
+              this.setAccessId('')
+              location.replace('/')
+            }, 2000);
+          }
+          else{
+            this.getToast(res.data.Message,'warn')
+          }
+        })
+      },
+      getPersonList(){
+        axios({
+          url:this.getHost()+'/Company/SaleList', 
+          method:'post',
+          data:qs.stringify({
+            UserId:getCookie('UserId'),
+            token:getCookie('token'),
+            Keyword:''
+
+          })
+        })
+        .then(res=>{
+          console.log(res)
+          if (res.data.Status===1) {
+            this.Person = res.data.Data.list
+            this.Person.unshift({
+                ID: '',
+                Name: '全部组员'
+            })
+          }else if (res.data.Status<0) {
+            this.getToast("登录失效，请重新登录",'warn')
+            setTimeout(() => {
+              this.delCookie("UserId")
+              this.delCookie("token")
+              this.setAccessId('')
+              location.replace('/')
+            }, 2000);
+          }
+          else{
+            this.getToast(res.data.Message,'warn')
+          }
+        })
+      },
       getList() {
         axios({
             url: this.getHost() + '/Company/CompanyList',
@@ -157,6 +319,11 @@
             console.log(res)
             if (res.data.Status === 1) {
               this.List = res.data.Data.list
+              if (this.List.length==0) {
+                this.emptyFlag = true
+              }else{
+                this.emptyFlag = false
+              }
             } else if (res.data.Status < 0) {
               this.delCookie("UserId")
               this.delCookie("token")
@@ -180,6 +347,7 @@
             console.log(res)
             if (res.data.Status === 1) {
               this.count = res.data.Data
+
             } else if (res.data.Status < 0) {
               this.delCookie("UserId")
               this.delCookie("token")
@@ -192,33 +360,37 @@
       },
       maskStatus(index) {
         if (this.hasMask[index] == true) {
-
+          
           this.hasMask[index] = false
         } else {
-
+          this.hasMask=[false,false,false]
           this.hasMask[index] = true
 
         }
-        for (let i = 0; i < this.hasMask.length; i++) {
-
-          if (index == i) {
-            continue
-          }
-          this.hasMask[i] = false
-        }
         this.Mask = this.hasMask[index] ? true : false
       },
-      statusListActive(index, name) {
+      statusListActive(index, name,id) {
         this.statusHasActive = index
         this.statusSelect = name
+        this.hasMask[0] = false
+        this.StatusID = id
+        this.getList()
+      
       },
-      styleListActive(index, name) {
+      styleListActive(index, name,id) {
         this.styleHasActive = index
         this.styleSelect = name
+        this.hasMask[1] = false
+        this.TypeID=id
+        this.getList()
+             
       },
-      personListActive(index, name) {
+      personListActive(index, name,id) {
         this.personHasActive = index
         this.personSelect = name
+        this.hasMask[2] = false
+        this.SaleID=id
+        this.getList()
       }
     }
   }
@@ -227,6 +399,35 @@
 
 <style scoped>
   @import '../../common/filter.css';
+  @import '../../common/focusList.css';
+/* .companyTop.active{
+  height: 100vh;
+  overflow: hidden;
+} */
+  
+.twoLine .round{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 11px;
+  border: 1px solid #ccc;
+  margin-right: 15px;
+}
+.twoLine .round.active{
+  border:1px solid #E2C78F;
+}
+.twoLine .round b{
+  display: flex;
+  width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  background-color: #fff;
+}
+.twoLine .round b.active{
+  background-color: #E2C78F;
+}
   .FilterConditions {
     padding: 0 10px;
   }
@@ -417,4 +618,57 @@
     margin: 0 auto;
   }
 
+   /* 底部 */
+  .bottom{
+    width: 100%;
+    height: 55px;
+    background: #3F434F;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-left: 60px;
+    padding-right: 15px;
+    box-sizing: border-box;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+  }
+  .bottom .content{
+    flex: 1;
+    width: 0;
+    font-size: 16px;
+    color: #fff;
+  }
+  .bottom .btn{
+    width: 110px;
+    height: 40px;
+    background-image: linear-gradient(to right,#E2C78F,#D5AE61);
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+  }
+  .bottom .round{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 11px;
+    border: 1px solid #ccc;
+    margin-right: 15px;
+  }
+  .bottom .round.active{
+    border:1px solid #E2C78F;
+  }
+  .bottom .round b{
+    display: flex;
+    width: 16px;
+    height: 16px;
+    border-radius: 8px;
+  }
+  .bottom .round b.active{
+    background-color: #E2C78F;
+  }
 </style>
