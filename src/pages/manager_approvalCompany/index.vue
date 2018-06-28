@@ -32,7 +32,7 @@
               <p>{{item.Name}}</p>
             </div>
             <div class="listBottom">
-              <i @click="showListMask(true,item.CompanyID)">查看相似公司</i>
+              <i @click="showListMask(true,item.ID)">查看相似公司</i>
               <!-- 
               <p>{{item.Content}}</p>
               <b>小A</b> -->
@@ -42,48 +42,52 @@
 
         </li>
       </ul>
-    </div>
+      <div class="null" v-if='nullFlag'>
+        <img src="./images/null.png" alt="">
+        <p>这里暂时还没有内容…</p>
+      </div>
+    </div> 
 
-    <footer>
-      <span :class="{active:checkAllBox}" @click="checkAll(list)"></span>
-      <p>已选
-        <b>{{idList.length}}</b>个家装公司</p>
-      <button type="button" @click="noAllow(true)" class="noAllow">不通过</button>
-      <button type="button" @click="distribution">审批通过</button>
+      <footer>
+        <span :class="{active:checkAllBox}" @click="checkAll(list)"></span>
+        <p>已选
+          <b>{{idList.length}}</b>个家装公司</p>
+        <button type="button" @click="noAllow(true)" class="noAllow">不通过</button>
+        <button type="button" @click="distribution">审批通过</button>
 
-    </footer>
+      </footer>
 
-    <!-- 遮罩 -->
-    <div id="mask" v-if="isShowMask">
-      <div class="maskContain">
-        <p class="title">审批不通过原因</p>
-        <div class="textarea">
-          <textarea name="" id="" cols="30" rows="6" v-model="giveUpReason"></textarea>
+      <!-- 遮罩 -->
+      <div id="mask" v-if="isShowMask">
+        <div class="maskContain">
+          <p class="title">审批不通过原因</p>
+          <div class="textarea">
+            <textarea name="" id="" cols="30" rows="6" v-model="giveUpReason"></textarea>
+          </div>
+          <div class="btn">
+            <span class="cancel" @click="noAllow(false)">取消</span>
+            <span class="confirm" @click.stop="giveUpFollow">确认</span>
+          </div>
         </div>
-        <div class="btn">
-          <span class="cancel" @click="noAllow(false)">取消</span>
-          <span class="confirm" @click.stop="giveUpFollow">确认</span>
+      </div>
+
+      <!-- 遮罩 -->
+      <div id="mask" v-if="listmask" @click="showListMask(false)">
+        <div class="maskContain">
+          <ul>
+            <li>
+              <span class="name">公司名称 </span>
+              <span>相似度</span>
+            </li>
+            <li v-for="(item,index) in similadList" :key="index">
+              <span class="name">{{item.Name}} </span>
+              <span>{{item.Rate}}%</span>
+            </li>
+          </ul>
+          <button type="button" @click="showListMask(false)" class="close">关闭</button>
         </div>
       </div>
     </div>
-
-    <!-- 遮罩 -->
-    <div id="mask" v-if="listmask" @click="showListMask(false)">
-      <div class="maskContain">
-        <ul>
-          <li>
-            <span class="name">公司名称 </span>
-            <span>相似度</span>
-          </li>
-          <li v-for="(item,index) in similadList" :key="index">
-            <span class="name">{{item.Name}} </span>
-            <span>{{item.Rate}}%</span>
-          </li>
-        </ul>
-        <button type="button" @click="showListMask(false)" class="close">关闭</button>
-      </div>
-    </div>
-  </div>
 </template>
 
 <script>
@@ -106,6 +110,8 @@
         giveUpReason: '',
         similadList: '',
         listmask: false,
+        nullFlag: false,
+        listFlag: true,
         AllManager: [{
           id: '',
           name: '全部经销商'
@@ -156,6 +162,7 @@
     created() {
       localStorage.removeItem("CompanyID")
       this.getList()
+
     },
     methods: {
       showListMask(bool, id) {
@@ -198,35 +205,34 @@
           this.getToast("请输入审核理由", 'warn')
         } else {
           axios({
-          url:this.getHost()+'/Approval/AuditCompany', 
-          method:'post',
-          data:qs.stringify({
-            UserId:getCookie('UserId'),
-            token:getCookie('token'),
-            List:this.idList,
-            IsAgree:false,
-            AuditReason:this.giveUpReason
-          })
-        })
-        .then(res=>{
-          console.log(res)
-          if (res.data.Status===1) {
-            this.getToast("审批成功",'correct')
-            this.getList()
-            this.noAllow(false)
-          }else if (res.data.Status<0) {
-            this.getToast("登录失效，请重新登录",'warn')
-            setTimeout(() => {
-              this.delCookie("UserId")
-              this.delCookie("token")
-              this.setAccessId('')
-              location.replace('/')
-            }, 2000);
-          }
-          else{
-            this.getToast(res.data.Message,'warn')
-          }
-        })
+              url: this.getHost() + '/Approval/AuditCompany',
+              method: 'post',
+              data: qs.stringify({
+                UserId: getCookie('UserId'),
+                token: getCookie('token'),
+                List: this.idList,
+                IsAgree: false,
+                AuditReason: this.giveUpReason
+              })
+            })
+            .then(res => {
+              console.log(res)
+              if (res.data.Status === 1) {
+                this.getToast("审批成功", 'correct')
+                this.getList()
+                this.noAllow(false)
+              } else if (res.data.Status < 0) {
+                this.getToast("登录失效，请重新登录", 'warn')
+                setTimeout(() => {
+                  this.delCookie("UserId")
+                  this.delCookie("token")
+                  this.setAccessId('')
+                  location.replace('/')
+                }, 2000);
+              } else {
+                this.getToast(res.data.Message, 'warn')
+              }
+            })
         }
       },
       noAllow(bool) {
@@ -256,6 +262,11 @@
             console.log(res)
             if (res.data.Status === 1) {
               this.list = res.data.Data.list
+              if (this.list == '') {
+                this.nullFlag = true
+              } else {
+                this.nullFlag = false
+              }
               for (let i = 0; i < this.list.length; i++) {
                 this.checkBoxs.push(false)
 
@@ -332,34 +343,33 @@
           this.getToast("请选择要审核的公司", 'warn')
         } else {
           axios({
-          url:this.getHost()+'/Approval/AuditCompany', 
-          method:'post',
-          data:qs.stringify({
-            UserId:getCookie('UserId'),
-            token:getCookie('token'),
-            List:this.idList,
-            IsAgree:true,
-            AuditReason:''
-          })
-        })
-        .then(res=>{
-          console.log(res)
-          if (res.data.Status===1) {
-            this.getToast("审批成功",'correct')
-            this.getList()
-          }else if (res.data.Status<0) {
-            this.getToast("登录失效，请重新登录",'warn')
-            setTimeout(() => {
-              this.delCookie("UserId")
-              this.delCookie("token")
-              this.setAccessId('')
-              location.replace('/')
-            }, 2000);
-          }
-          else{
-            this.getToast(res.data.Message,'warn')
-          }
-        })
+              url: this.getHost() + '/Approval/AuditCompany',
+              method: 'post',
+              data: qs.stringify({
+                UserId: getCookie('UserId'),
+                token: getCookie('token'),
+                List: this.idList,
+                IsAgree: true,
+                AuditReason: ''
+              })
+            })
+            .then(res => {
+              console.log(res)
+              if (res.data.Status === 1) {
+                this.getToast("审批成功", 'correct')
+                this.getList()
+              } else if (res.data.Status < 0) {
+                this.getToast("登录失效，请重新登录", 'warn')
+                setTimeout(() => {
+                  this.delCookie("UserId")
+                  this.delCookie("token")
+                  this.setAccessId('')
+                  location.replace('/')
+                }, 2000);
+              } else {
+                this.getToast(res.data.Message, 'warn')
+              }
+            })
         }
       },
       ...mapMutations({
@@ -373,9 +383,10 @@
 <style scoped>
   @import '../../common/mask.css';
   @import '../../common/filter.css';
-  .maskContain ul{
+  .maskContain ul {
     margin-bottom: 22px;
   }
+
   .maskContain li {
     display: flex;
     justify-content: center;
@@ -705,11 +716,31 @@
     font-size: 13px;
     font-family: PingFangSC-Regular;
     color: rgba(152, 152, 152, 1);
-    background:rgba(237,236,235,1);
-    border-radius:2px;
+    background: rgba(237, 236, 235, 1);
+    border-radius: 2px;
     line-height: 34px;
     text-align: center;
     margin: 0 auto;
+
+  }
+
+  .null {
+    padding-top: 100px;
+  }
+
+  .null img {
+    display: block;
+    width: 168px;
+    height: 154px;
+    margin: 0 auto;
+
+  }
+
+  .null p {
+    font-size: 16px;
+    color: #b2b2b2;
+    text-align: center;
+    padding-top: 24px;
 
   }
 

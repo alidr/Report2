@@ -18,18 +18,18 @@
         <input type="text" placeholder="请搜索公司名称关键词">
         <span>搜索</span>
       </div>
-      <div class="FilterConditions " >
+      <div class="FilterConditions ">
         <div class="filter">
-            <span class="filterResult">{{statusSelect}}</span>
-            <span class="iconfont icon-xiaosanjiao icon" @click="maskStatus(0)"></span>
+          <span class="filterResult">{{statusSelect}}</span>
+          <span class="iconfont icon-xiaosanjiao icon" @click="maskStatus(0)"></span>
         </div>
         <div class="filter">
-            <span class="filterResult">{{styleSelect}}</span>
-            <span class="iconfont icon-xiaosanjiao icon" @click="maskStatus(1)"></span>
+          <span class="filterResult">{{styleSelect}}</span>
+          <span class="iconfont icon-xiaosanjiao icon" @click="maskStatus(1)"></span>
         </div>
         <div class="filter">
-            <span class="filterResult">{{personSelect}}</span>
-            <span class="iconfont icon-xiaosanjiao icon" @click="maskStatus(2)"></span>
+          <span class="filterResult">{{personSelect}}</span>
+          <span class="iconfont icon-xiaosanjiao icon" @click="maskStatus(2)"></span>
         </div>
       </div>
       <ul class="selectListStatus" v-show="hasMask[0]">
@@ -45,10 +45,11 @@
         <div class="mask"></div>
       </ul>
     </div>
-   <!-- 公司列表 -->
-   <div class="comList">
+    <!-- 公司列表 -->
+    <div class="comList">
       <focusList :list="List" id="list"></focusList>
-   </div>
+      <empty v-if='emptyFlag'></empty>
+    </div>
   </div>
 </template>
 
@@ -56,164 +57,166 @@
   import qs from 'qs'
   import axios from "axios";
   import focusList from "../../components/focusList";
+  import empty from "../../components/empty"
   export default {
     name: 'HomeDecoration',
-    data(){
-      return{
-        keyword:'',
-        StatusID:'',
-        TypeID:'',
-        SaleID:'',
-        count:{
-          Negotiation:'',
-          Progressive:'',
-          Complete:''
+    data() {
+      return {
+        keyword: '',
+        StatusID: '',
+        TypeID: '',
+        SaleID: '',
+        count: {
+          Negotiation: '',
+          Progressive: '',
+          Complete: ''
         },
 
-        List:[1,1,1,1],
-        Mask:false,
+        List: [1, 1, 1, 1],
+        emptyFlag: false,
+        Mask: false,
         // 公司状态列表
-        Status:[{
-          id:'',
-          name:'全部状态'
-        },{
-          id:1,
-          name:'洽谈中'
-        },{
-          id:2,
-          name:'签约中'
-        },{
-          id:3,
-          name:'已签约'
+        Status: [{
+          id: '',
+          name: '全部状态'
+        }, {
+          id: 1,
+          name: '洽谈中'
+        }, {
+          id: 2,
+          name: '签约中'
+        }, {
+          id: 3,
+          name: '已签约'
         }],
         // 公司类型列表
-        Style:[{
-          id:1,
-          name:'传统公司'
-        },{
-          id:2,
-          name:'整装公司'
-        },{
-          id:3,
-          name:'地产家装'
-        },{
-          id:4,
-          name:'家装'
+        Style: [{
+          id: 1,
+          name: '传统公司'
+        }, {
+          id: 2,
+          name: '整装公司'
+        }, {
+          id: 3,
+          name: '地产家装'
+        }, {
+          id: 4,
+          name: '家装'
         }],
         // 业务员
-        Person:[{
-          id:1,
-          name:'小明'
-        },{
-          id:2,
-          name:'小红'
-        },{
-          id:3,
-          name:'小绿'
-        },{
-          id:4,
-          name:'小黄'
+        Person: [{
+          id: 1,
+          name: '小明'
+        }, {
+          id: 2,
+          name: '小红'
+        }, {
+          id: 3,
+          name: '小绿'
+        }, {
+          id: 4,
+          name: '小黄'
         }],
-        hasMask:[false,false,false],
+        hasMask: [false, false, false],
         // hasStatusMask:false,
         // hasStyleMask:false,
         // hasPersonMask:false,
-        statusHasActive:0,
-        statusSelect:"全部状态",
-        personHasActive:0,
-        personSelect:"全部类型",
-        styleHasActive:0,
-        styleSelect:"全部组员",
+        statusHasActive: 0,
+        statusSelect: "全部状态",
+        personHasActive: 0,
+        personSelect: "全部类型",
+        styleHasActive: 0,
+        styleSelect: "全部组员",
       }
-      
+
     },
-    components:{
-    focusList,
+
+    components: {
+      focusList,
+      empty
     },
-    created(){
+    created() {
       this.getList()
       this.getTotalData()
     },
-    methods:{
-      getList(){
+    methods: {
+      getList() {
         axios({
-          url:this.getHost()+'/Company/CompanyList', 
-          method:'post',
-          data:qs.stringify({
-            UserId:getCookie('UserId'),
-            token:getCookie('token'),
-            keyword:this.keyword,
-            StatusID:this.StatusID,
-            TypeID:this.TypeID,
-            SaleID:this.SaleID,
+            url: this.getHost() + '/Company/CompanyList',
+            method: 'post',
+            data: qs.stringify({
+              UserId: getCookie('UserId'),
+              token: getCookie('token'),
+              keyword: this.keyword,
+              StatusID: this.StatusID,
+              TypeID: this.TypeID,
+              SaleID: this.SaleID,
+            })
           })
-        })
-        .then(res=>{
-          console.log(res)
-          if (res.data.Status===1) {
-            this.List = res.data.Data.list
-          }else if (res.data.Status<0) {
-            this.delCookie("UserId")
-            this.delCookie("token")
-            this.setAccessId('')
-            location.replace('/')
-          }
-          else{
-            this.getToast(res.data.Message,'warn')
-          }
-        })
+          .then(res => {
+            console.log(res)
+            if (res.data.Status === 1) {
+              this.List = res.data.Data.list
+            } else if (res.data.Status < 0) {
+              this.delCookie("UserId")
+              this.delCookie("token")
+              this.setAccessId('')
+              location.replace('/')
+            } else {
+              this.getToast(res.data.Message, 'warn')
+            }
+          })
       },
-      getTotalData(){
+      getTotalData() {
         axios({
-          url:this.getHost()+'/Company/Count', 
-          method:'post',
-          data:qs.stringify({
-            UserId:getCookie('UserId'),
-            token:getCookie('token')
+            url: this.getHost() + '/Company/Count',
+            method: 'post',
+            data: qs.stringify({
+              UserId: getCookie('UserId'),
+              token: getCookie('token')
+            })
           })
-        })
-        .then(res=>{
-          console.log(res)
-          if (res.data.Status===1) {
-            this.count = res.data.Data
-          }else if (res.data.Status<0) {
-            this.delCookie("UserId")
-            this.delCookie("token")
-            this.setAccessId('')
-            location.replace('/')
-          }
-          else{
-            this.getToast(res.data.Message,'warn')
-          }
-        })
+          .then(res => {
+            console.log(res)
+            if (res.data.Status === 1) {
+              this.count = res.data.Data
+            } else if (res.data.Status < 0) {
+              this.delCookie("UserId")
+              this.delCookie("token")
+              this.setAccessId('')
+              location.replace('/')
+            } else {
+              this.getToast(res.data.Message, 'warn')
+            }
+          })
       },
-      maskStatus(index){
+      maskStatus(index) {
         if (this.hasMask[index] == true) {
-          
-          this.hasMask[index] = false   
-        }else{
-            
-            this.hasMask[index] = true
 
-          }
+          this.hasMask[index] = false
+        } else {
+
+          this.hasMask[index] = true
+
+        }
         for (let i = 0; i < this.hasMask.length; i++) {
-          
-          if (index==i) {
+
+          if (index == i) {
             continue
           }
           this.hasMask[i] = false
         }
-        this.Mask = this.hasMask[index]?true:false
+        this.Mask = this.hasMask[index] ? true : false
       },
-      statusListActive(index,name){
-      this.statusHasActive = index
-      this.statusSelect = name
+      statusListActive(index, name) {
+        this.statusHasActive = index
+        this.statusSelect = name
       },
-      styleListActive(index,name){
+      styleListActive(index, name) {
         this.styleHasActive = index
         this.styleSelect = name
       },
-      personListActive(index,name){
+      personListActive(index, name) {
         this.personHasActive = index
         this.personSelect = name
       }
@@ -223,14 +226,16 @@
 </script>
 
 <style scoped>
- @import '../../common/filter.css';
-  .FilterConditions{
+  @import '../../common/filter.css';
+  .FilterConditions {
     padding: 0 10px;
   }
+
   .HomeDecoration {
     width: 100%;
     overflow: hidden;
   }
+
   .top {
     width: 100%;
     overflow: hidden;
@@ -373,9 +378,13 @@
   }
 
   .top .classList ul li span::before {
-    content:'';
+    content: '';
     position: absolute;
-    top: 0;left: 0;bottom: 0;right: 0;margin: auto;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    margin: auto;
     width: 0;
     height: 0;
     border-left: 5px solid transparent;
@@ -402,10 +411,10 @@
     border-radius: 8px;
     margin-bottom: 15px;
   }
-  .comList{
+
+  .comList {
     width: 92%;
     margin: 0 auto;
   }
-  
 
 </style>

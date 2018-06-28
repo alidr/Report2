@@ -11,8 +11,8 @@
           <span>{{item.TypeName}}</span>
           <i>提交日期 {{item.Date}}</i>
           <div class="up">
-            <p>{{item.CompanyName}} </p>
-            <b>业务员{{item.UserName}}</b>
+            <p class="name">{{item.CompanyName}} </p>
+            <b class="salesman">业务员{{item.UserName}}</b>
             <div class="upBtn">
               <button type="button" class="no" @click.stop="isAllow(false,item.ID)">不通过</button>
               <button type="button" class="yes" @click.stop="isAllow(true,item.ID)">审批通过</button>
@@ -26,8 +26,13 @@
           </div>
         </li>
       </ul>
+      <!-- <div class="empty" v-if='emptyFlag'>
+        <img src="./images/empty.png" alt="">
+        <p>这里暂时还没有内容…</p>
+      </div> -->
+      <empty v-if='emptyFlag'></empty>
     </div>
-       <!-- 遮罩 -->
+    <!-- 遮罩 -->
     <div id="mask" v-if="listmask" @click="showListMask(false)">
       <div class="maskContain">
         <ul>
@@ -46,126 +51,136 @@
 </template>
 
 <script>
-  import qs from 'qs'
+  import qs from 'qs';
   import axios from "axios";
+  import empty from "../../components/empty";
   export default {
     name: 'appeal',
     data() {
       return {
-        list:[],
-        style:1,
-        similadList:'',
-        listmask:false
+        list: [],
+        style: 1,
+        similadList: '',
+        listmask: false,
+        emptyFlag: false,
+        listFlag: true
       }
     },
-    created(){
-      this.getList(1)
+    components:{
+      empty
+
     },
-    methods:{
-      showListMask(bool,id){
+    created() {
+      this.getList(1)
+
+    },
+    methods: {
+      showListMask(bool, id) {
         this.listmask = bool
         if (bool) {
           console.log(id);
-          
+
           this.getSimilarList(id)
         }
       },
-      getSimilarList(id){
+      getSimilarList(id) {
         axios({
-        url:this.getHost()+'/Approval/GetLikeness', 
-        method:'post',
-        data:qs.stringify({
-          UserId:getCookie('UserId'),
-          token:getCookie('token'),
-          CompanyID:id
+            url: this.getHost() + '/Approval/GetLikeness',
+            method: 'post',
+            data: qs.stringify({
+              UserId: getCookie('UserId'),
+              token: getCookie('token'),
+              CompanyID: id
+            })
           })
-        })
-        .then(res=>{
-          console.log(res)
-          if (res.data.Status===1) {
-            this.similadList = res.data.Data
-          }else if (res.data.Status<0) {
-            this.getToast("登录失效，请重新登录",'warn')
-            setTimeout(() => {
-              this.delCookie("UserId")
-              this.delCookie("token")
-              this.setAccessId('')
-              location.replace('/')
-            }, 2000);
-          }
-          else{
-            this.getToast(res.data.Message,'warn')
-          }
-        })
+          .then(res => {
+            console.log(res)
+            if (res.data.Status === 1) {
+              this.similadList = res.data.Data
+            } else if (res.data.Status < 0) {
+              this.getToast("登录失效，请重新登录", 'warn')
+              setTimeout(() => {
+                this.delCookie("UserId")
+                this.delCookie("token")
+                this.setAccessId('')
+                location.replace('/')
+              }, 2000);
+            } else {
+              this.getToast(res.data.Message, 'warn')
+            }
+          })
       },
-      getList(TypeID){
+      getList(TypeID) {
         axios({
-        url:this.getHost()+'/Approval/GetFollowList', 
-        method:'post',
-        data:qs.stringify({
-          UserId:getCookie('UserId'),
-          token:getCookie('token'),
-          TypeID:TypeID,
+            url: this.getHost() + '/Approval/GetFollowList',
+            method: 'post',
+            data: qs.stringify({
+              UserId: getCookie('UserId'),
+              token: getCookie('token'),
+              TypeID: TypeID,
+            })
           })
-        })
-        .then(res=>{
-          console.log(res)
-          if (res.data.Status===1) {
-            this.list = res.data.Data.list
-          }else if (res.data.Status<0) {
-            this.getToast("登录失效，请重新登录",'warn')
-            setTimeout(() => {
-              this.delCookie("UserId")
-              this.delCookie("token")
-              this.setAccessId('')
-              location.replace('/')
-            }, 2000);
-          }
-          else{
-            this.getToast(res.data.Message,'warn')
-          }
-        })
+          .then(res => {
+            console.log(res)
+            if (res.data.Status === 1) {
+              this.list = res.data.Data.list
+              if (this.list == '') {
+                this.emptyFlag = true
+              } else {
+                this.emptyFlag = false
+              }
+            } else if (res.data.Status < 0) {
+              this.getToast("登录失效，请重新登录", 'warn')
+              setTimeout(() => {
+                this.delCookie("UserId")
+                this.delCookie("token")
+                this.setAccessId('')
+                location.replace('/')
+              }, 2000);
+            } else {
+              this.getToast(res.data.Message, 'warn')
+            }
+          })
       },
-      active(style){
+      active(style) {
         console.log(style);
-        
+
         this.style = style
         this.getList(style)
       },
-      isAllow(bool,id){
+      isAllow(bool, id) {
         axios({
-        url:bool?this.getHost()+'/Approval/AgreeFollow':this.getHost()+'/Approval/CancelFollow', 
-        method:'post',
-        data:qs.stringify({
-          UserId:getCookie('UserId'),
-          token:getCookie('token'),
-          Id:id
+            url: bool ? this.getHost() + '/Approval/AgreeFollow' : this.getHost() + '/Approval/CancelFollow',
+            method: 'post',
+            data: qs.stringify({
+              UserId: getCookie('UserId'),
+              token: getCookie('token'),
+              Id: id
+            })
           })
-        })
-        .then(res=>{
-          console.log(res)
-          if (res.data.Status===1) {
-            this.getToast("操作成功",'warn')
-            this.getList(this.style)
-          }else if (res.data.Status<0) {
-            this.getToast("登录失效，请重新登录",'warn')
-            setTimeout(() => {
-              this.delCookie("UserId")
-              this.delCookie("token")
-              this.setAccessId('')
-              location.replace('/')
-            }, 2000);
-          }
-          else{
-            this.getToast(res.data.Message,'warn')
-          }
-        })
+          .then(res => {
+            console.log(res)
+            if (res.data.Status === 1) {
+              this.getToast("操作成功", 'warn')
+              this.getList(this.style)
+            } else if (res.data.Status < 0) {
+              this.getToast("登录失效，请重新登录", 'warn')
+              setTimeout(() => {
+                this.delCookie("UserId")
+                this.delCookie("token")
+                this.setAccessId('')
+                location.replace('/')
+              }, 2000);
+            } else {
+              this.getToast(res.data.Message, 'warn')
+            }
+          })
       },
-      applyDetail(id){
+      applyDetail(id) {
         this.$router.push({
-          path:'/appealDetails',
-          query:{
-            id:id
+          path: '/appealDetails',
+          query: {
+            id: id
           }
         })
       }
@@ -177,23 +192,20 @@
 </script>
 
 <style scoped>
-@import '../../common/mask.css';
-  .maskContain li{
+  @import '../../common/mask.css';
+  .maskContain li {
     display: flex;
     justify-content: center;
     align-items: center;
     border-bottom: 1px solid #f0f0f0;
     padding: 10px 0;
   }
-  .maskContain li:last-child{
+
+  .maskContain li:last-child {
     border-bottom: none;
   }
-  .name{
-    width: 0;
-    flex-grow: 1;
-  }
 
-.btn {
+  .btn {
     width: 58%;
     margin: 0 auto;
     display: flex;
@@ -209,9 +221,9 @@
     line-height: 29px;
     text-align: center;
     font-size: 14px;
-    
-    
-    
+
+
+
   }
 
   .btn button.active {
@@ -227,6 +239,7 @@
     background: none;
 
   }
+
   .appealList {
     width: 94%;
     margin: 0 auto;
@@ -239,8 +252,9 @@
     padding-top: 12px;
     margin-bottom: 9px;
     padding-bottom: 20px;
-    border-radius:4px;
+    border-radius: 4px;
   }
+
   .appealList ul li>span {
     display: inline-block;
     background: rgba(246, 234, 212, 1);
@@ -254,23 +268,26 @@
     text-align: center;
     margin-right: 140px;
   }
+
   .appealList ul li>i {
     font-style: normal;
     font-size: 12px;
-    color:rgba(76,76,76,1);
+    color: rgba(76, 76, 76, 1);
     line-height: 20px;
   }
 
   .appealList ul li .up {
     width: 92%;
     overflow: hidden;
-    margin: 0 auto; 
+    margin: 0 auto;
     border-bottom: 1px solid rgba(177, 177, 177, 1);
     padding-bottom: 8px;
     margin-bottom: 14px;
-    margin-left:20px;
+    margin-left: 20px;
     position: relative;
-    
+    display: flex;
+    line-height: 28px;
+
   }
 
   .appealList ul li .up .name {
@@ -278,8 +295,8 @@
     font-family: PingFangSC-Regular;
     color: rgba(77, 77, 77, 1);
     line-height: 28px;
-    border:none;
-    margin-right: 0;
+    border: none;
+    margin-right: 4px;
   }
 
   .appealList ul li .up .salesman {
@@ -288,7 +305,7 @@
     color: rgba(77, 77, 77, 1);
     line-height: 28px;
     margin-left: 4px;
-    border:none;
+    border: none;
     margin-right: 0;
     padding: 0;
   }
@@ -316,12 +333,12 @@
     font-size: 12px;
   }
 
-  .appealList ul li .up .upBtn button:nth-child(1) {
+  .appealList ul li .up .upBtn .no {
     background: rgba(228, 228, 228, 1);
     color: rgba(178, 178, 178, 1);
   }
 
-  .appealList ul li .up .upBtn button:nth-child(2) {
+  .appealList ul li .up .upBtn .yes {
     background: rgba(226, 199, 143, 1);
     color: rgba(255, 255, 255, 1);
   }
@@ -337,13 +354,32 @@
     font-style: normal;
     font-size: 12px;
     color: rgba(242, 111, 83, 1);
-    margin-right:80px;
   }
 
   .appealList ul li .down a {
+    float: right;
     font-size: 12px;
     color: rgba(128, 128, 128, 1);
   }
 
+  .empty {
+    padding-top: 100px;
+  }
+
+  .empty img {
+    display: block;
+    width: 168px;
+    height: 154px;
+    margin: 0 auto;
+
+  }
+
+  .empty p {
+    font-size: 16px;
+    color: #b2b2b2;
+    text-align: center;
+    padding-top: 24px;
+
+  }
 
 </style>
