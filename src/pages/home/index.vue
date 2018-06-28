@@ -4,7 +4,7 @@
     <!-- 头部信息 -->
     <div class="home_top">
         <div class="userImg">
-          <img src="./user.png" alt="">
+          <img src="./userP.png" alt="">
         </div>
         <div class="info">
           <p>{{Name}}</p>

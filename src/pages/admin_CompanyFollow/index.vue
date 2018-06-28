@@ -72,6 +72,7 @@
         checkBoxs:[],
         checkAllBox:false,
         idList:[],
+        selected:false,
         All:[{
           id:'',
           name:'全部岗位'
@@ -412,7 +413,7 @@
     color: rgba(242, 111, 83, 1);
     font-weight: normal;
     padding-top: 10px;
-    margin-right: 4px;
+    margin-right: 10px;
   }
 
   .companyList ul li a .listMid {
@@ -485,30 +486,32 @@
     width: 100%;
     overflow: hidden;
     margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
   }
 
   .companyList ul li a .listBottom i {
-    float: left;
     font-size: 10px;
     color: rgba(102, 102, 102, 1);
     font-style: normal;
-    margin-right: 16px;
-    padding-left: 23px;
+    padding-left: 20px;
   }
 
   .companyList ul li a .listBottom p {
-    float: left;
+    width: 30%;
     font-size: 12px;
     font-family: PingFangSC-Regular;
     color: rgba(102, 102, 102, 1);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .companyList ul li a .listBottom b {
-    float: right;
     font-size: 12px;
     font-family: PingFangSC-Regular;
     color: rgba(51, 51, 51, 1);
-    margin-right: 7px;
+    padding-right: 10px;
   }
 
   footer {

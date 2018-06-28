@@ -44,6 +44,7 @@
 
         </li>
       </ul>
+      <empty v-if='emptyFlag'></empty>
     </div>
   </div>
 </template>
@@ -55,6 +56,7 @@
   } from 'vuex'
   import axios from "axios"
   import qs from "qs";
+  import empty from '../../components/empty'
 
   export default {
     name: 'UserList',
@@ -65,6 +67,7 @@
         Keyword: '',
         list: [],
         isShow: false,
+        emptyFlag:false,
         // 全部岗位
         Allpost: [{
           id: '',
@@ -101,6 +104,9 @@
         TimeHasActive: 0,
         TimeSelect: "新建时间顺序",
       }
+    },
+    components:{
+      empty
     },
     computed: {
       ...mapGetters([
@@ -167,6 +173,11 @@
             console.log(res)
             if (res.data.Status === 1) {
               this.list = res.data.Data.list
+              if (this.list == '') {
+                this.emptyFlag = true
+              } else {
+                this.emptyFlag = false
+              }
             } else if (res.data.Status < 0) {
               this.delCookie("UserId")
               this.delCookie("token")

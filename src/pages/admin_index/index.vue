@@ -5,7 +5,7 @@
       <!-- 用户信息 -->
       <div class="userMsg">
         <div class="userPic">
-          <img src="./user.jpg" alt="">
+          <img src="./user.png" alt="">
         </div>
         <p>管理员</p>
         <a href="javascript:;" class="admin" @click="PsdMask(true)">
@@ -18,6 +18,7 @@
           <span>|</span> 快捷入口</h3>
         <ul>
           <li>
+
             <router-link to="/addUser" class="newUser">
               <span>新建用户</span>
             </router-link>
@@ -173,7 +174,6 @@ import {loginOut} from "../../utils/loginOut";
     float: left;
     width: 14%;
     height: 43px;
-    border: 1px solid #e4e4e4;
     border-radius: 50%;
     margin-right: 10px;
   }
