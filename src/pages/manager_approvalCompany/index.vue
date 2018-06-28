@@ -42,10 +42,7 @@
 
         </li>
       </ul>
-      <div class="null" v-if='nullFlag'>
-        <img src="./images/null.png" alt="">
-        <p>这里暂时还没有内容…</p>
-      </div>
+      <empty v-if='emptyFlag'></empty>
     </div> 
 
       <footer>
@@ -96,12 +93,14 @@
   import {
     mapGetters,
     mapMutations
-  } from 'vuex'
+  } from 'vuex';
+  import empty from '../../components/empty'
   export default {
     name: 'CompanyFollow',
     data() {
       return {
         list: [],
+        emptyFlag:false,
         checkBoxs: [],
         checkAllBox: false,
         idList: [],
@@ -187,6 +186,11 @@
             console.log(res)
             if (res.data.Status === 1) {
               this.similadList = res.data.Data
+              if (this.list == '') {
+                this.emptyFlag = true
+              } else {
+                this.emptyFlag = false
+              }
             } else if (res.data.Status < 0) {
               this.getToast("登录失效，请重新登录", 'warn')
               setTimeout(() => {

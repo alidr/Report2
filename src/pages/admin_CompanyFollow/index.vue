@@ -61,6 +61,7 @@
 
         </li>
       </ul>
+      <emoty v-if='emptyFlag'></emoty>
     </div>
 
     <footer v-if="selected">
@@ -123,6 +124,9 @@
         styleSelect: "全部类型",
         emptyFlag: false,
       }
+    },
+    components:{
+      empty
     },
     created(){
       localStorage.removeItem("CompanyID")
@@ -321,10 +325,16 @@
           console.log(res)
           if (res.data.Status===1) {
             this.list  = res.data.Data.list
+            if (this.list == '') {
+                this.emptyFlag = true
+              } else {
+                this.emptyFlag = false
+              }
             for (let i = 0; i < this.list.length; i++) {
               this.checkBoxs.push(false)
               
             } 
+            
             console.log(this.checkBoxs);
             if (this.list.length==0) {
                 this.emptyFlag = true
