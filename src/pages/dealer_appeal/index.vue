@@ -16,7 +16,7 @@
             <span class="CompanyName">{{item.CompanyName}} </span>
             <span class="UserName">业务员{{item.UserName}}</span>
             <div class="upBtn">
-              <button type="button" class="no" @click.stop="isAllow(false,item.ID)" v-if="btn">不通过</button>
+              <button type="button" class="no" @click.stop="noAllow(true,item.ID)" v-if="btn">不通过</button>
               <button type="button" class="yes" @click.stop="isAllow(true,item.ID)"
               v-if="btn">审批通过</button>
             </div>
@@ -29,6 +29,19 @@
           </div>
         </li>
       </ul>
+    </div>
+
+    <div id="mask" v-if="isShowMask">
+        <div class="maskContain">
+          <p class="title">审批不通过原因</p>
+          <div class="textarea">
+            <textarea name="" id="" cols="30" rows="6" v-model="giveUpReason"></textarea>
+          </div>
+          <div class="btn">
+            <span class="cancel" @click="noAllow(false)">取消</span>
+            <span class="confirm" @click.stop="isAllow(false)">确认</span>
+          </div>
+        </div>
     </div>
   </div>
 </template>
@@ -43,7 +56,10 @@
       return {
         list:[],
         style:'',
-        btn:true
+        btn:true,
+        isShowMask:false,
+        giveUpReason:'',
+        Id:''
       }
     },
      computed: {
@@ -90,34 +106,68 @@
         this.style = style
         this.getList(style)
       },
-      isAllow(bool,id){
+      isAllow(bool,id) {
+      if (bool) {
         axios({
-        url:bool?this.getHost()+'/Approval/AgreeSate':this.getHost()+'/Approval/CancelSate', 
-        method:'post',
-        data:qs.stringify({
-          UserId:getCookie('UserId'),
-          token:getCookie('token'),
-          Id:id
+          url: this.getHost() + '/Approval/AgreeSate',
+          method: 'post',
+          data: qs.stringify({
+            UserId: getCookie('UserId'),
+            token: getCookie('token'),
+            Id: id,
           })
         })
-        .then(res=>{
+        .then(res => {
           console.log(res)
-          if (res.data.Status===1) {
-            this.getToast("操作成功",'warn')
-            this.getList("")
-          }else if (res.data.Status<0) {
-            this.getToast("登录失效，请重新登录",'warn')
+          if (res.data.Status === 1) {
+            this.getToast("操作成功", 'warn')
+            this.getList(this.style)
+          } else if (res.data.Status < 0) {
+            this.getToast("登录失效，请重新登录", 'warn')
             setTimeout(() => {
               this.delCookie("UserId")
               this.delCookie("token")
               this.setAccessId('')
               location.replace('/')
             }, 2000);
-          }
-          else{
-            this.getToast(res.data.Message,'warn')
+          } else {
+            this.getToast(res.data.Message, 'warn')
           }
         })
+      }else{
+        if (!this.giveUpReason) {
+          this.getToast("请输入不通过的原因",'warn')
+          return
+        }
+        axios({
+          url:this.getHost() + '/Approval/CancelSate',
+          method: 'post',
+          data: qs.stringify({
+            UserId: getCookie('UserId'),
+            token: getCookie('token'),
+            Id: this.Id,
+            Reason:this.giveUpReason
+          })
+        })
+        .then(res => {
+          console.log(res)
+          if (res.data.Status === 1) {
+            this.getToast("操作成功", 'warn')
+            this.getList(this.style)
+            this.noAllow(false)
+          } else if (res.data.Status < 0) {
+            this.getToast("登录失效，请重新登录", 'warn')
+            setTimeout(() => {
+              this.delCookie("UserId")
+              this.delCookie("token")
+              this.setAccessId('')
+              location.replace('/')
+            }, 2000);
+          } else {
+            this.getToast(res.data.Message, 'warn')
+          }
+        })
+      } 
       },
       applyDetail(id){
         console.log(id);
@@ -128,7 +178,18 @@
             id:id
           }
         })
-      }
+      },
+      noAllow(bool,id){
+          
+          this.isShowMask = bool
+          console.log(bool);
+          
+          if (bool) {
+            this.Id = id
+          }else{
+            this.giveUpReason = ''
+          }
+      },
 
     }
 
@@ -137,6 +198,7 @@
 </script>
 
 <style scoped>
+@import '../../common/mask.css';
   .appeal {
     width: 100%;
     box-sizing: border-box;

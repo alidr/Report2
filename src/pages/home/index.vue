@@ -47,16 +47,16 @@
       <div class="focus" v-if="List.length">
         重点关注({{List.length}})
       </div>
-      <div :class="{height:maxHeight}">
+      <div>
         <focusList :list = "List" :Action = "action" :IsEmphasis=true></focusList>
       </div>
-      <div class="lookMore" v-if="List.length >2">
-        <a href="javascript:;" @click="lookMore">{{words}}</a>
+      <div class="lookMore">
+        <a href="javascript:;" @click="lookMore">查看全部</a>
       </div>
     </div>
 
     <!-- 最新申诉 -->
-    <appealList v-if="appeal" :list="applyList"></appealList>
+    <appealList v-if="appeal" :list="applyList" :AccessId="AccessId" @refresh="getNewApply" @refreshNaav="getNavInfo"></appealList>
     <!-- 账号管理遮罩 -->
     <div id="mask" v-if="hasPsdMask">
       <div class="maskContain">
@@ -157,8 +157,9 @@ export default {
       location.replace('/')
     },
     lookMore(){
-      this.maxHeight?this.words = "收起":this.words = "查看全部"
-      this.maxHeight = !this.maxHeight
+      this.$router.push({
+        path:'/companyList'
+      })
     },
     //获取导航列表
     getNavInfo(){

@@ -88,8 +88,8 @@ export default {
   },
   created(){
     
-     this.CategoryName = sessionStorage.getItem("Address")
-     this.Address = sessionStorage.getItem("CategoryName")
+     this.CategoryName = sessionStorage.getItem("CategoryName")
+     this.Address = sessionStorage.getItem("Address")
      this.applyType = this.$route.query.applyType;
     switch (this.applyType) {
        case 1 :
