@@ -13,6 +13,8 @@ import CompeteProductAnalysis from "@/pages/competeProductAnalysis";
 import MessageCenter from "@/pages/messageCenter";
 import AppealDetails from "@/pages/manager_appealDetails"
 import Announce from "@/pages/Announce"
+import ApprovalRecord from "@/pages/busniess_ApprovalRecord";
+
 
 Vue.use(Router)
 
@@ -98,12 +100,20 @@ let router = new Router({
       },
     },
     {
+      path: '/approvalRecord',
+      component: ApprovalRecord,
+      meta: {
+        title: '审批记录'
+      },
+    },
+    {
       path: '/404',
       component: NotFound,
       meta: {
           title: '页面未找到'
       }
-    }
+    },
+
   ]
 })
 router.beforeEach((to, from, next) => {

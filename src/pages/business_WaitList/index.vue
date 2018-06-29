@@ -250,7 +250,7 @@ export default {
 .waitList{
   background-color: #fff;
   border-radius: 6px;
-  padding: 25px 5px 20px 20px;
+  padding: 25px 20px 20px 20px;
   position: relative;
   margin-bottom: 10px;
 }

@@ -20,7 +20,7 @@
           <p class="person">
             审批人：{{item.UserName}}
           </p>
-          <p><a href="javascript:;" to="/companyDetail" @click="companyDetail(item.SourceID)">点击进入公司详情页>></a></p>
+          <p v-if="item.TagID!=2"><a href="javascript:;" to="/companyDetail" @click="companyDetail(item.SourceID)">点击进入公司详情页>></a></p>
         </div>
       </div>
       <empty v-if='emptyFlag'></empty>

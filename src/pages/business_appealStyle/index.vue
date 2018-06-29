@@ -40,6 +40,12 @@ export default {
         .then(res=>{
           console.log(res)
           if (res.data.Status===1) {
+            console.log(res.data.Data.UserID == getCookie('UserId'));
+            
+            if (res.data.Data.UserID == getCookie('UserId')) {
+              this.getToast("该公司已经在您的名下，不需要申诉",'warn')
+              return
+            }
             if (res.data.Data.Code==2) {
               sessionStorage.setItem("ComInfo",JSON.stringify(res.data.Data))
               this.$router.push({
@@ -48,14 +54,16 @@ export default {
                   applyType:1
                 }
               })
-            }else if(res.data.Data.Code==3){
-              this.getToast("该公司已签约，不可申请",'warn')
+            }
+             if(res.data.Data.Code==3){
+              this.getToast("该公司已签约，不可申诉",'warn')
               setTimeout(() => {
                 this.$router.push({
                 path: '/home'
               })
               }, 2000);
-            }else{
+            }
+            if(res.data.Data.Code==0||res.data.Data.Code==-1||res.data.Data.Code==1){
               this.getToast("该公司可直接申请，不需要跟进权",'warn')
               setTimeout(() => {
                 this.$router.push({
@@ -76,7 +84,19 @@ export default {
             this.getToast(res.data.Message,'warn')
           }
         })
-       } else {
+       } else if (num ==2) {
+         if (sessionStorage.getItem('UserID') == getCookie('UserId')) {
+           this.$router.push({
+            path: '/appealMaterial',
+            query: {
+              applyType:num
+            }
+          })
+         }else{
+           this.getToast("该公司不再您的名下,不能延长保护期",'warn')
+         }
+       }
+       else {
           this.$router.push({
           path: '/appealMaterial',
           query: {

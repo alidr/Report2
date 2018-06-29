@@ -107,6 +107,7 @@ export default {
           console.log(res)
           if (res.data.Status === 1) {
             this.getToast("操作成功", 'warn')
+            this.noAllow(false)
             this.$emit('refresh')
             this.$emit('refreshNaav')
           } else if (res.data.Status < 0) {

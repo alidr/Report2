@@ -2,11 +2,16 @@
   <!-- 用户列表管理 -->
   <div class="UserList">
     <div class="top companyTop">
-      <div class="search">
+      <div class="serchTop">
+        <div class="search">
         <input type="text" placeholder="请搜索姓名/组织名称/手机号" v-model="Keyword">
         <span @click="getList()">搜索</span>
+        </div>
+
+        <button type="button"  @click="addUser" v-if="isShow">添加</button>
       </div>
-      <button type="button" v-if="isShow" @click="addUser">添加</button>
+      <!-- v-if="isShow" -->
+      
       <div class="classList">
         <div class="filter">
           <span class="filterResult">{{statusSelect}}</span>
@@ -36,9 +41,9 @@
             <span class="JobName">{{item.JobName}}</span>
 
 
-            <span class="Organization">组织： {{item.Organization}}</span>
+            <span class="Organization" v-if="item.Organization">组织： {{item.Organization}}</span>
 
-            <img src="./delete.png" alt="" @click.stop="deleteUser(item.ID)">
+            <img src="./delete.png" alt="" @click.stop="deleteUser(item.ID)" v-if="dealer">
           </div>
 
           <div class="listBottom">
@@ -96,6 +101,7 @@
         styleHasActive: 0,
         styleSelect: "时间排序",
         emptyFlag: false,
+        dealer:false
       }
     },
     components:{
@@ -114,6 +120,7 @@
       } else if (this.AccessId == 4) {
         //经销商
         this.getBusiness()
+        this.dealer = false
       }
       this.getStyleList()
 
@@ -360,13 +367,24 @@
     padding-bottom: 16px;
     margin-bottom: 12px;
   }
-
+  .serchTop{
+    display: flex;
+    align-items: center;
+  }
   .top .search {
-    float: left;
-    width: 74%;
+    /* float: left; */
+    /* width: 74%; */
+    width: 0;
+    flex-grow: 1;
     height: 40px;
-    margin-left: 15px;
+    /* margin-left: 15px; */
     position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 15px;
+    border: 1px solid rgba(208, 208, 208, 1);
+    border-radius: 4px;
 
   }
 
@@ -376,7 +394,7 @@
     border: none;
     background: none;
     padding-left: 14px;
-    border: 1px solid rgba(208, 208, 208, 1);
+    border: none;
     border-radius: 4px;
 
   }
@@ -387,9 +405,9 @@
     height: 40px;
     background: rgba(182, 160, 121, 1);
     border-radius: 0px 4px 4px 0px;
-    position: absolute;
+    /* position: absolute;
     right: 0;
-    top: 0;
+    top: 0; */
     font-size: 14px;
     font-family: PingFangSC-Regular;
     color: rgba(255, 255, 255, 1);

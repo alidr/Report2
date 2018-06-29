@@ -7,21 +7,21 @@
     </div>
     <div class="appealList">
       <ul>
-        <li v-for="(item,index) in list" :key="index" @click="applyDetail(item.ID)">
+        <li v-for="(item,index) in list" :key="index" @click="applyDetail(item.CompanyID)">
           <span>{{item.TypeName}}</span>
           <i>提交日期 {{item.Date}}</i>
           <div class="up">
             <p class="name">{{item.CompanyName}} </p>
             <b class="salesman">业务员{{item.UserName}}</b>
             <div class="upBtn">
-              <button type="button" class="no" @click.stop="isAllow(false,item.ID)">不通过</button>
+              <button type="button" class="no" @click.stop="noAllow(true,item.ID)">不通过</button>
               <button type="button" class="yes" @click.stop="isAllow(true,item.ID)">审批通过</button>
             </div>
           </div>
           <div class="down">
             <i @click.stop="showListMask(true,item.CompanyID)">查看相似公司</i>
             <a href="javascript:;">
-              <span>查看申诉详情>></span>
+              <span>查看公司详情>></span>
             </a>
           </div>
         </li>
@@ -47,6 +47,20 @@
         </ul>
       </div>
     </div>
+
+      <!-- 遮罩 -->
+    <div id="mask" v-if="isShowMask">
+      <div class="maskContain">
+        <p class="title">审批不通过原因</p>
+        <div class="textarea">
+          <textarea name="" id="" cols="30" rows="6" v-model="giveUpReason"></textarea>
+        </div>
+        <div class="btn">
+          <span class="cancel" @click="noAllow(false)">取消</span>
+          <span class="confirm" @click.stop="isAllow(false,ID)">确认</span>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -63,7 +77,10 @@
         similadList: '',
         listmask: false,
         emptyFlag: false,
-        listFlag: true
+        listFlag: true,
+         isShowMask:false,
+        giveUpReason:'',
+        ID:''
       }
     },
     components:{
@@ -75,6 +92,12 @@
 
     },
     methods: {
+      noAllow(bool,id){
+        this.isShowMask = bool
+        if (bool) {
+          this.ID = id
+        }
+      },
       showListMask(bool, id) {
         this.listmask = bool
         if (bool) {
@@ -149,13 +172,19 @@
         this.getList(style)
       },
       isAllow(bool, id) {
-        axios({
-            url: bool ? this.getHost() + '/Approval/AgreeFollow' : this.getHost() + '/Approval/CancelFollow',
+        if (!bool) {
+          if (!this.giveUpReason) {
+            this.getToast("请输入不通过得原因",'warn')
+            return
+          }
+           axios({
+            url: this.getHost() + '/Approval/CancelFollow',
             method: 'post',
             data: qs.stringify({
               UserId: getCookie('UserId'),
               token: getCookie('token'),
-              Id: id
+              Id: id,
+              Reason:this.giveUpReason
             })
           })
           .then(res => {
@@ -163,6 +192,7 @@
             if (res.data.Status === 1) {
               this.getToast("操作成功", 'warn')
               this.getList(this.style)
+              this.noAllow(false)
             } else if (res.data.Status < 0) {
               this.getToast("登录失效，请重新登录", 'warn')
               setTimeout(() => {
@@ -175,10 +205,40 @@
               this.getToast(res.data.Message, 'warn')
             }
           })
+        }else{
+           axios({
+            url: this.getHost() + '/Approval/AgreeFollow',
+            method: 'post',
+            data: qs.stringify({
+              UserId: getCookie('UserId'),
+              token: getCookie('token'),
+              Id: id
+            })
+          })
+          .then(res => {
+            console.log(res)
+            if (res.data.Status === 1) {
+              this.getToast("操作成功", 'warn')
+              this.getList(this.style)
+              this.noAllow(false)
+            } else if (res.data.Status < 0) {
+              this.getToast("登录失效，请重新登录", 'warn')
+              setTimeout(() => {
+                this.delCookie("UserId")
+                this.delCookie("token")
+                this.setAccessId('')
+                location.replace('/')
+              }, 2000);
+            } else {
+              this.getToast(res.data.Message, 'warn')
+            }
+          })
+        }
+       
       },
       applyDetail(id) {
         this.$router.push({
-          path: '/appealDetails',
+          path: '/companyDetail',
           query: {
             id: id
           }
@@ -193,6 +253,10 @@
 
 <style scoped>
   @import '../../common/mask.css';
+  .maskContain li .name{
+    flex-grow: 1;
+    width: 0;
+  }
   .maskContain li {
     display: flex;
     justify-content: center;
@@ -291,6 +355,7 @@
   }
 
   .appealList ul li .up .name {
+    
     font-size: 16px;
     font-family: PingFangSC-Regular;
     color: rgba(77, 77, 77, 1);

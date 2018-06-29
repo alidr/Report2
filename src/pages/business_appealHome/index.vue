@@ -35,8 +35,9 @@
             <span v-if="item.Status==-1">{{item.ResultDate}}</span>
             <span class="appealStatus" v-if="item.Status == 0">待审批</span>
             <span class="appealStatus" v-if="item.Status == 1">审批中</span>
+            <span id="lookDetail" @click="applyDetail(item.ID)">查看申诉详情>></span>
           </p>
-          <p v-if="item.Status==-1">原因:&emsp;{{item.Result}}</p>
+          <p v-if="item.Status==-1" class="Reson">原因:&emsp;{{item.Result}}</p>
         </div>
       </div>
       <!-- <div class="lookMore">
@@ -108,6 +109,16 @@ export default {
   },
  
   methods: {
+    applyDetail(id){
+        console.log(id);
+        
+        this.$router.push({
+          path:'/appealDetails',
+          query:{
+            id:id
+          }
+        })
+      },
     nextStep () {
       if (!this.name) {
         this.getToast("请输入公司名称",'warn')
@@ -136,6 +147,7 @@ export default {
           sessionStorage.setItem("ID",this.data.ID)
           sessionStorage.setItem("Address",this.data.Address)
           sessionStorage.setItem("CategoryName",this.data.CategoryName)
+          sessionStorage.setItem("UserID",this.data.UserID)
         }else if (res.data.Status<0) {
           this.delCookie("UserId")
           this.delCookie("token")
@@ -216,6 +228,14 @@ export default {
 <style scoped>
 @import '../../common/input.css';
 @import '../../common/focusList.css';
+/*  */
+#lookDetail{
+  position: absolute;
+  right: 15px;
+}
+.Reson{
+  margin-top: 5px;
+}
 .contentList{
   padding-left: 20px;
 }

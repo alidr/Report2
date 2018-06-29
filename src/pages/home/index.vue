@@ -52,8 +52,8 @@
       <div>
         <focusList :list = "List" :Action = "action" :IsEmphasis=true></focusList>
       </div>
-      <div class="lookMore">
-        <a href="javascript:;" @click="lookMore">查看全部</a>
+      <div class="lookMore" v-if="List.length>=3">
+        <a href="javascript:;" @click="lookMore" >查看全部</a>
       </div>
     </div>
 
@@ -421,7 +421,7 @@ export default {
   /* height: 80px; */
   display: flex;
   align-items: center;
-  padding: 5px 10px;
+  padding: 5px;
 }
 .msg_bottom a{
   flex: 1;

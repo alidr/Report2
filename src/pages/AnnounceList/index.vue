@@ -14,14 +14,14 @@
       > -->
         <p class="announceInfo">
           <span >{{item.Type}}</span>
-          <span>发布人：{{item.CreateUser}}</span>
+          <span v-if="MyAnnounce==1">发布人：{{item.CreateUser}}</span>
           <span>{{item.CreateDate}}</span>
         </p>
         <div class="announceContent" :class="{active:true}">
           {{item.Content}}
         </div>
         <!-- <span class="line" :class="{active:isExtend}"></span> -->
-         <span class="line" :class="{active:true}"></span>
+         <!-- <span class="line" :class="{active:true}"></span> -->
       </div>
 
         <!-- 我发布的 -->
@@ -58,11 +58,19 @@ export default {
       announ:false
     }
   },
+   computed: {
+    ...mapGetters([
+      'AccessId'
+    ])
+  },
   created(){
     this.getAllList()
+    // console.log(this.AccessId);
     
     if (this.AccessId==1||this.AccessId==2||this.AccessId==-1) {
       this.announ = true
+      // console.log(this.announ);
+      
       this.getMyList()
     }
   },
@@ -235,11 +243,12 @@ export default {
     -webkit-box-orient: vertical;
   color: #4D4D4D;
   line-height: 20px;
-  margin-bottom: 10px;
+  /* margin-bottom: 10px; */
 }
 .MyContent{
   height: auto !important;
   position: relative;
+  padding-top: 10px;
 }
 
 .announceContent.active{
@@ -261,7 +270,11 @@ export default {
 }
 #button{
   width: calc(100% - 80px);
-  margin: 25px auto;
+  position: fixed;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 99;
 }
 
 </style>

@@ -53,8 +53,9 @@
       ])
     },
     created(){
-
       
+      this.detail =  sessionStorage.getItem("detail")||""
+      sessionStorage.removeItem("detail")
     },
     methods:{
       commit(){
@@ -120,6 +121,8 @@
         this.setDealerSelectedMember(list)
       },
       addMember(){
+        sessionStorage.removeItem("detail")
+        sessionStorage.setItem("detail",this.detail)
         this.$router.push({
           path:"/selectMember"
         })

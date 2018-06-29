@@ -57,7 +57,7 @@ export default {
     const date = new Date()
     return{
       years:date.getFullYear(),
-      month:date.getMonth()+1,
+      month:date.getMonth(),
       months:[1,2,3,4,5,6,7,8,9,10,11,12],
       ID:'',
       complete:{
@@ -74,8 +74,9 @@ export default {
   },
   created(){
     this.ID = this.$route.query.id
+    this.stylePlay = this.$route.query.stylePlay
     this.getComplete(this.ID)
-    console.log(this.years)
+    console.log(this.month)
     this.showModel()
   },
   computed: {
@@ -96,7 +97,7 @@ export default {
     },
       //判断角色，显示对应的内容
       showModel() {
-        if (this.AccessId == 5) {
+        if ((this.AccessId == 5&&this.stylePlay=="")||this.AccessId == -1) {
           this.show = true
 
         } else {

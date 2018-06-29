@@ -15,7 +15,7 @@ const GiveUpCompany = () =>import ('@/pages/busniess_giveUpCompany')
 const EditUser = () =>import ('@/pages/admin_editUser')
 const EditCompany = () =>import ('@/pages/editCompany')
 const AnnounceStyle = () =>import ('@/pages/admin_announceStyle')
-
+const EditCompete = () => import('@/pages/busniess_editCompete')
 export default [{
   path: '/demo',
   component: Demo,
@@ -113,6 +113,13 @@ export default [{
   component: AnnounceStyle,
   meta: {
     title: '公告管理'
+  },
+},
+, {
+  path: '/editCompete',
+  component: EditCompete,
+  meta: {
+    title: '编辑竞品信息'
   },
 },
 ]

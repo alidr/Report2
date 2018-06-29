@@ -131,7 +131,7 @@
         statusHasActive: 0,
         statusSelect: "全部状态",
         personHasActive: 0,
-        personSelect: "全部组员",
+        personSelect: "全部业务员",
         styleHasActive: 0,
         styleSelect: "全部类型",
 
@@ -286,7 +286,7 @@
             this.Person = res.data.Data.list
             this.Person.unshift({
                 ID: '',
-                Name: '全部组员'
+                Name: '全部业务员'
             })
           }else if (res.data.Status<0) {
             this.getToast("登录失效，请重新登录",'warn')
@@ -404,14 +404,22 @@
   height: 100vh;
   overflow: hidden;
 } */
-  
+.contentListTop{
+  margin-left: 0px;
+}
+.contentListBottom{
+  margin-left: 0px;
+}
+.firstLine span:nth-child(1){
+  margin-left: 30px;
+}
 .twoLine .round{
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 11px;
+  width: 20px;
+  height: 20px;
+  border-radius: 10px;
   border: 1px solid #ccc;
   margin-right: 15px;
 }
@@ -423,7 +431,7 @@
   width: 16px;
   height: 16px;
   border-radius: 8px;
-  background-color: #fff;
+  background-color: #ccc;
 }
 .twoLine .round b.active{
   background-color: #E2C78F;
@@ -626,7 +634,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding-left: 60px;
+    padding-left: 30px;
     padding-right: 15px;
     box-sizing: border-box;
     position: fixed;
@@ -653,9 +661,9 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 22px;
-    height: 22px;
-    border-radius: 11px;
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
     border: 1px solid #ccc;
     margin-right: 15px;
   }
@@ -667,6 +675,7 @@
     width: 16px;
     height: 16px;
     border-radius: 8px;
+    background-color: #ccc;
   }
   .bottom .round b.active{
     background-color: #E2C78F;

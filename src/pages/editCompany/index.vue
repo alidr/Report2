@@ -39,7 +39,7 @@
        </div>
        <div class="input">
          <span>联系人手机号码</span>
-         <input type="text" placeholder="请输入联系人手机号码" v-model="data.Mobile">
+         <input type="text" placeholder="请输入联系人手机号码" v-model="data.Mobile" maxlength="11">
        </div>
        <div class="input">
          <span>联系人地址</span>
@@ -108,7 +108,8 @@ export default {
       },
       area:'北京市,北京市,东城区',
       areaId:[110000, 110100, 110101],
-      image: ""
+      image: "",
+      imageTem:''
     }
   },
   created(){
@@ -154,7 +155,8 @@ export default {
         if (res.data.Status===1) {
           this.data=res.data.Data
           if (this.data.HeadImageUrl) {
-            this.image =this.getImgHost() + this.data.HeadImageUrl
+            this.imageTem =this.getImgHost() + this.data.HeadImageUrl
+            this.image = this.getImgHost() + this.data.HeadImageUrl
           }
           
         }else if (res.data.Status<0) {
@@ -199,6 +201,9 @@ export default {
       }else if (!this.data.Address) {
          this.getToast("请输入公司详细地址",'warn')
       }else{
+        if (this.image == this.imageTem) {
+          this.image = ""
+        }
         axios({
           url:this.getHost()+'/Company/CompanySave', 
           method:'post',
@@ -292,7 +297,7 @@ export default {
   margin-right: 20px;
 }
 .Material{
-  padding: 15px;
+  padding: 15px 15px 15px 25px;
   box-sizing: border-box;
   height: 45vh;
   /* margin-bottom: 30px; */

@@ -11,6 +11,11 @@ const EditUser = () =>
 const WaitGroup = () =>import ('@/pages/dealer_waitGroup')
 const GroupMember = () =>import ('@/pages/manager_GroupMember')
 
+const UploadContract = () =>
+  import ('@/pages/business_uploadContract')
+const ApplyAuthorized = () =>
+  import ('@/pages/business_applyAuthorized')
+
 export default [
 {
   path: '/approvalCompany',
@@ -36,7 +41,7 @@ export default [
   path: '/appealManger',
   component: AppealManger,
   meta: {
-    title: '跟进申诉'
+    title: '跟进审批'
   },
 }, {
   path: '/UserList',
@@ -87,5 +92,21 @@ export default [
       title: '编辑用户'
     },
   },
+
+   {
+     path: '/uploadContract',
+     component: UploadContract,
+     meta: {
+       title: '上传'
+     },
+   },
+
+   {
+     path: '/applyAuthorized',
+     component: ApplyAuthorized,
+     meta: {
+       title: '申请授权'
+     },
+   },
 ]
 

@@ -16,7 +16,7 @@
           <span @click="showMask(true)" v-if="edit">
             <img src="./Settings.png" alt="">
           </span>
-          <span>
+          <span v-if="stylePlay!=1">
             <img src="./common.png" alt="" v-if="!data.IsEmphasis" @click="Emphasis(false)">
             <img src="./collect.png" alt="" v-if="data.IsEmphasis"
             @click="Emphasis(true)">
@@ -129,9 +129,9 @@
           <p class="Date">
             <span>{{item.CreateDate}}</span>
             <span class="personText">跟进人 {{item.UserName}}</span>
-            <i @click="deleteTimeLine(item.ID)"><img src="./delete.png" alt=""></i>
+            <i @click="deleteTimeLine(item.ID)" v-if="show"><img src="./delete.png" alt=""></i>
           </p>
-          <p class="detail">{{item.Content}}</p>
+          <div class="detail">{{item.Content}}</div>
           <div class="timeLineImg">
             <img :src="getImgHost()+item.Image1" alt="" v-if="item.Image1!=''" @click="getImg(item.Image1)">
             <img :src="getImgHost()+item.Image2" alt="" v-if="item.Image2!=''"
@@ -151,7 +151,7 @@
     <div class="competition">
       <div class="followDays">
         <p>竞品分析 <span class="month">{{complete.Month}}月</span></p>
-        <a href="javascript:;" @click="allMonth" v-if="show">所有月份>></a>
+        <a href="javascript:;" @click="allMonth">所有月份>></a>
       </div>
       <div class="competitionInfo" v-if="infoNull">
         <p>
@@ -174,15 +174,18 @@
       <div class="infoNull" v-if="!infoNull">
           信息为空
       </div>
-      <a href="javascrit:;" id="button" v-if="show" @click="editCompete">编辑当前月份数据</a>
+      <a href="javascrit:;" id="button" v-if="edit" @click="editCompete">编辑当前月份数据</a>
     </div>
     <!-- 直营店信息 -->
     <div class="shopInfo">
       <div class="followDays">
         <p>直营门店信息</p>
-        <span class="upload" v-if="busniessShopShow" @click="look">查看直营分店证明</span>
-        <span class="upload" v-if="!busniessShopShow" @click="uploadContract(3)">上传直营分店证明</span>
-        <!-- <span class="reUpload" v-if="busniessShopShow">重新上传</span> -->
+        
+        <div v-if="noHasImg">
+          <span class="upload" @click="look" v-if="busniessShopShow">查看直营分店证明</span>
+          <span class="upload"  @click="uploadContract(3)" v-if="!busniessShopShow">上传直营分店证明</span>
+          <span class="reUpload" @click="look" v-if="!busniessShopShow">查看证明</span>
+        </div>
       </div>
       <div class="ShopMsg" v-if="afterUpload">
         <p>合同签约成功后</p>
@@ -192,7 +195,7 @@
         <p v-for="(item,index) in shopList" :key="index">{{item.Name}}<span>{{item.Address}}</span><i @click="deleteShopMask(true,item.ID)"><img src="./delete.png" alt="" v-if="show"></i></p>
       </div>
       <div class="followDays addShop">
-        <span class="upload" v-if="ShopListShow" @click="addShop(true)">添加直营门店</span>
+        <span class="upload" v-if="show" @click="addShop(true)">添加直营门店</span>
       </div>
     </div>
   </div>
@@ -267,6 +270,7 @@ import {mapGetters, mapMutations } from 'vuex'
 export default {
   data(){
     return{
+      noHasImg:false,
       shopID:'',
       deleteShopWarn:false,
       shopName:'',
@@ -424,8 +428,8 @@ export default {
       this.addShopMask = bool
     },
     look(){
-      if (!this.data.ProveImage) {
-        this.getToast("合同上传后才能查看",'warn')
+      if (this.data.Status!==3) {
+        this.getToast("该公司还未签约",'warn')
       }else{
         this.getImg(this.data.ProveImage)
       }
@@ -496,20 +500,25 @@ export default {
           // 是否为已签约
           if (this.data.Status==3) {
             //已签约是否有证明
-            if (this.data.ProveImage) {
+            if (this.data.Status==3) {
               //查看直营店按钮
-              this.busniessShopShow = true
-              this.ShopListShow=true
-              this.afterUpload = false
-              this.getShop(this.ID)
-            }else{
-              console.log(this.show);
-              
+              this.noHasImg = true
               if (this.show) {
                 this.busniessShopShow = false
               }else{
               this.busniessShopShow = true
               }
+              this.ShopListShow=true
+              this.afterUpload = false
+              this.getShop(this.ID)
+            }else{
+              // console.log(this.show);
+              this.noHasImg = false
+              // if (this.show) {
+              //   this.busniessShopShow = false
+              // }else{
+              // this.busniessShopShow = true
+              // }
             }
           }else{
             //上传提醒
@@ -532,6 +541,8 @@ export default {
           //业务员
           if ((this.AccessId ==5&&this.stylePlay=="") ||this.AccessId==-1){
             this.edit = true
+            console.log( this.edit);
+            
           }
           if (this.AccessId ==5&&this.stylePlay=="") {
              if (this.data.IsShowLook) {
@@ -567,9 +578,20 @@ export default {
           if (this.AccessId ==3) {
              if (this.data.AuthBookImage) {
               this.applyshu = false
-            }else{
-              this.applyshu = true
               this.btn2Active = true
+            }else{
+              
+              console.log("this.data.Status",this.data.Status);
+              
+              if (this.data.Status==2||this.data.Status==3) {
+                this.applyshu = true
+                this.btn2Active = true
+                console.log(this.btn2Active);
+              }else{
+                 this.applyshu = true
+                this.btn2Active = false
+              }
+             
             }
           }else{
             if (this.data.AuthBookImage) {
@@ -691,16 +713,29 @@ export default {
       })
     },
     //
-    editCompete(){
+    // editCompete(){
+    //   this.$router.push({
+    //     path:'/editCompete',
+    //     query:{
+    //       id:this.ID,
+    //       month:this.complete.Month
+    //       }
+    //   })
+    // },
+     editCompete(){
       this.$router.push({
         path:'/editCompete',
         query:{
           id:this.ID,
-          month:this.complete.Month
+          month:this.complete.Month,
+          year:""
           }
       })
     },
     getImg(src){
+      console.log(src);
+
+      
       this.src = src
       console.log(this.src);
       this.isImgMask = true
@@ -753,7 +788,8 @@ export default {
       this.$router.push({
         path:'/competeProduct',
         query:{
-          id:this.ID
+          id:this.ID,
+          stylePlay:this.stylePlay||""
         }
       })
     },
@@ -1196,11 +1232,12 @@ export default {
   height: 27px;
 }
 .followTimeDetail .detail{
-  height: 20px;
+  /* height: 20px;
   overflow: hidden;
   white-space: nowrap;
-  text-overflow: ellipsis;
+  text-overflow: ellipsis; */
   color: #999;
+  margin-bottom: 10px;
 }
 /* .timeLineImg{
   display: flex;

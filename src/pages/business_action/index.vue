@@ -4,7 +4,7 @@
     <div class="actionDetail">
       <p class="title">跟单详情</p>
       <div>
-        <textarea name="" id="" cols="30" rows="6" placeholder="请填跟进内容(必填)" v-model="detail"></textarea>
+        <textarea name="" id="" cols="30" rows="6" placeholder="请填跟进内容(必填, 请输入100字以内)" v-model="detail" maxlength="100" onchange="this.value=this.value.substring(0, 100)" onkeydown="this.value=this.value.substring(0, 100)" onkeyup="this.value=this.value.substring(0, 100)" ></textarea>
       </div>
     </div>
     <div class="unloadImg">

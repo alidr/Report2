@@ -15,7 +15,7 @@
           <span class="filterResult">{{styleSelect}}</span>
           <span class="iconfont icon-xiaosanjiao icon" @click="maskStatus(1)"></span>
         </div>
-         <div class="filter">
+         <div class="filter" v-if="!selected">
           <span class="filterResult">{{personSelect}}</span>
           <span class="iconfont icon-xiaosanjiao icon" @click="maskStatus(2)"></span>
         </div>
@@ -61,7 +61,7 @@
 
         </li>
       </ul>
-      <emoty v-if='emptyFlag'></emoty>
+      <empty v-if='emptyFlag'></empty>
     </div>
 
     <footer v-if="selected">
@@ -71,7 +71,7 @@
       <button type="button" @click="distribution">分配业务员</button>
     </footer>
 
-     <empty v-if='emptyFlag'></empty>
+     <!-- <empty v-if='emptyFlag'></empty> -->
   </div>
 </template>
 
@@ -135,9 +135,10 @@
       }else if (this.AccessId==5){
         this.getMyMember()
         this.selected = false
+        this.getPersonList()
       } 
       this.getStyleList()
-      this.getPersonList()
+      
     },
      computed: {
       ...mapGetters([

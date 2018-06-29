@@ -64,8 +64,9 @@
           </span>
         </div>
     </div>
-    </div>
     <a href="javascript:;" id="button" @click="commitInfo">完成添加</a>
+    </div>
+    
   </div>
 </template>
 
@@ -88,6 +89,7 @@ export default {
       other:'',
       areaId:'',
       image: '',
+      id:''
     }
   },
    computed: {
@@ -97,6 +99,9 @@ export default {
   },
   mounted () {
     this.initPicker()
+  },
+  created(){
+    this.id = this.$route.query.id
   },
   methods:{
     onFileChange:function (e) {
@@ -152,7 +157,7 @@ export default {
           data:qs.stringify({
             UserId:getCookie('UserId'),
             token:getCookie('token'),
-            ID:0,
+            ID:this.id||0,
             CategoryID:localStorage.getItem("companyStyle"),
             Name:localStorage.getItem("companyName"),
             ShortName:this.companyEasyName,
@@ -164,7 +169,7 @@ export default {
             Mobile:this.comPersonTel,
             UserAddress:this.comPersonArea,
             Remark:this.other,
-            HeadImageUrl:'',
+            HeadImageUrl:this.image,
           })
         })
         .then(res=>{
@@ -217,7 +222,7 @@ export default {
   .Material{
   padding: 15px;
   box-sizing: border-box;
-  height: 45vh;
+  height: 25vh;
   /* margin-bottom: 30px; */
   background-color: #fff;
   display: flex;
@@ -240,6 +245,7 @@ export default {
   opacity: 0;
   position: absolute;
   top:0;
+  left: 0;
   z-index: 9;
   width: 80px;
   height: 80px;
@@ -275,10 +281,11 @@ export default {
   }
   #button{
     width: calc(100% - 80px);
-    position: absolute;
+    margin: 0 auto;
+    /* position: absolute;
     bottom: 40px;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-50%); */
   }
   .uploadImg{
     height: 100px;

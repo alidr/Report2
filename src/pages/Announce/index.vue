@@ -5,6 +5,7 @@
         <span>公告类型</span>
         <input type="text" placeholder="请选择通告类型" v-model="JobInfo" 
         :jobId = "jobId" @click="showPicker">
+        <i class="arrow"></i>
     </div> 
     <div class="announceDetail">
       <p class="title">公告详情</p>
@@ -38,7 +39,7 @@ export default {
       anDetail:'',
       idList:[],
       JobInfo:'',
-      JobId:'',
+      jobId:'',
     }
   },
   created(){
@@ -99,8 +100,18 @@ export default {
       this.picker.show()
     },
     getActive(idx,id){
+      
       if (!this.isActive[idx]) {
+           if (idx==0) {
+        this.idList = []
+        for (let i = 0; i < this.list.length; i++) {
+            this.idList.push(this.list[i].ID)
+        }
+        console.log(this.idList);
+        
+      }else{
         this.idList.push(id)
+      }
       }else{
         for (let i = 0; i < this.idList.length; i++) {
           if (this.idList[i]==id) {
@@ -108,6 +119,9 @@ export default {
           }
         }
       }
+
+
+     
       this.isActive[idx] = !this.isActive[idx]
       this.isActive = this.isActive.slice()
     },

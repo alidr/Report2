@@ -8,17 +8,17 @@
     </div>
     <div class="followBottom">
       <p>
-        <span class="active"><b :class="{active: queryStr.Code == '2'}"></b></span>
+        <span class="active"><b :class="{active: queryStr.StatusName =='洽谈中'}"></b></span>
         洽谈中
       </p>
-      <div class="line active"></div>
+      <div class="line" :class="{active: queryStr.StatusName =='签约中'}"></div>
       <p>
-        <span><b :class="{active: queryStr.Code == '2'}"></b></span>
+        <span><b :class="{active: queryStr.StatusName =='签约中'}"></b></span>
         签约中
       </p>
-      <div class="line"></div>
+      <div class="line" :class="{active:queryStr.StatusName =='已签约'}"></div>
       <p>
-        <span><b :class="{active: queryStr.Code == '3'}"></b></span>
+        <span><b :class="{active:queryStr.StatusName =='已签约'}"></b></span>
         已签约
       </p>
     </div>

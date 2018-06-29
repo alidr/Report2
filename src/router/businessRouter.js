@@ -59,7 +59,7 @@ export default [{
   path: '/appealMaterial',
   component: AppealMaterial,
   meta: {
-    title: '提交跟进权资料'
+    title: '提交申诉资料'
   },
 }, {
   path: '/waitList',
@@ -85,7 +85,7 @@ export default [{
     path: '/uploadContract',
     component: UploadContract,
     meta: {
-      title: '上传合同'
+      title: '上传'
     },
   }, {
     path: '/action',
@@ -115,7 +115,7 @@ export default [{
     path: '/CompanyFollow',
     component: CompanyFollow,
     meta: {
-      title: '公司待跟进'
+      title: '组员跟进列表'
     },
   },
   {

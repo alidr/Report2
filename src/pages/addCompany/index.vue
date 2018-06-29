@@ -125,6 +125,16 @@ export default {
             localStorage.setItem("companyName",this.companyName)
             this.$router.push({path:"/completeInformation"})
           }
+          if (res.data.Data.Code==0) {
+            localStorage.setItem("companyStyle",this.jobId)
+            localStorage.setItem("companyName",this.companyName)
+            this.$router.push({
+              path:"/completeInformation",
+                query:{
+                  id:res.data.Data.ID
+                }
+              })
+          }
           //其他情况
           if (this.AccessId==-1) {
             if (res.data.Data.Code!=1) {
@@ -133,17 +143,22 @@ export default {
           }else{
             if (res.data.Data.Code==2) {
               //洽谈中，签约中
-              this.setBusninessCompanyInfo(res.data.Data)
-              console.log(this.BusninessCompanyInfo);
               
+              // console.log(this.BusninessCompanyInfo);
+              if (res.data.Data.UserID==getCookie('UserId')) {
+                this.getToast("该公司已在您的名下",'warn')
+              }else{
+                this.setBusninessCompanyInfo(res.data.Data)
+                this.$router.push({path:"/giveUpCompany"})
+              }
               // sessionStorage.setItem('data2',JSON.stringify(res.data.Data))
-              this.$router.push({path:"/giveUpCompany"})
+              
             }else if (res.data.Data.Code==3) {
               //已签约
               this.setBusninessCompanyInfo(res.data.Data)
               this.$router.push({path:"/giveUpCompany"})
 
-            }else if (res.data.Data.Code==0||res.data.Data.Code==-1) { 
+            }else if (res.data.Data.Code==-1) { 
               this.$router.push({
                 path:"/companyContract",
                 query:{
