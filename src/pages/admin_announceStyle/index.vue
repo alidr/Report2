@@ -7,60 +7,10 @@
         <li v-for="(item,index) in list" :key="index"> 
           <p>{{item.Name}}</p>
           <div class="picture">
-            <img src="./del_03.png" alt="" @click="deleteStyle(item.ID)">
+            <img src="./del_03.png" alt="" @click="deleteShopMask(true,item.ID)">
             <img src="./edit_03.png" alt="" @click="edit(item.ID)">
           </div>
         </li>
-        <!-- <li>
-          <p>整装公司</p>
-          <div class="picture">
-            <img src="./del_03.png" alt="">
-            <img src="./edit_03.png" alt="">
-          </div>
-        </li>
-
-        <li>
-          <p>局部改造</p>
-          <div class="picture">
-            <img src="./del_03.png" alt="">
-            <img src="./edit_03.png" alt="">
-          </div>
-        </li>
-        <li>
-          <p>橱柜（全国定制）</p>
-          <div class="picture">
-            <img src="./del_03.png" alt="">
-            <img src="./edit_03.png" alt="">
-          </div>
-        </li>
-        <li>
-          <p>泛家装</p>
-          <div class="picture">
-            <img src="./del_03.png" alt="">
-            <img src="./edit_03.png" alt="">
-          </div>
-        </li>
-        <li>
-          <p>地产家装</p>
-          <div class="picture">
-            <img src="./del_03.png" alt="">
-            <img src="./edit_03.png" alt="">
-          </div>
-        </li>
-        <li>
-          <p>设计公司</p>
-          <div class="picture">
-            <img src="./del_03.png" alt="">
-            <img src="./edit_03.png" alt="">
-          </div>
-        </li>
-        <li>
-          <p>家装平台</p>
-          <div class="picture">
-            <img src="./del_03.png" alt="">
-            <img src="./edit_03.png" alt="">
-          </div>
-        </li> -->
       </ul>
     </div>
 
@@ -74,6 +24,18 @@
         <div class="btn">
           <span class="cancel" @click="mask(false)">取消</span>
           <span class="confirm" @click="mask(true)">确定</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="mask" v-show="deleteShopWarn">
+      <div class="maskContain">
+        <div class="content">
+          确认删除吗？
+        </div>
+        <div class="btn">
+          <span class="cancel" @click="deleteShopMask(false)">取消</span>
+          <span class="confirm" @click="deleteStyle()">确认</span>
         </div>
       </div>
     </div>
@@ -91,14 +53,21 @@
         list:[],
         hasMask:false,
         jobName:'',
-        jobID:''
+        jobID:'',
+        deleteShopWarn:false,
+        shopID:''
       }
     },
     created(){
       this.getList()
     },
     methods:{
+      deleteShopMask(bool,ID){
+        this.deleteShopWarn = bool;
+        this.shopID = ID||""
+      },
       getList(){
+        this.axiosloading()
         axios({
           url:this.getHost()+'/Notice/NoticeTypeList', 
           method:'post',
@@ -135,6 +104,7 @@
               this.getToast("请输入编辑的内容","warn")
               return
             }
+            this.axiosloading()
             axios({
               url:this.getHost()+'/Notice/NoticeEdit', 
               method:'post',
@@ -166,14 +136,15 @@
             this.hasMask = false
           }
         },
-        deleteStyle(id){
+        deleteStyle(){
+          this.axiosloading()
            axios({
               url:this.getHost()+'/Notice/DeleteNoticeType', 
               method:'post',
               data:qs.stringify({
                 UserId:getCookie('UserId'),
                 token:getCookie('token'),
-                ID:id
+                ID:this.shopID
               })
             })
             .then(res=>{
@@ -181,6 +152,7 @@
               if (res.data.Status===1) {
                 this.hasMask =false
                 this.getToast("删除成功",'warn')
+                this.deleteShopMask(false)
                 this.getList()
               }else if (res.data.Status<0) {
                 this.delCookie("UserId")

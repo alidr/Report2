@@ -7,7 +7,7 @@
         <li v-for="(item,index) in list" :key="index"> 
           <p>{{item.Name}}</p>
           <div class="picture">
-            <img src="./del_03.png" alt="" @click="deleteStyle(item.ID)">
+            <img src="./del_03.png" alt="" @click="deleteShopMask(true,item.ID)">
             <img src="./edit_03.png" alt="" @click="edit(item.ID)">
           </div>
         </li>
@@ -27,6 +27,18 @@
         </div>
       </div>
     </div>
+
+    <div id="mask" v-show="deleteShopWarn">
+      <div class="maskContain">
+        <div class="content">
+          确认删除吗？
+        </div>
+        <div class="btn">
+          <span class="cancel" @click="deleteShopMask(false)">取消</span>
+          <span class="confirm" @click="deleteStyle()">确认</span>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -41,13 +53,21 @@
         list:[],
         hasMask:false,
         jobName:'',
-        jobID:''
+        jobID:'',
+        deleteShopWarn:false,
+        shopID:''
       }
     },
     created(){
       this.getList()
     },
     methods:{
+      
+      deleteShopMask(bool,ID){
+        this.deleteShopWarn = bool;
+        this.shopID = ID||""
+      },
+
       getList(){
         axios({
           url:this.getHost()+'/Notice/CompanyList', 
@@ -123,7 +143,7 @@
               data:qs.stringify({
                 UserId:getCookie('UserId'),
                 token:getCookie('token'),
-                ID:id
+                ID:this.shopID
               })
             })
             .then(res=>{
@@ -131,6 +151,7 @@
               if (res.data.Status===1) {
                 this.hasMask =false
                 this.getToast("删除成功",'warn')
+                this.deleteShopMask(false)
                 this.getList()
               }else if (res.data.Status<0) {
                 this.delCookie("UserId")

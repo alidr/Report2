@@ -76,6 +76,7 @@
       methods:{
         getList(){
           console.log(2222)
+          this.axiosloading()
           axios({
             url:this.getHost()+'/Notice/JobInfo', 
             method:'post',
@@ -112,6 +113,7 @@
               this.getToast("请输入编辑的内容","warn")
               return
             }
+            this.axiosloading()
             axios({
               url:this.getHost()+'/Notice/UpdateJobInfo', 
               method:'post',

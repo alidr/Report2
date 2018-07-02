@@ -7,11 +7,11 @@
     <div class="cantain">
       <div class="waitList" v-for="(item,index) in companyList" :key="index">
         <div class="firstLine">
-            <span class="status" v-if="item.Status == 0">洽谈中</span>
-            <span class="status" v-if="item.Status == 1">已完成</span>
+            <span class="status" :class="{red:item.Status==2,yellow:item.Status==1,grey:item.Status==3}">{{item.StatusName}}</span>
+            <!-- <span class="status" v-if="item.Status == 1">已完成</span> -->
             <span class="name">{{item.Name}}</span>
-            <p class="waitNum" v-if="item.Surplus < item.Enddate"><span>排队人数 {{item.lineNum}}</span></p>
-            <p class="waitend" v-if="item.Surplus > item.Enddate">
+            <p class="waitNum" v-if="(item.Surplus < item.Enddate)||(item.Surplus > item.Enddate)&&!item.IsShow"><span>排队人数 {{item.Count}}</span></p>
+            <p class="waitend" v-if="(item.Surplus > item.Enddate)&&item.IsShow">
               <span @click="Mask(true,item.ID)">放弃</span>
               <span @click="grab(item.ID,item.CompanyID)">抢单</span>
             </p>
@@ -327,5 +327,16 @@ export default {
   margin-top: 10px;
   color: #666666;
 }
-
+.red{
+  background-color: #FBC1B4;
+  color: #F26F53
+}
+.yellow{
+  background-color: #F6EAD4;
+  color: #BB9F61;
+}
+.grey{
+  background-color: #ccc;
+  color: #fff
+}
 </style>

@@ -106,7 +106,7 @@ export default {
         return
       }
       console.log(this.jobId);
-      
+      this.axiosloading()
       axios({
         url:this.getHost()+'/Company/VerifyCompany', 
         method:'post',

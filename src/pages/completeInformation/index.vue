@@ -151,6 +151,7 @@ export default {
       }else if (!this.detailArea) {
          this.getToast("请输入公司详细地址",'warn')
       }else{
+        this.axiosloading()
         axios({
           url:this.getHost()+'/Company/CompanySave', 
           method:'post',

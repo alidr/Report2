@@ -1,26 +1,37 @@
 <template>
   <!-- 公司待跟进 -->
   <div class="CompanyFollow">
-    <div class="top">
+    <div class="top companyTop">
       <div class="search">
-        <input type="text" placeholder="请搜索公司名称关键词">
-        <span>搜索</span>
+        <input type="text" placeholder="请搜索公司名称关键词" v-model="keyword">
+        <span @click="getList">搜索</span>
       </div>
-      <div class="classList">
+      <div class="FilterConditions ">
         <div class="filter">
-          <span class="filterResult">{{AllManager}}</span>
+          <span class="filterResult">{{statusSelect}}</span>
           <span class="iconfont icon-xiaosanjiao icon" @click="maskStatus(0)"></span>
         </div>
         <div class="filter">
-          <span class="filterResult">{{AllSalesman}}</span>
-          <span class="iconfont icon-xiaosanjiao icon" @click="maskStatus(0)"></span>
+          <span class="filterResult">{{styleSelect}}</span>
+          <span class="iconfont icon-xiaosanjiao icon" @click="maskStatus(1)"></span>
         </div>
         <div class="filter">
-          <span class="filterResult">{{newApply}}</span>
-          <span class="iconfont icon-xiaosanjiao icon" @click="maskStatus(0)"></span>
+          <span class="filterResult">{{personSelect}}</span>
+          <span class="iconfont icon-xiaosanjiao icon" @click="maskStatus(2)"></span>
         </div>
-
       </div>
+      <ul class="selectListStatus" v-show="hasMask[0]">
+        <li v-for="(item,index) in Status" :key="index" :class="{active:index==statusHasActive}" @click="statusListActive(index,item.Name,item.ID)">{{item.Name}}</li>
+        <div class="mask"></div>
+      </ul>
+      <ul class="selectListStyle" v-show="hasMask[1]">
+        <li v-for="(item,index) in Style" :key="index" :class="{active:index==styleHasActive}" @click="styleListActive(index,item.Name,item.ID)">{{item.Name}}</li>
+        <div class="mask"></div>
+      </ul>
+      <ul class="selectListPerson" v-show="hasMask[2]">
+        <li v-for="(item,index) in Person" :key="index" :class="{active:index==personHasActive}" @click="personListActive(index,item.Name,item.ID)">{{item.Name}}</li>
+        <div class="mask"></div>
+      </ul>
     </div>
     <div class="companyList">
       <ul>
@@ -28,7 +39,7 @@
           <a href="javascript:;">
             <div class="listMid">
               <span :class="{active:checkBoxs[index]}" @click="check(index,item.ID)"></span>
-              <button type="button">{{item.StatusName}}</button>
+              <button type="button" :class="{red:item.Status==2,yellow:item.Status==1,grey:item.Status==3}">{{item.StatusName}}</button>
               <p>{{item.Name}}</p>
             </div>
             <div class="listBottom">
@@ -84,6 +95,7 @@
           <button type="button" @click="showListMask(false)" class="close">关闭</button>
         </div>
       </div>
+      <empty v-if="nullFlag"></empty>
     </div>
 </template>
 
@@ -94,7 +106,7 @@
     mapGetters,
     mapMutations
   } from 'vuex';
-  import empty from '../../components/empty'
+   import empty from "../../components/empty"
   export default {
     name: 'CompanyFollow',
     data() {
@@ -111,59 +123,143 @@
         listmask: false,
         nullFlag: false,
         listFlag: true,
-        AllManager: [{
-          id: '',
-          name: '全部经销商'
+        // 经销商列表
+        Status: [],
+        // 业务员列表
+        Style: [],
+        // 时间排序
+        Person: [{
+          ID: false,
+          Name: '最新申诉'
         }, {
-          id: 1,
-          name: '经销商'
-        }, {
-          id: 2,
-          name: '经销商'
-        }, {
-          id: 3,
-          name: '经销商'
+          ID: true,
+          Name: '申请时间顺序'
         }],
-        AllSalesman: [{
-          id: '',
-          name: '业务员'
-        }, {
-          id: 1,
-          name: '业务员'
-        }, {
-          id: 2,
-          name: '业务员'
-        }, {
-          id: 3,
-          name: '业务员'
-        }],
-        newApply: [{
-          id: '',
-          name: '最新申请'
-        }, {
-          id: 1,
-          name: '最新申请'
-        }, {
-          id: 2,
-          name: '最新申请'
-        }, {
-          id: 3,
-          name: '最新申请'
-        }],
-        AllManagerHasActive: 0,
-        AllManager: "全部经销商",
-        AllSalesmanHasActive: 0,
-        AllSalesman: "业务员",
-        newApplyHasActive: 0,
-        newApply: "最新申请",
+        hasMask: [false, false, false],
+        // hasStatusMask:false,
+        // hasStyleMask:false,
+        // hasPersonMask:false,
+        statusHasActive: 0,
+        statusSelect: "全部经销商",
+        personHasActive: 0,
+        personSelect: "最新申诉",
+        styleHasActive: 0,
+        styleSelect: "全部业务员",
+        keyword:''
+
       }
     },
     created() {
       localStorage.removeItem("CompanyID")
+      this.getDealer()
+      this.getBusniess()
       this.getList()
 
     },
+    components:{
+      empty
+    },
     methods: {
+      getBusniess(){
+        axios({
+            url: this.getHost() + '/Approval/GetUserList',
+            method: 'post',
+            data: qs.stringify({
+              UserId: getCookie('UserId'),
+              token: getCookie('token'),
+              Id:''
+            })
+          })
+          .then(res => {
+            console.log(res)
+            if (res.data.Status === 1) {
+              this.Style = res.data.Data.list
+              this.Style.unshift({
+                  ID: '',
+                  Name: '全部业务员'
+              })
+            } else if (res.data.Status < 0) {
+              this.getToast("登录失效，请重新登录", 'warn')
+              setTimeout(() => {
+                this.delCookie("UserId")
+                this.delCookie("token")
+                this.setAccessId('')
+                location.replace('/')
+              }, 2000);
+            } else {
+              this.getToast(res.data.Message, 'warn')
+            }
+          })
+      },
+      getDealer(){
+        axios({
+            url: this.getHost() + '/Approval/GetDealerList',
+            method: 'post',
+            data: qs.stringify({
+              UserId: getCookie('UserId'),
+              token: getCookie('token')
+            })
+          })
+          .then(res => {
+            console.log(res)
+            if (res.data.Status === 1) {
+              this.Status = res.data.Data.list
+              this.Status.unshift({
+                  ID: '',
+                  Name: '全部经销商'
+              })
+            } else if (res.data.Status < 0) {
+              this.getToast("登录失效，请重新登录", 'warn')
+              setTimeout(() => {
+                this.delCookie("UserId")
+                this.delCookie("token")
+                this.setAccessId('')
+                location.replace('/')
+              }, 2000);
+            } else {
+              this.getToast(res.data.Message, 'warn')
+            }
+          })
+      },
+       maskStatus(index) {
+         console.log(this.hasMask[index]);
+         
+        if (this.hasMask[index] == true) {
+          
+          this.hasMask[index] = false
+          // console.log(this.hasMask[index]);
+          
+        } else {
+          this.hasMask=[false,false,false]
+          this.hasMask[index] = true
+
+        }
+        this.hasMask = this.hasMask.slice()
+        this.Mask = this.hasMask[index] ? true : false
+      },
+      statusListActive(index, name,id) {
+        this.statusHasActive = index
+        this.statusSelect = name
+        this.hasMask[0] = false
+        this.StatusID = id
+        this.getList()
+      
+      },
+      styleListActive(index, name,id) {
+        this.styleHasActive = index
+        this.styleSelect = name
+        this.hasMask[1] = false
+        this.TypeID=id
+        this.getList()
+             
+      },
+      personListActive(index, name,id) {
+        this.personHasActive = index
+        this.personSelect = name
+        this.hasMask[2] = false
+        this.SaleID=id
+        this.getList()
+      },
       showListMask(bool, id) {
         this.listmask = bool
         if (bool) {
@@ -256,17 +352,17 @@
             data: qs.stringify({
               UserId: getCookie('UserId'),
               token: getCookie('token'),
-              DealerID: '',
-              SaleID: '',
-              Sort: '',
-              Keyword: ''
+              DealerID: this.StatusID,
+              SaleID: this.TypeID,
+              Sort:this.SaleID,
+              Keyword: this.keyword
             })
           })
           .then(res => {
             console.log(res)
             if (res.data.Status === 1) {
               this.list = res.data.Data.list
-              if (this.list == '') {
+              if (this.list.length==0) {
                 this.nullFlag = true
               } else {
                 this.nullFlag = false
@@ -387,6 +483,9 @@
 <style scoped>
   @import '../../common/mask.css';
   @import '../../common/filter.css';
+  .FilterConditions{
+    padding: 0 15px;
+  }
   .maskContain ul {
     margin-bottom: 22px;
   }
@@ -590,11 +689,11 @@
     float: left;
     width: 22%;
     height: 20px;
-    background: rgba(207, 207, 207, 1);
+    /* background: rgba(207, 207, 207, 1); */
     border-radius: 3px;
     font-size: 10px;
     font-family: PingFangSC-Regular;
-    color: rgba(255, 255, 255, 1);
+    /* color: rgba(255, 255, 255, 1); */
     line-height: 18px;
     text-align: center;
     margin-right: 12px;
@@ -747,5 +846,16 @@
     padding-top: 24px;
 
   }
-
+  .red{
+  background-color: #FBC1B4;
+  color: #F26F53
+}
+.yellow{
+  background-color: #F6EAD4;
+  color: #BB9F61;
+}
+.grey{
+  background-color: #ccc;
+  color: #fff
+}
 </style>

@@ -49,13 +49,14 @@
             </div>
             <div class="listMid">
               <span :class="{active:checkBoxs[index]}" v-if="selected" @click.stop="check(index,item.ID)"></span>
-              <button type="button">{{item.StatusName}}</button>
+              <button type="button" :class="{red:item.Status==2,yellow:item.Status==1,grey:item.Status==3}">{{item.StatusName}}</button>
               <p>{{item.Name}}</p>
             </div>
             <div class="listBottom">
-              <i>{{item.CreateDate}}</i>
-              <p>{{item.Content}}</p>
-              <b>{{item.UserName}}</b>
+              <i v-if="!item.CreateDate==''">{{item.CreateDate}}</i>
+              <p v-if="!item.CreateDate==''">{{item.Content}}</p>
+              <b v-if="!item.CreateDate==''">{{item.UserName}}</b>
+              <i v-if="item.CreateDate==''">暂无跟单消息</i>
             </div>
           </a>
 
@@ -611,11 +612,11 @@
     float: left;
     width: 22%;
     height: 20px;
-    background: rgba(207, 207, 207, 1);
+    /* background: rgba(207, 207, 207, 1); */
     border-radius: 3px;
     font-size: 10px;
     font-family: PingFangSC-Regular;
-    color: rgba(255, 255, 255, 1);
+    /* color: rgba(255, 255, 255, 1); */
     line-height: 18px;
     text-align: center;
     margin-right: 12px;
@@ -729,5 +730,17 @@
     margin-right: 24px;
     margin-top: 8px;
   }
+  .red{
+  background-color: #FBC1B4;
+  color: #F26F53
+}
+.yellow{
+  background-color: #F6EAD4;
+  color: #BB9F61;
+}
+.grey{
+  background-color: #ccc;
+  color: #fff
+}
 
 </style>

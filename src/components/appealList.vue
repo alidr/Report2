@@ -6,7 +6,7 @@
       <div class="contentList" v-for="(item,index) in list" :key="index" @click="applyDetail(item.ID)">
         <div class="contentListTop">
           <p class="firstLine">
-            <span class="status">{{item.SateID}}</span>
+            <span class="status" :class="{red:item.SateID==1,yellow:item.SateID==2,grey:item.SateID==3}">{{item.SateName}}</span>
             <span>申诉日期：{{item.CreateDate}}</span>
           </p>
           <p class="twoLine twoLineInfo">
@@ -110,6 +110,7 @@ export default {
             this.noAllow(false)
             this.$emit('refresh')
             this.$emit('refreshNaav')
+            this.giveUpReason = ""
           } else if (res.data.Status < 0) {
             this.getToast("登录失效，请重新登录", 'warn')
             setTimeout(() => {
@@ -150,8 +151,6 @@ export default {
 /* 最新申诉 */
 .firstLine .status{
   background-color: #fff !important;
-  border:1px solid #BB9F61;
-  color: #BB9F61;
 }
 .twoLine.twoLineInfo span:nth-child(1){
   font-size: 16px;
@@ -162,6 +161,18 @@ export default {
 }
 .lookDetail{
   text-align: right;
+}
+.red{
+  border:1px solid #F26F53;
+  color: #F26F53
+}
+.yellow{
+  border:1px solid #BB9F61;
+  color: #BB9F61;
+}
+.grey{
+  border:1px solid #BFBFBF;
+  color:  #BFBFBF;
 }
 </style>
 

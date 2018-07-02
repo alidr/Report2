@@ -48,6 +48,7 @@ export default {
         this.getToast("两次密码不一致",'warn')
         return
       }
+      this.axiosloading()
       axios({
         url:this.getHost()+'/UserInfo/Password', 
         method:'post',

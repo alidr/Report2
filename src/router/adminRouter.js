@@ -1,4 +1,4 @@
-const Demo = () => import ('@/pages/admin_demo')
+// const Demo = () => import ('@/pages/admin_demo')
 const AdminIndex = () => import ('@/pages/admin_index')
 const AddCompany = () => import ('@/pages/addCompany')
 const CompleteInformation = () => import ('@/pages/completeInformation')
@@ -17,12 +17,6 @@ const EditCompany = () =>import ('@/pages/editCompany')
 const AnnounceStyle = () =>import ('@/pages/admin_announceStyle')
 const EditCompete = () => import('@/pages/busniess_editCompete')
 export default [{
-  path: '/demo',
-  component: Demo,
-  meta: {
-      title: '管理员demo'
-  }
-}, {
   path: '/adminIndex',
   component: AdminIndex,
   meta: {

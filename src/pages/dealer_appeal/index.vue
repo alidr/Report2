@@ -10,7 +10,7 @@
     <div class="appealList">
       <ul>
         <li v-for="(item,index) in list" :key="index" @click="applyDetail(item.ID)">
-            <span>{{item.StatusName}}</span>
+            <span :class="{red:item.TypeID==1,yellow:item.TypeID==2,grey:item.TypeID==3}">{{item.TypeName}}</span>
           
           <div class="up">
             <span class="CompanyName">{{item.CompanyName}} </span>
@@ -210,6 +210,18 @@
 
 <style scoped>
 @import '../../common/mask.css';
+.red{
+  border:1px solid #F26F53;
+  color: #F26F53
+}
+.yellow{
+  border:1px solid #BB9F61;
+  color: #BB9F61;
+}
+.grey{
+  border:1px solid #BFBFBF;
+  color:  #BFBFBF;
+}
   .appeal {
     width: 100%;
     box-sizing: border-box;
@@ -273,10 +285,10 @@
     border-radius: 3px;
     line-height: 20px;
     text-align: center;
-    border: 1px solid #BFBFBF;
+    /* border: 1px solid #BFBFBF; */
     padding: 0 10px;
     font-size: 12px;
-    color: rgba(191, 191, 191, 1);
+    /* color: rgba(191, 191, 191, 1); */
     margin-bottom: 6px;
   }
 
@@ -323,20 +335,22 @@
   }
 
   .appealList ul li .down {
-    overflow: hidden;
-
+    display: flex;
+    justify-content: center;
   }
 
   .appealList ul li .down i {
     font-style: normal;
     font-size: 12px;
     color: rgba(242, 111, 83, 1);
+    flex-grow: 1;
+    width: 0;
   }
 
   .appealList ul li .down a {
     font-size: 12px;
     color: rgba(128, 128, 128, 1);
-    margin-left: 110px;
+    /* margin-left: 110px; */
   }
 
 </style>

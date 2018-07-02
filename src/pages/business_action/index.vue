@@ -177,6 +177,7 @@ export default {
         this.getToast("请输入详细跟单内容",'warn')
         return
       }
+      this.axiosloading()
       axios({
         url:this.getHost()+'/Company/AddDocumentary', 
         method:'post',

@@ -204,6 +204,7 @@ export default {
         if (this.image == this.imageTem) {
           this.image = ""
         }
+        this.axiosloading()
         axios({
           url:this.getHost()+'/Company/CompanySave', 
           method:'post',

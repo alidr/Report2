@@ -86,6 +86,7 @@
         <span class="statusDetail" :class="{'active':btn2Active}">授权书照片</span>
         <a href="javascript:;" class="applyBtn" :class="{'active':btn2Active}" v-if="applyshu"  @click="uploadContract(1)">上传授权书</a>
         <a href = "javascript:;" class="applyBtn active" v-if="!applyshu" @click="getImg(data.AuthBookImage)" >查看授权书</a>
+         <span class="applyStatus active" v-if="reApplyshu" @click="uploadContract(1)">重新上传</span>
       </p>
 
       <!-- <p class="uploadContract">
@@ -129,7 +130,7 @@
           <p class="Date">
             <span>{{item.CreateDate}}</span>
             <span class="personText">跟进人 {{item.UserName}}</span>
-            <i @click="deleteTimeLine(item.ID)" v-if="show"><img src="./delete.png" alt=""></i>
+            <i @click="deleteShopMask(true,item.ID,1)" v-if="show"><img src="./delete.png" alt=""></i>
           </p>
           <div class="detail">{{item.Content}}</div>
           <div class="timeLineImg">
@@ -192,10 +193,10 @@
         <p>才可添加该模块信息</p>
       </div>
       <div class="ShopDetailInfo" v-if="ShopListShow">
-        <p v-for="(item,index) in shopList" :key="index">{{item.Name}}<span>{{item.Address}}</span><i @click="deleteShopMask(true,item.ID)"><img src="./delete.png" alt="" v-if="show"></i></p>
+        <p v-for="(item,index) in shopList" :key="index">{{item.Name}}<span>{{item.Address}}</span><i @click="deleteShopMask(true,item.ID,2)"><img src="./delete.png" alt="" v-if="show"></i></p>
       </div>
       <div class="followDays addShop">
-        <span class="upload" v-if="show" @click="addShop(true)">添加直营门店</span>
+        <span class="upload" v-if="show&&!applyhe" @click="addShop(true)">添加直营门店</span>
       </div>
     </div>
   </div>
@@ -257,7 +258,7 @@
         </div>
         <div class="btn">
           <span class="cancel" @click="deleteShopMask(false)">取消</span>
-          <span class="confirm" @click="deleteShop">确认</span>
+          <span class="confirm" @click="deleteSelect">确认</span>
         </div>
       </div>
     </div>
@@ -307,6 +308,7 @@ export default {
       expendWord:"展开",
       applyshou:true,
       applyshu:true,
+      reApplyshu:false,
       applyhe:true,
       btnActive:false,
       btn2Active:false,
@@ -333,7 +335,9 @@ export default {
       edit:false,
       afterUpload:true,
       addShopMask:false,
-      stylePlay:''
+      stylePlay:'',
+      type:-1,
+      timeId:''
     }
   },
   created(){
@@ -351,6 +355,14 @@ export default {
     ])
   },
   methods:{
+    deleteSelect(){
+      if (this.type==1) {
+        this.deleteTimeLine()
+      }else{
+        this.deleteShop()
+      }
+    },
+    
     deleteShop(){
       axios({
         url:this.getHost()+'/Company/DelShopById', 
@@ -381,9 +393,15 @@ export default {
         }
       })
     },
-    deleteShopMask(bool,ID){
+    deleteShopMask(bool,ID,type){
       this.deleteShopWarn = bool;
-      this.shopID = ID||""
+      if (type==1) {
+        this.timeId =ID||""
+      }else{
+        this.shopID = ID||""
+      }
+      
+      this.type = type
     },
     comfirmAddShop(){
       if (!this.shopName) {
@@ -544,21 +562,31 @@ export default {
             console.log( this.edit);
             
           }
-          if (this.AccessId ==5&&this.stylePlay=="") {
+          if (this.AccessId ==5&&this.stylePlay==""&&this.data.UserID==getCookie('UserId')) {
              if (this.data.IsShowLook) {
               this.applyshou = false
             }else{
               this.applyshou = true
               this.btnActive = true
             }
-            
-            if (this.data.ContractImage) {
-              
-              this.applyhe = false
-            }else{
+            // applyhe 上传合同按钮
+            //！applyhe查看合同按钮
+            //btn3Active亮不亮
+            if ((this.data.ContractImage==''||this.data.ContractImage==null)&&this.data.Status==2) {
               this.applyhe = true
               this.btn3Active = true
+            }else if (this.data.ContractImage&&(this.data.Status==2||this.data.Status==3)) {
+              this.applyhe = false
+              this.btn3Active = true
             }
+
+            // if (this.data.ContractImage&&(this.data.Status==2||this.data.Status==3)) {
+              
+            //   this.applyhe = false
+            // }else{
+            //   this.applyhe = true
+            //   this.btn3Active = true
+            // }
           }else{
             if (this.data.IsShowLook) {
               this.applyshou = false
@@ -567,8 +595,9 @@ export default {
               this.btnActive = false
             }
 
-             if (this.data.ContractImage) {
+             if (this.data.ContractImage==""||this.data.ContractImage==null) {
               this.applyhe = false
+              this.btn3Active = false
             }else{
               this.applyhe = true
               this.btn3Active = false
@@ -577,7 +606,11 @@ export default {
         //区域经理
           if (this.AccessId ==3) {
              if (this.data.AuthBookImage) {
+              //  console.log("hahhaha",this.data.AuthBookImage);
+              //  console.log("hahhaha",this.applyshu);
+               
               this.applyshu = false
+              this.reApplyshu = true
               this.btn2Active = true
             }else{
               
@@ -594,6 +627,7 @@ export default {
              
             }
           }else{
+            this.reApplyshu = false
             if (this.data.AuthBookImage) {
               this.applyshu = false
             }else{
@@ -758,14 +792,14 @@ export default {
       }
     },
     //删除时间线
-    deleteTimeLine(id){
+    deleteTimeLine(){
       axios({
         url:this.getHost()+'/Company/DelDocumentary', 
         method:'post',
         data:qs.stringify({
           UserId:getCookie('UserId'),
           token:getCookie('token'),
-          Id:id
+          Id:this.timeId
         })
       })
       .then(res=>{
@@ -773,6 +807,7 @@ export default {
         if (res.data.Status===1) {
           this.getToast("删除成功",'correct')
           this.getTimeLine(this.ID)
+          this.deleteShopMask(false)
         }else if (res.data.Status<0) {
           this.delCookie("UserId")
           this.delCookie("token")

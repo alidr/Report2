@@ -43,11 +43,11 @@
 
             <span class="Organization" v-if="item.Organization">组织： {{item.Organization}}</span>
 
-            <img src="./delete.png" alt="" @click.stop="deleteUser(item.ID)" v-if="dealer">
+            <img src="./delete.png" alt="" @click.stop="deleteShopMask(true,item.ID)" v-if="dealer">
           </div>
 
           <div class="listBottom">
-            <p v-if="item.IsShow">已签约／总数：
+            <p>已签约／总数：
               <span>{{item.Count}}</span>／{{item.TotalCount}}</p>
             <a href="javascript:;" @click="editUser(item.ID)">
               <i>点击详情>></i>
@@ -58,6 +58,17 @@
         </li>
       </ul>
       <empty v-if='emptyFlag'></empty>
+    </div>
+    <div id="mask" v-show="deleteShopWarn">
+      <div class="maskContain">
+        <div class="content">
+          确认删除吗？
+        </div>
+        <div class="btn">
+          <span class="cancel" @click="deleteShopMask(false)">取消</span>
+          <span class="confirm" @click="deleteUser">确认</span>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -70,6 +81,7 @@
   import axios from "axios"
   import qs from "qs";
   import empty from '../../components/empty'
+
 
   export default {
     name: 'UserList',
@@ -101,7 +113,9 @@
         styleHasActive: 0,
         styleSelect: "时间排序",
         emptyFlag: false,
-        dealer:false
+        dealer:false,
+        deleteShopWarn:false,
+        shopID:''
       }
     },
     components:{
@@ -113,19 +127,24 @@
       ])
     },
     created() {
+      this.getStyleList()
+      this.getList()
       if (this.AccessId == -1 || this.AccessId == 3||this.AccessId == 2) {
         //管理员
-        this.getList()
-        this.isShow = true
+         this.dealer = true
       } else if (this.AccessId == 4) {
         //经销商
-        this.getBusiness()
+        // this.getBusiness()
         this.dealer = false
       }
-      this.getStyleList()
+      
 
     },
     methods: {
+      deleteShopMask(bool,ID){
+        this.deleteShopWarn = bool;
+        this.shopID = ID||""
+      },
       getStyleList(){
         axios({
           url:this.getHost()+'/Notice/JobInfo', 
@@ -177,30 +196,18 @@
         this.statusSelect = name
         this.hasMask[0] = false
         this.StatusID = id
-        if (this.AccessId == -1 || this.AccessId == 3||this.AccessId == 2) {
-        //管理员
         this.getList()
-        this.isShow = true
-      } else if (this.AccessId == 4) {
-        //经销商
-        this.getBusiness()
-      }
-      
+        // this.isShow = true
+
       },
       styleListActive(index, name,id) {
         this.styleHasActive = index
         this.styleSelect = name
         this.hasMask[1] = false
         this.TypeID=id
-       if (this.AccessId == -1 || this.AccessId == 3||this.AccessId == 2) {
-        //管理员
         this.getList()
-        this.isShow = true
-      } else if (this.AccessId == 4) {
-        //经销商
-        this.getBusiness()
-      }
-             
+        // this.isShow = true
+
       },
       getList() {
         // console.log(222)
@@ -237,67 +244,6 @@
             this.getToast(res.data.Message, 'warn')
           })
       },
-      getBusiness() {
-        console.log(222)
-        axios({
-            url: this.getHost() + '/Approval/GetUserList',
-            method: 'post',
-            data: qs.stringify({
-              UserId: getCookie('UserId'),
-              token: getCookie('token'),
-              Keyword: this.Keyword,
-              JobId: this.StatusID,
-              Sort: this.TypeID,
-            })
-          })
-          .then(res => {
-            console.log(res)
-            if (res.data.Status === 1) {
-              this.list = res.data.Data.list
-              if (this.list == '') {
-                this.emptyFlag = true
-              } else {
-                this.emptyFlag = false
-              }
-            } else if (res.data.Status < 0) {
-              this.delCookie("UserId")
-              this.delCookie("token")
-              this.setAccessId('')
-              location.replace('/')
-            } else {
-              this.getToast(res.data.Message, 'warn')
-            }
-          })
-          .catch(res => {
-            this.getToast(res.data.Message, 'warn')
-          })
-      },
-      // maskStatus(index){
-      //   if (this.hasMask[index] == true) {
-
-      //     this.hasMask[index] = false   
-      //   }else{
-
-      //       this.hasMask[index] = true
-
-      //     }
-      //   for (let i = 0; i < this.hasMask.length; i++) {
-
-      //     if (index==i) {
-      //       continue
-      //     }
-      //     this.hasMask[i] = false
-      //   }
-      //   this.Mask = this.hasMask[index]?true:false
-      // },
-      // AllpostHasActive(index,name){
-      // this.AllpostHasActive = index
-      // this.AllpostSelect = name
-      // },
-      // TimeHasActive(index,name){
-      //   this.TimeHasActive = index
-      //   this.TimeSelect = name
-      // },
       addUser() {
         this.$router.push({
           'path': '/addUser'
@@ -311,28 +257,24 @@
           }
         })
       },
-      deleteUser(ID) {
+      deleteUser() {
         axios({
             url: this.getHost() + '/UserInfo/DelUserInfo',
             method: 'post',
             data: qs.stringify({
               UserId: getCookie('UserId'),
               token: getCookie('token'),
-              Id: ID
+              Id: this.shopID
             })
           })
           .then(res => {
             console.log(res)
             if (res.data.Status === 1) {
               this.getToast("删除成功", 'warn')
-               if (this.AccessId == -1 || this.AccessId == 3||this.AccessId == 2) {
-                //管理员
+              this.deleteShopMask(false)
                 this.getList()
-                this.isShow = true
-              } else if (this.AccessId == 4) {
-                //经销商
-                this.getBusiness()
-              }
+                // this.isShow = true
+
             } else if (res.data.Status < 0) {
               this.delCookie("UserId")
               this.delCookie("token")
@@ -345,14 +287,19 @@
           .catch(res => {
             this.getToast(res.data.Message, 'warn')
           })
-      }
+      },
+      ...mapMutations({
+      setAccessId: 'SET_ACCESSID'
+    })
+
     }
-  }
+}
 
 </script>
 
 <style scoped>
   @import '../../common/filter.css';
+  @import '../../common/mask.css';
   .UserList {
     width: 100%;
     overflow: hidden;

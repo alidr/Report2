@@ -19,12 +19,12 @@
       <div class="contentList" v-for="(item,index) in applyHistoryList" :key="index">
         <div class="contentListTop">
           <p class="firstLine">
-            <span class="status">{{item.TypeName}}</span>
+            <span class="status" :class="{red:item.TypeID==1,yellow:item.TypeID==2,grey:item.TypeID==3}">{{item.TypeName}}</span>
             <span>申诉日期:{{item.CreateDate}}</span>
           </p>
           <p class="twoLine">
             <span>{{item.CompanyName}}</span>
-            <span v-if="item.Status == 0" @click="cancel(item.ID)">撤销申诉</span>
+            <span v-if="item.Status == 0" @click="deleteShopMask(true,item.ID)">撤销申诉</span>
           </p>
         </div>
         <!-- <div class="contentListBottom">
@@ -33,8 +33,8 @@
         <div class="contentListBottom">
           <p>
             <span v-if="item.Status==-1">{{item.ResultDate}}</span>
-            <span class="appealStatus" v-if="item.Status == 0">待审批</span>
-            <span class="appealStatus" v-if="item.Status == 1">审批中</span>
+            <span class="appealStatus">{{item.StatusName}}</span>
+            <!-- <span class="appealStatus" v-if="item.Status == 1">审批中</span> -->
             <span id="lookDetail" @click="applyDetail(item.ID)">查看申诉详情>></span>
           </p>
           <p v-if="item.Status==-1" class="Reson">原因:&emsp;{{item.Result}}</p>
@@ -45,6 +45,17 @@
       </div> -->
     </div>
 
+    </div>
+    <div id="mask" v-show="deleteShopWarn">
+      <div class="maskContain">
+        <div class="content">
+          确认撤销吗？
+        </div>
+        <div class="btn">
+          <span class="cancel" @click="deleteShopMask(false)">取消</span>
+          <span class="confirm" @click="cancel()">确认</span>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -59,49 +70,13 @@ export default {
     appealHisList
   },
   data () {
-   
     return {
       test: '111',
       data:null,
       name:'',
-      applyHistoryList: [
-        // {
-        //   ID: '1',
-        //   CompanyName: '交换机',
-        //   Status: '1',
-        //   Result: '1',
-        //   ResultDate: '20180203',
-        //   CreateDate: '111',
-        //   TypeName: '777'
-        // },
-        //  {
-        //    ID: '2',
-        //   CompanyName: '换个号',
-        //   Status: '0',
-        //   Result: '1',
-        //   ResultDate: '20180503',
-        //   CreateDate: '111',
-        //    TypeName: '777'
-        // },
-        //  {
-        //    ID: '3',
-        //   CompanyName: '是的',
-        //   Status: '1',
-        //   Result: '0',
-        //   ResultDate: '20180330',
-        //   CreateDate: '111',
-        //    TypeName: '777'
-        // },
-        //  {
-        //    ID: '4',
-        //   CompanyName: '苟富贵',
-        //   Status: '1',
-        //   Result: '1',
-        //   ResultDate: '20180203',
-        //   CreateDate: '111',
-        //    TypeName: '777'
-        // },
-      ]
+      applyHistoryList: [],
+      deleteShopWarn:false,
+      shopID:''
     }
   },
   created () {
@@ -109,6 +84,10 @@ export default {
   },
  
   methods: {
+    deleteShopMask(bool,ID){
+      this.deleteShopWarn = bool;
+      this.shopID = ID||""
+    },
     applyDetail(id){
         console.log(id);
         
@@ -192,20 +171,21 @@ export default {
         this.getToast(res.data.Message,'warn')
       })
     },
-    cancel(id){
+    cancel(){
       axios({
         url:this.getHost()+'/Approval/CancelApply', 
         method:'post',
         data:qs.stringify({
           UserId:getCookie('UserId'),
           token:getCookie('token'),
-          Id:id
+          Id:this.shopID
         })
       })
       .then(res=>{
         console.log(res)
         if (res.data.Status===1) {
           this.getToast("操作成功",'warn')
+          this.deleteShopMask(false)
           this.getData()
         }else if (res.data.Status<0) {
           this.getToast("登录失效，请重新登录",'warn')
@@ -228,7 +208,12 @@ export default {
 <style scoped>
 @import '../../common/input.css';
 @import '../../common/focusList.css';
+@import '../../common/mask.css';
 /*  */
+.contentListBottom span:nth-child(3){
+  color: #666;
+  font-size: 12px;
+}
 #lookDetail{
   position: absolute;
   right: 15px;
@@ -264,9 +249,9 @@ export default {
   padding-top: 10px;
 }
 .firstLine .status{
-  background-color: #fff !important;
-  border:1px solid #BB9F61;
-  color: #BB9F61;
+  /* background-color: #fff !important; */
+  /* border:1px solid #BB9F61; */
+  /* color: #BB9F61; */
   margin-left: 5px !important;
 }
 .appealTop{
@@ -290,6 +275,21 @@ export default {
   color: #4D4D4D;
   font-size: 18px;
   font-weight: 600;
+}
+.contentListBottom span:nth-child(2){
+  height: 15px;
+}
+.red{
+  border:1px solid #F26F53;
+  color: #F26F53
+}
+.yellow{
+  border:1px solid #BB9F61;
+  color: #BB9F61;
+}
+.grey{
+  border:1px solid #BFBFBF;
+  color:  #BFBFBF;
 }
 
 </style>

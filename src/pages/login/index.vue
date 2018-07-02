@@ -47,6 +47,7 @@
           this.getToast("请输入密码", 'warn')
           return
         }
+        this.axiosloading()
         axios({
             url: this.getHost() + '/Login/Login',
             method: 'post',

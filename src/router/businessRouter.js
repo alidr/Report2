@@ -1,4 +1,4 @@
-const Demo = () => import ('@/pages/business_demo')
+// const Demo = () => import ('@/pages/business_demo')
 const AddCompany = () => import ('@/pages/addCompany')
 const CompleteInformation = () => import ('@/pages/completeInformation')
 const AppealHome = () =>import ('@/pages/business_appealHome')
@@ -19,13 +19,7 @@ const GiveUpCompany = () =>import ('@/pages/busniess_giveUpCompany')
 
 
 
-export default [{
-  path: '/demo',
-  component: Demo,
-  meta: {
-      title: '业务员demo'
-  }
-}, {
+export default [ {
   path: '/addCompany',
   component: AddCompany,
   meta: {

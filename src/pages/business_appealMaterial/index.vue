@@ -140,6 +140,7 @@ export default {
       this.hasPsdMask = false;
     },
     axiosApi (url, reqData) {
+      this.axiosloading()
         axios({
         url:this.getHost()+url, 
         method:'post',

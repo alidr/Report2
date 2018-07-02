@@ -68,6 +68,7 @@ export default {
   methods: {
     //获取职位
     getPickerConfig() {
+      this.axiosloading()
       axios({
         url:this.getHost()+'/Notice/JobInfo', 
         method:'post',
@@ -96,6 +97,7 @@ export default {
     //获取上一级负责人数据
     getPickLastData(key){
       console.log(key)
+      this.axiosloading()
       axios({
         url:this.getHost()+'/UserInfo/GetParentUserList', 
         method:'post',
@@ -196,6 +198,7 @@ export default {
       }else if (this.password !==this.rePassword) {
         this.getToast("两次密码不一致",'warn')
       }else{
+        this.axiosloading()
         axios({
           url:this.getHost()+'/UserInfo/SaveUserInfo', 
           method:'post',

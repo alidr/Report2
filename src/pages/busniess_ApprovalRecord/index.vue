@@ -12,23 +12,25 @@
        <div class="approvalInfo" v-for="(item,index) in OneList" :key="index">
         <p class="time"><span>{{item.Date}}</span></p>
         <p class="info">{{item.JobName}} {{item.UserName}}
-          <span :class="{color:item.Content}">{{item.Status}}</span>
+          <span  v-if="item.Status!=-1">{{item.Content}}</span>
+          <span :class="{color:item.Status==-1}" v-if="item.Status==-1">审批不通过</span>
         </p>
-        <p class="reson" v-if="item.Content">{{item.Content}}</p>
+      <p class="reson" v-if="item.Status==-1">{{item.Content}}</p>
       </div>
     </div>
     <div class="approvalModel" v-if="TwoList.length">
-      <!-- <p class="title">合同报备申请记录</p>
-      <div class="approvalInfo">
+      <p class="title">合同报备申请记录</p>
+      <!-- <div class="approvalInfo">
         <p class="time"><span>2018-08-11 12:00</span></p>
         <p class="info">业务员 小白啊 <span>提交授权申请</span></p>
       </div> -->
        <div class="approvalInfo" v-for="(item,index) in TwoList" :key="index">
         <p class="time"><span>{{item.Date}}</span></p>
         <p class="info">{{item.JobName}} {{item.UserName}}
-          <span :class="{color:item.Content}">{{item.Status}}</span>
+          <span  v-if="item.Status!=-1">{{item.Content}}</span>
+          <span :class="{color:item.Status==-1}" v-if="item.Status==-1">审批不通过</span>
         </p>
-        <p class="reson" v-if="item.Content">{{item.Content}}</p>
+      <p class="reson" v-if="item.Status==-1">{{item.Content}}</p>
       </div>
     </div>
 
@@ -63,8 +65,8 @@ export default {
         data:qs.stringify({
           UserId:getCookie('UserId'),
           token:getCookie('token'),
-          CompanyID:num,
-          TypeID:this.queryId
+          CompanyID:this.queryId,
+          TypeID:num
         })
       })
       .then(res=>{
@@ -138,6 +140,7 @@ export default {
   color: #E2C78F;
   margin-left: 10px;
 }
+
 .approvalInfo .info .color{
   color: #F26F53;
 }

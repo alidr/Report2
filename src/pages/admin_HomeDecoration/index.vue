@@ -54,7 +54,7 @@
       <div class="contentList" v-for="(item,index) in List" :key="index"  v-if="admin" @click="jump(item.ID)">
         <div class="contentListTop">
           <p class="firstLine">
-            <span>{{item.StatusName}}</span>
+            <span :class="{red:item.Status==2,yellow:item.Status==1,grey:item.Status==3}">{{item.StatusName}}</span>
             <span>剩余保护期:{{item.EndDate}}天</span>
           </p>
           <p class="twoLine">
@@ -239,6 +239,7 @@
         })
       },
       getStyleList(){
+        this.axiosloading()
         axios({
           url:this.getHost()+'/Notice/CompanyList', 
           method:'post',
@@ -270,6 +271,7 @@
         })
       },
       getPersonList(){
+        this.axiosloading()
         axios({
           url:this.getHost()+'/Company/SaleList', 
           method:'post',
@@ -303,6 +305,7 @@
         })
       },
       getList() {
+        this.axiosloading()
         axios({
             url: this.getHost() + '/Company/CompanyList',
             method: 'post',
@@ -335,6 +338,7 @@
           })
       },
       getTotalData() {
+        
         axios({
             url: this.getHost() + '/Company/Count',
             method: 'post',
@@ -680,4 +684,16 @@
   .bottom .round b.active{
     background-color: #E2C78F;
   }
+  .red{
+  border:1px solid #F26F53;
+  color: #F26F53
+}
+.yellow{
+  border:1px solid #BB9F61;
+  color: #BB9F61;
+}
+.grey{
+  border:1px solid #BFBFBF;
+  color:  #BFBFBF;
+}
 </style>

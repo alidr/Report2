@@ -4,7 +4,7 @@ import store from '../store'
 import Login from '@/pages/login'
 import NotFound from '@/pages/notFound'
 import Home from '@/pages/home'
-import AccountManagement from '@/pages/accountManagement'
+// import AccountManagement from '@/pages/accountManagement'
 import CompanyList from '@/pages/admin_HomeDecoration'
 import CompanyDetail from '@/pages/companyDetail'
 import ModifyPsd from '@/pages/modifyPsd'
@@ -40,12 +40,6 @@ let router = new Router({
       component: Home,
       meta: {
         title: '首页'
-      }
-    }, {
-      path: '/accountManagement',
-      component: AccountManagement,
-      meta: {
-          title: '账户管理'
       }
     }, {
       path: '/companyList',

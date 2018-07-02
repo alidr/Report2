@@ -106,8 +106,8 @@ export default {
       buniess:false,
       applyList:[],
       addUser:false,
-      annou:false
-      
+      annou:false,
+      emptyInfo:false
     }
   },
   components:{

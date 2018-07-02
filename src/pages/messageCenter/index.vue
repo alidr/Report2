@@ -9,7 +9,7 @@
             <span>{{item.CreateDate}}</span>
           </p>
           <p class="twoLine">
-            <span>{{item.JobName}}{{item.Content}}</span>
+            <span>{{item.Content}}</span>
             <!-- <span>撤销申诉</span> -->
           </p>
         </div>
@@ -109,10 +109,13 @@ export default {
   position: absolute;
   left: 0px;
   border-radius: 0px 15px 15px 0 !important;
+  background-color: #F6EAD4;
+  color: #BB9F61;
 }
 .contentListTop .twoLine span{
   font-size: 14px;
   font-weight: normal;
+  line-height: 18px;
 }
 .contentListBottom .person{
   color: #F26F53;

@@ -45,6 +45,7 @@
             <span>{{item.Rate}}%</span>
           </li>
         </ul>
+        <button type="button" @click="showListMask(false)" class="close">关闭</button>
       </div>
     </div>
 
@@ -68,6 +69,7 @@
   import qs from 'qs';
   import axios from "axios";
   import empty from "../../components/empty";
+  import { mapGetters, mapMutations } from 'vuex'
   export default {
     name: 'appeal',
     data() {
@@ -78,7 +80,7 @@
         listmask: false,
         emptyFlag: false,
         listFlag: true,
-         isShowMask:false,
+        isShowMask:false,
         giveUpReason:'',
         ID:''
       }
@@ -96,6 +98,8 @@
         this.isShowMask = bool
         if (bool) {
           this.ID = id
+        }else{
+          this.giveUpReason = ""
         }
       },
       showListMask(bool, id) {
@@ -107,6 +111,7 @@
         }
       },
       getSimilarList(id) {
+        this.axiosloading()
         axios({
             url: this.getHost() + '/Approval/GetLikeness',
             method: 'post',
@@ -121,7 +126,7 @@
             if (res.data.Status === 1) {
               this.similadList = res.data.Data
             } else if (res.data.Status < 0) {
-              this.getToast("登录失效，请重新登录", 'warn')
+              this.getToast(res.data.Message, 'warn')
               setTimeout(() => {
                 this.delCookie("UserId")
                 this.delCookie("token")
@@ -134,6 +139,7 @@
           })
       },
       getList(TypeID) {
+        this.axiosloading()
         axios({
             url: this.getHost() + '/Approval/GetFollowList',
             method: 'post',
@@ -177,6 +183,7 @@
             this.getToast("请输入不通过得原因",'warn')
             return
           }
+          this.axiosloading()
            axios({
             url: this.getHost() + '/Approval/CancelFollow',
             method: 'post',
@@ -222,7 +229,7 @@
               this.getList(this.style)
               this.noAllow(false)
             } else if (res.data.Status < 0) {
-              this.getToast("登录失效，请重新登录", 'warn')
+              this.getToast("res.data.Message", 'warn')
               setTimeout(() => {
                 this.delCookie("UserId")
                 this.delCookie("token")
@@ -243,7 +250,10 @@
             id: id
           }
         })
-      }
+      },
+      ...mapMutations({
+      setAccessId: 'SET_ACCESSID'
+    })
 
     }
 
@@ -253,6 +263,21 @@
 
 <style scoped>
   @import '../../common/mask.css';
+  .maskContain .close {
+    display: block;
+    padding: 0 24px;
+    font-size: 13px;
+    font-family: PingFangSC-Regular;
+    color: rgba(152, 152, 152, 1);
+    background: rgba(237, 236, 235, 1);
+    border-radius: 2px;
+    line-height: 34px;
+    text-align: center;
+    margin: 0 auto;
+  }
+  .maskContain{
+    padding: 15px !important;
+  }
   .maskContain li .name{
     flex-grow: 1;
     width: 0;
@@ -365,7 +390,7 @@
   }
 
   .appealList ul li .up .salesman {
-    font-size: 16px;
+    font-size: 14px;
     font-family: PingFangSC-Regular;
     color: rgba(77, 77, 77, 1);
     line-height: 28px;

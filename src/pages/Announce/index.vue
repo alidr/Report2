@@ -127,6 +127,7 @@ export default {
     },
     //获取数据
     getData(){
+      this.axiosloading()
       axios({
         url:this.getHost()+'/Notice/GetNoticeJob', 
         method:'post',
@@ -165,6 +166,7 @@ export default {
          this.getToast("请输入公告详情",'warn')
         return
       }
+      this.axiosloading()
       axios({
         url:this.getHost()+'/Notice/AddNotice', 
         method:'post',

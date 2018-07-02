@@ -27,10 +27,10 @@
       <a href="javascript:;" id="button"  class="confirm" @click="upload">确认上传</a>
       <a href="javascript:;" class="cancel" id="button" @click="cancel">取消上传</a>
     </div>
-    <div class="msg">
+    <!-- <div class="msg">
       <p>1、签约合同在审核失败的时候可以重新上传 </p>
       <p>2、凭证多次重新上传</p>
-    </div>
+    </div> -->
   </div>
 </template>
 

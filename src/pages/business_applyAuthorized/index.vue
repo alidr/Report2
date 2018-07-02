@@ -51,6 +51,7 @@ export default {
   },
   methods:{
     gitInfo(){
+      this.axiosloading()
       axios({
         url:this.getHost()+'/Company/ApplyAuth', 
         method:'post',
@@ -121,6 +122,7 @@ export default {
       }else if (!this.Rebate) {
         this.getToast("请输入激励性返利",'warn')
       }else{
+        this.axiosloading()
         axios({
         url:this.getHost()+'/Company/ApplyAuthSave', 
         method:'post',

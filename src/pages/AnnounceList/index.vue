@@ -34,11 +34,23 @@
         <div class="MyContent" :class="{active:true}">
            {{list.Content}}
         </div>
-        <i @click="deleteAn(list.ID)"><img src="./delete.png" alt="" ></i>
+        <i @click="deleteShopMask(true,list.ID)"><img src="./delete.png" alt="" ></i>
       </div>
 
     </div>
     <router-link to="/announce" id="button" v-if="announ">发布公告</router-link>
+
+    <div id="mask" v-show="deleteShopWarn">
+      <div class="maskContain">
+        <div class="content">
+          确认删除吗？
+        </div>
+        <div class="btn">
+          <span class="cancel" @click="deleteShopMask(false)">取消</span>
+          <span class="confirm" @click="deleteAn()">确认</span>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -55,7 +67,9 @@ export default {
       MyAnnounce:1,
       list:[],
       MyList:[],
-      announ:false
+      announ:false,
+      deleteShopWarn:false,
+      shopID:''
     }
   },
    computed: {
@@ -75,6 +89,10 @@ export default {
     }
   },
   methods:{
+    deleteShopMask(bool,ID){
+        this.deleteShopWarn = bool;
+        this.shopID = ID||""
+      },
     extend(){
       this.isExtend = !this.isExtend
     },
@@ -82,6 +100,7 @@ export default {
       this.MyAnnounce = num
     },
     getAllList(){
+      this.axiosloading()
       axios({
         url:this.getHost()+'/Notice/NoticeList', 
         method:'post',
@@ -106,6 +125,7 @@ export default {
       })
     },
      getMyList(){
+      this.axiosloading()
       axios({
         url:this.getHost()+'/Notice/MyNoticeList', 
         method:'post',
@@ -129,20 +149,22 @@ export default {
         }
       })
     },
-    deleteAn(ID){
+    deleteAn(){
+      this.axiosloading()
       axios({
         url:this.getHost()+'/Notice/DeleteNotice', 
         method:'post',
         data:qs.stringify({
           UserId:getCookie('UserId'),
           token:getCookie('token'),
-          Id:ID
+          Id:this.shopID
         })
       })
       .then(res=>{
         console.log(res)
         if (res.data.Status===1) {
           this.getToast("删除成功",'warn')
+          this.deleteShopMask(false)
           this.getMyList()
         }else if (res.data.Status<0) {
           this.delCookie("UserId")
@@ -163,6 +185,7 @@ export default {
 </script>
 
 <style scoped>
+  @import '../../common/mask.css';
 #AnnounceList{
   padding: 15px;
   box-sizing: border-box;

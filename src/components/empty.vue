@@ -16,7 +16,7 @@
 </script>
 <style scoped>
   .empty {
-    padding-top: 100px;
+    padding-top: 50px;
   }
 
   .empty img {

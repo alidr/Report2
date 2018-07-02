@@ -4,7 +4,7 @@
     <div class="info">
       <div class="input">
         <span>姓名</span>
-        <input type="text" placeholder="请输入员工姓名" v-model='name'>
+        <input type="text" placeholder="请输入员工姓名" v-model='name' :readonly="dealer">
       </div>
       <div class="input" >
         <span>职位</span>
@@ -17,7 +17,7 @@
       </div>
        <div class="input">
         <span>组织名称</span>
-        <input type="text" placeholder="请输入组织名称" v-model="Organization">
+        <input type="text" placeholder="请输入组织名称" v-model="Organization" :readonly="dealer">
       </div>
     </div>
      <div class="info">
@@ -31,15 +31,15 @@
       </div>
       <div class="input">
         <span>密码</span>
-        <input type="password" placeholder="******" v-model="password" maxlength="8">
+        <input type="password" placeholder="******" v-model="password" maxlength="8" :readonly="dealer">
       </div>
       <div class="input">
         <span>确认密码</span>
-        <input type="password" placeholder="******" v-model="rePassword" maxlength="8">
+        <input type="password" placeholder="******" v-model="rePassword" maxlength="8" :readonly="dealer">
       </div>
     </div>
     <div class="btn">
-      <a href="javascript:;" id="button" @click="commitUserInfo">确认保存</a>
+      <a href="javascript:;" id="button" @click="commitUserInfo" v-if="!dealer">确认保存</a>
       <!-- <router-link to="/adminIndex" id="button">取消</router-link> -->
     </div>
   </div>
@@ -63,7 +63,8 @@ export default {
       password:'',
       rePassword:'',
       group:'',
-      id:''
+      id:'',
+      dealer:false
     }
   },
    computed: {
@@ -74,10 +75,14 @@ export default {
   mounted () {
     this.id =this.$route.query.id
     this.getInfo(this.id)
+    if (this.AccessId==4) {
+      this.dealer=true
+    }
     // this.getPickerConfig()
   },
   methods: {
     getInfo(id){
+      this.axiosloading()
       axios({
         url:this.getHost()+'/UserInfo/GetUserByID', 
         method:'post',
@@ -117,6 +122,7 @@ export default {
       }else if (this.password !==this.rePassword) {
         this.getToast("两次密码不一致",'warn')
       }else{
+        this.axiosloading()
         axios({
           url:this.getHost()+'/UserInfo/SaveUserInfo', 
           method:'post',
