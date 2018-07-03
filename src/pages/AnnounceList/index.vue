@@ -20,15 +20,16 @@
         <div class="announceContent" :class="{active:true}">
           {{item.Content}}
         </div>
+        
         <!-- <span class="line" :class="{active:isExtend}"></span> -->
          <!-- <span class="line" :class="{active:true}"></span> -->
       </div>
-
+      
         <!-- 我发布的 -->
        <div class="announceDetail" v-if="MyAnnounce==2" v-for="(list,index) in MyList" :key="index">
         <p class="announceInfo" >
           <span >{{list.Type}}</span>
-          <span>发布人：{{list.CreateUser}}</span>
+          <span>发布人：我</span>
           <span>{{list.CreateDate}}</span>
         </p>
         <div class="MyContent" :class="{active:true}">
@@ -51,6 +52,7 @@
         </div>
       </div>
     </div>
+    <empty v-if="infoNull"></empty>
   </div>
 </template>
 
@@ -58,6 +60,7 @@
 import qs from 'qs'
 import axios from "axios";
 import { mapGetters, mapMutations } from 'vuex'
+import empty from '../../components/empty'
 
 export default {
   name: 'AnnounceList',
@@ -69,13 +72,18 @@ export default {
       MyList:[],
       announ:false,
       deleteShopWarn:false,
-      shopID:''
+      shopID:'',
+      infoNull:false,
+      myinfoNull:false
     }
   },
    computed: {
     ...mapGetters([
       'AccessId'
     ])
+  },
+  components:{
+    empty
   },
   created(){
     this.getAllList()
@@ -113,6 +121,11 @@ export default {
         console.log(res)
         if (res.data.Status===1) {
           this.list = res.data.Data.list
+            if (this.list.length==0 ) {
+              this.infoNull==true
+            }else{
+              this.infoNull==false
+            }
         }else if (res.data.Status<0) {
           this.delCookie("UserId")
           this.delCookie("token")
@@ -137,7 +150,7 @@ export default {
       .then(res=>{
         console.log(res)
         if (res.data.Status===1) {
-          this.MyList = res.data.Data.list
+          this.MyList = res.data.Data.list    
         }else if (res.data.Status<0) {
           this.delCookie("UserId")
           this.delCookie("token")

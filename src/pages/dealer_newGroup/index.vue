@@ -249,7 +249,7 @@
     font-size: 14px;
     font-family: PingFangSC-Regular;
     color: rgba(128, 128, 128, 1);
-
+    background-color: #f5f5f5;
 
   }
 
@@ -274,7 +274,7 @@
     padding-top: 14px;
     padding-left: 4px;
     width: 100%;
-    text-indent: 1em;
+    /* text-indent: 1em; */
   }
 
   .bottom textarea::placeholder {

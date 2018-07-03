@@ -33,13 +33,14 @@
       <p class="reson" v-if="item.Status==-1">{{item.Content}}</p>
       </div>
     </div>
-
+    <empty v-if="infoNull"></empty>
   </div>
 </template>
 
 <script>
 import qs from 'qs'
 import axios from "axios";
+import empty from '../../components/empty'
 
 export default {
   name: 'ApprovalRecord',
@@ -47,7 +48,8 @@ export default {
     return{
       OneList:[],
       TwoList:[],
-      queryId:''
+      queryId:'',
+      infoNull:false
     }
   },
   created(){
@@ -56,6 +58,9 @@ export default {
     
     this.getOneList(1),
     this.getOneList(2)
+  },
+  components:{
+    empty
   },
   methods:{
     getOneList(num){
@@ -76,6 +81,11 @@ export default {
             this.OneList = res.data.Data.list
           }else{
             this.TwoList = res.data.Data.list
+          }
+          if (this.OneList.length==0&&this.TwoList.length==0) {
+            this.infoNull = true
+          }else{
+            this.infoNull = false
           }
         }else if (res.data.Status<0) {
           this.getToast("登录失效，请重新登录",'warn')

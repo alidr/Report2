@@ -4,7 +4,7 @@
     <div class="input">
         <span>公告类型</span>
         <input type="text" placeholder="请选择通告类型" v-model="JobInfo" 
-        :jobId = "jobId" @click="showPicker">
+        :jobId = "jobId" @click="showPicker" readonly>
         <i class="arrow"></i>
     </div> 
     <div class="announceDetail">
@@ -102,16 +102,16 @@ export default {
     getActive(idx,id){
       
       if (!this.isActive[idx]) {
-           if (idx==0) {
-        this.idList = []
-        for (let i = 0; i < this.list.length; i++) {
-            this.idList.push(this.list[i].ID)
+        if (idx==0) {
+          this.idList = []
+          for (let i = 1; i < this.list.length; i++) {
+              this.idList.push(this.list[i].ID)
+          }
+          console.log(this.idList);
+          
+        }else{
+          this.idList.push(id)
         }
-        console.log(this.idList);
-        
-      }else{
-        this.idList.push(id)
-      }
       }else{
         for (let i = 0; i < this.idList.length; i++) {
           if (this.idList[i]==id) {
@@ -164,6 +164,9 @@ export default {
         return
       }else if (!this.anDetail) {
          this.getToast("请输入公告详情",'warn')
+        return
+      }else if (this.idList.length==0) {
+         this.getToast("请选择要通知的人员",'warn')
         return
       }
       this.axiosloading()

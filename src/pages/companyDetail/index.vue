@@ -596,10 +596,10 @@ export default {
             }
 
              if (this.data.ContractImage==""||this.data.ContractImage==null) {
-              this.applyhe = false
+              this.applyhe = true
               this.btn3Active = false
             }else{
-              this.applyhe = true
+              this.applyhe = false
               this.btn3Active = false
             }
           }

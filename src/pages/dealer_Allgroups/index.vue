@@ -14,7 +14,7 @@
             <span>{{item.StatusName}}</span>
           <div class="left">
             <i></i>
-            <span>{{item.StatusName}}</span>
+            <span>小组{{index+1}}</span>
           </div>
           <div class="right">
             <i></i>
@@ -198,12 +198,10 @@ import empty from '../../components/empty'
   }
 
   .groupList ul li .left span {
-    font-size: 16px;
+    font-size: 14px;
     font-family: PingFangSC-Light;
     color: rgba(102, 102, 102, 1);
     line-height: 10px;
-
-
   }
 
   .groupList ul li .left i {
