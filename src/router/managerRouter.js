@@ -1,6 +1,6 @@
 const Appeal = () =>import ('@/pages/dealer_Appeal')
 const ApprovalCompany = () =>import ('@/pages/manager_approvalCompany')
-const CompanyContract = () =>import ('@/pages/manager_companyContract')
+// const CompanyContract = () =>import ('@/pages/manager_companyContract')
 const GiveUpCompany = () =>
   import ('@/pages/busniess_giveUpCompany')
 const UserList = () =>import ('@/pages/admin_UserList')
@@ -24,13 +24,13 @@ export default [
       title: '新建公司待审批'
   },
 },
-{
-  path: '/companyContract',
-  component: CompanyContract,
-  meta: {
-      title: '新建公司已签约'
-  },
-},
+// {
+//   path: '/companyContract',
+//   component: CompanyContract,
+//   meta: {
+//       title: '新建公司已签约'
+//   },
+// },
 {
   path: '/giveUpCompany',
   component: GiveUpCompany,
