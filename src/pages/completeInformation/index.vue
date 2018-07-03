@@ -158,7 +158,7 @@ export default {
           data:qs.stringify({
             UserId:getCookie('UserId'),
             token:getCookie('token'),
-            ID:this.id||0,
+            ID:0,
             CategoryID:localStorage.getItem("companyStyle"),
             Name:localStorage.getItem("companyName"),
             ShortName:this.companyEasyName,

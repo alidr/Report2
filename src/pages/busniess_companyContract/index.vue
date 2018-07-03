@@ -6,7 +6,7 @@
         </div>
         <div class="btn">
             <button type="button" class="giveUp" @click="giveUp">放弃，返回首页</button>
-            <button type="button" class="sure" @click="commitInfo">确认添加，并进入公司详情页</button>
+            <button type="button" class="sure" @click="commitInfo">确认添加</button>
         </div>
     </div>
 </template>
