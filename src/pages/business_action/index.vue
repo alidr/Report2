@@ -196,9 +196,19 @@ export default {
         if (res.data.Status===1) {
           this.getToast("操作成功",'loading')
           setTimeout(() => {
-            this.$router.push({
-            path:"/home"
-          })
+            if (this.$route.query.jump=='home') {
+               this.$router.push({
+                path:"/home"
+              })
+            }else{
+               this.$router.push({
+                path:"/companyDetail",
+                query:{
+                  id:this.CompanyID
+                }
+              })
+            }
+           
           }, 2000);
           
         }else if (res.data.Status<0) {

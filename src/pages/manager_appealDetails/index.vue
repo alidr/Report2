@@ -37,7 +37,7 @@
       <h5>相关凭证</h5>
       <ul>
         <li>
-          <img :src="getImgHost()+data.SateImage" alt="" @click="getImg(data.SateImage)">
+          <img :src="imgSrc" alt="" @click="getImg(data.SateImage)">
         </li>
       </ul>
     </div>
@@ -134,11 +134,15 @@ export default {
           
         },
         isImgMask:false,
-        isShowImg:false
+        isShowImg:false,
+        imgSrc:''
       }
     },
     created(){
       this.Id = this.$route.query.id
+      
+      // console.log(this.imgSrc);
+      
       this.getInfo()
     },
     methods:{
@@ -147,6 +151,7 @@ export default {
       },
       getImg(src){
         this.src = src
+        console.log(src);
         console.log(this.src);
         this.isImgMask = true
         this.isShowImg = true
@@ -165,6 +170,7 @@ export default {
         console.log(res)
         if (res.data.Status===1) {
           this.data = res.data.Data
+          this.imgSrc = this.getImgHost()+this.data.SateImage
         }else if (res.data.Status<0) {
           this.getToast("登录失效，请重新登录",'warn')
           setTimeout(() => {
@@ -236,7 +242,7 @@ export default {
 
   .details ul li span {
     float: right;
-    width: 50%;
+    /* width: 50%; */
     font-size: 14px;
     color: rgba(102, 102, 102, 1);
     line-height: 42px;
@@ -244,7 +250,6 @@ export default {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-
   }
 
   .reason {

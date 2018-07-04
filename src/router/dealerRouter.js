@@ -20,8 +20,8 @@ const SalesmanList = () =>
   import ('@/pages/SalesmanList')
 const EditUser = () =>
   import ('@/pages/admin_editUser')
-
-
+const ApplyAuthorized = () =>
+  import ('@/pages/business_applyAuthorized')
 export default [{
     path: '/demo',
     component: Demo,
@@ -37,6 +37,13 @@ export default [{
       title: '申诉审批'
     },
   },
+    {
+      path: '/applyAuthorized',
+      component: ApplyAuthorized,
+      meta: {
+        title: '申请授权'
+      },
+    },
   {
     path: '/appealFollowUp',
     component: AppealFollowUp,

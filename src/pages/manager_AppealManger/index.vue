@@ -12,7 +12,7 @@
           <i>提交日期 {{item.Date}}</i>
           <div class="up">
             <p class="name">{{item.CompanyName}} </p>
-            <b class="salesman">业务员{{item.UserName}}</b>
+            <!-- <b class="salesman">业务员{{item.UserName}}</b> -->
             <div class="upBtn">
               <button type="button" class="no" @click.stop="noAllow(true,item.ID)">不通过</button>
               <button type="button" class="yes" @click.stop="isAllow(true,item.ID)">审批通过</button>
@@ -355,7 +355,9 @@
     color: rgba(187, 159, 97, 1);
     line-height: 20px;
     text-align: center;
-    margin-right: 140px;
+    /* width: 0;
+    flex-grow: 1; */
+    /* margin-right: 140px; */
   }
 
   .appealList ul li>i {
@@ -363,6 +365,8 @@
     font-size: 12px;
     color: rgba(76, 76, 76, 1);
     line-height: 20px;
+    float: right;
+    margin-right: 10px;
   }
 
   .appealList ul li .up {

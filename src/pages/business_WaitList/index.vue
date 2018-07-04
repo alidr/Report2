@@ -147,8 +147,14 @@ export default {
         })
       })
       .then(res=>{
-        
         if (res.data.Status===1) {
+          this.Mask(false)
+          setTimeout(() => {
+            this.$router.push({
+              path:'/home'
+            })
+          }, 2000);
+          // this.getData ()
         }else if (res.data.Status<0) {
           this.delCookie("UserId")
           this.delCookie("token")
@@ -180,6 +186,11 @@ export default {
         
         if (res.data.Status===1) {
           this.PsdMask(true);
+          setTimeout(() => {
+            this.$router.push({
+              path:'/home'
+            })
+          }, 2000);
         }else if (res.data.Status<0) {
           this.delCookie("UserId")
           this.delCookie("token")

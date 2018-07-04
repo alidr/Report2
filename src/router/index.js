@@ -37,6 +37,7 @@ let router = new Router({
     },
     {
       path: '/home',
+      name:'Home',
       component: Home,
       meta: {
         title: '首页'

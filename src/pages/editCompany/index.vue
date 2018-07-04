@@ -229,13 +229,18 @@ export default {
         .then(res=>{
           console.log(res)
           if (res.data.Status===1) {
-            this.getToast("编辑成功,跳转首页",'correct')
+            this.getToast("编辑成功,跳转公司详情",'correct')
             setTimeout(() => {
-              if (this.AccessId==-1) {
-                this.$router.push({path:"/adminIndex"})
-              }else{
-                this.$router.push({path:"/home"})
-              }
+              // if (this.AccessId==-1) {
+              //   this.$router.push({path:"/adminIndex"})
+              // }else{
+                this.$router.push({
+                  path:"/companyDetail",
+                  query:{
+                    id:this.Id
+                  }
+                  })
+              // }
             }, 2000);
           }else if (res.data.Status<0) {
             this.delCookie("UserId")

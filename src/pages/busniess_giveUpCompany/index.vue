@@ -105,7 +105,7 @@ import { mapGetters, mapMutations } from 'vuex'
             this.getToast("申请成功",'warn')
             setTimeout(() => {
               this.$router.push({
-                path:'/waitList',
+                path:'/home',
               })
             }, 2000);
           }else if (res.data.Status<0) {

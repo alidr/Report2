@@ -8,7 +8,7 @@
           </p>
           <p class="twoLine">
             <span>{{item.Name}}</span>
-            <span @click.stop="action(item.ID)" v-if="Action">+行动</span>
+            <span @click.stop="action(item.ID,'home')" v-if="Action">+行动</span>
           </p>
           <i v-if="item.IsEmphasis||IsEmphasis"></i>
         </div>
@@ -42,11 +42,12 @@ export default {
           }
         })
     },
-    action(num){
+    action(num,jump){
       this.$router.push({
           path: '/action',
           query: {
-            id: num
+            id: num,
+            jump:jump
           }
         })
     }

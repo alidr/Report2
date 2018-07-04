@@ -18,6 +18,7 @@ const AnnounceStyle = () =>import ('@/pages/admin_announceStyle')
 const EditCompete = () => import('@/pages/busniess_editCompete')
 export default [{
   path: '/adminIndex',
+  name: 'AdminIndex',
   component: AdminIndex,
   meta: {
       title: '管理员首页'

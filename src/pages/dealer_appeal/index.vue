@@ -14,7 +14,7 @@
           
           <div class="up">
             <span class="CompanyName">{{item.CompanyName}} </span>
-            <span class="UserName">业务员{{item.UserName}}</span>
+            <!-- <span class="UserName">业务员{{item.UserName}}</span> -->
             <div class="upBtn">
               <button type="button" class="no" @click.stop="noAllow(true,item.ID)" v-if="btn">不通过</button>
               <button type="button" class="yes" @click.stop="isAllow(true,item.ID)"

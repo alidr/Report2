@@ -1,6 +1,10 @@
 <template>
   <div id="app">
-    <router-view />
+    <a href="javascript:;" @click="back" id="fixBack" v-show="needBack&&isminprograme">
+      <!-- <i class="iconfont icon-fanhui"></i> -->
+      <span>返回</span>
+    </a>
+    <router-view/>
   </div>
 </template>
 
@@ -13,6 +17,12 @@ import ManagerRouter from './router/managerRouter.js'
 
 export default {
   name: 'App',
+  data(){
+    return{
+      isminprograme: false,
+      needBack:false
+    }
+  },
   computed: {
     ...mapGetters([
       'AccessId'
@@ -21,9 +31,37 @@ export default {
   watch: {
     'AccessId': function() {
       this.initRouter()
+    },
+    '$route': function (to, from) {
+      // this.calc_transitionName(to, from)
+      if (to.name === 'Home' || to.name === 'Login'||to.name === 'AdminIndex') {
+        this.needBack = false
+      } else {
+        this.needBack = true
+      }
+    }
+  },
+  created(){
+    let that = this
+    function ready() {
+      if (window.__wxjs_environment === 'miniprogram') {
+        that.isminprograme = true
+      }
+    }
+    /* eslint-disable no-undef */
+    if (!window.WeixinJSBridge || !WeixinJSBridge.invoke) {
+      document.addEventListener('WeixinJSBridgeReady', ready, false)
+    } else {
+      ready()
     }
   },
   methods: {
+    afterEnter() {
+      console.log('afterEnter')
+    },
+    back() {
+      this.$router.back()
+    },
     initRouter() {
       let AccessId = this.AccessId
       if (AccessId == -1) {
@@ -73,4 +111,19 @@ export default {
       margin-top: -200px;
       opacity: 0;
  }
+ #fixBack{
+    position: fixed;
+    left: 0;
+    top: 10vh;
+    width: 50px;
+    height: 40px;
+    background-color: rgba(0,0,0,.3);
+    z-index: 999999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 0 4px 4px 0px;
+    color: #fff
+ }
+
 </style>

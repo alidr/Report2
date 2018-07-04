@@ -46,7 +46,8 @@
         <p>
           <i><img src="./photo.png" alt=""></i>
           <span>门头照</span>
-          <span class="color" @click="getImg(data.HeadImageUrl)">查看门头照</span>
+          <span class="ImageBtn" v-if="data.HeadImageUrl==''">查看门头照</span>
+          <span class="ImageBtn active" v-if="data.HeadImageUrl" @click="getImg(data.HeadImageUrl)">查看门头照</span>
         </p>
         <div v-if="isExpend" class="otherInfo">
           <p>
@@ -59,7 +60,7 @@
           </p>
           <p>
             <span>公司地址</span>
-            <span class="color">{{data.PCAName}}+{{data.Address}}</span>
+            <span class="color">{{data.PCAName}}{{data.Address}}</span>
           </p>
         </div>
         
@@ -121,7 +122,7 @@
         <p>
           <span>跟单时间线</span>
           （{{timeList.length}}）
-          <span class="upload" @click="addFollow" v-if="show">添加跟单行动</span>
+          <span class="upload noImg" @click="addFollow('detail')" v-if="show">添加跟单行动</span>
         </p>
         
       </div>
@@ -183,9 +184,10 @@
         <p>直营门店信息</p>
         
         <div v-if="noHasImg">
-          <span class="upload" @click="look" v-if="busniessShopShow">查看直营分店证明</span>
-          <span class="upload"  @click="uploadContract(3)" v-if="!busniessShopShow">上传直营分店证明</span>
-          <span class="reUpload" @click="look" v-if="!busniessShopShow">查看证明</span>
+          <!-- <span class="upload" @click="look" v-if="busniessShopShow">查看直营分店证明</span> -->
+          <span class="upload" :class="{noImg:data.ProveImage}" @click="look" v-if="busniessShopShow">查看直营分店证明</span>
+          <span class="upload" :class="{noImg:data.ProveImage}" @click="look" v-if="!busniessShopShow">查看证明</span>
+          <span class="reUpload"   @click="uploadContract(3)" v-if="!busniessShopShow">上传直营分店证明</span>
         </div>
       </div>
       <div class="ShopMsg" v-if="afterUpload">
@@ -230,7 +232,7 @@
     </div>
     <div id="mask" v-show="isImgMask" @click="hideImgMask">
       <div class="img" v-if="isShowImg">
-        <img :src="getImgHost()+src" alt="">
+        <img :src="src" alt="">
       </div>
     </div>
     <!--  -->
@@ -449,7 +451,12 @@ export default {
       if (this.data.Status!==3) {
         this.getToast("该公司还未签约",'warn')
       }else{
-        this.getImg(this.data.ProveImage)
+        if (this.data.ProveImage) {
+          this.getImg(this.data.ProveImage)
+        }else{
+          return
+        }
+        
       }
     },
     //判断是否为业务员
@@ -490,11 +497,12 @@ export default {
       this.giveUp = false;
     },
     //跳转添加跟单行动
-    addFollow(){
+    addFollow(jump){
       this.$router.push({
         path: '/action',
         query: {
-          id:this.ID
+          id:this.ID,
+          jump:jump
         }
       })
     },
@@ -768,10 +776,9 @@ export default {
     },
     getImg(src){
       console.log(src);
-
       
-      this.src = src
-      console.log(this.src);
+      this.src =this.getImgHost() + src
+      alert(this.src);
       this.isImgMask = true
       this.isShowImg = true
     },
@@ -1107,6 +1114,15 @@ export default {
   display: flex;
   width: 60px;
 }
+.ImageBtn{
+  background-color: #ccc;
+  padding: 5px;
+  border-radius: 4px;
+  color: #fff
+}
+.ImageBtn.active{
+  background-color: rgba(226,199,143,1);
+}
 .color{
   color: rgb(83, 78, 78);
 }
@@ -1347,9 +1363,13 @@ export default {
   border-radius: 4px;
 }
 .upload{
-  background-color: #E2C78F;
+  background-color: #ccc;
+  
   color: #fff;
   margin-right: 10px;
+}
+.upload.noImg{
+  background-color: #E2C78F;
 }
 .reUpload{
   color: #E2C78F;
