@@ -47,7 +47,7 @@
     </div>
     <!-- 公司列表 -->
     <div class="comList">
-      <focusList :list="List" id="list" v-if="!admin"></focusList>
+      <focusList :list="List" id="list" v-if="!admin" :Action="active"></focusList>
        <!-- <companyFilter v-if="admin" :list="List"></companyFilter> -->
       <empty v-if='emptyFlag'></empty>
       <div>
@@ -139,6 +139,7 @@
         checkBoxs:[],
         checkAllBox:false,
         idList:[],
+        active:false
       }
 
     },
@@ -159,6 +160,9 @@
       this.getTotalData()
       if (this.AccessId == -1||this.AccessId == 4) {
         this.admin = true
+      }
+      if (this.AccessId==5) {
+        this.active = true
       }
     },
     methods: {
