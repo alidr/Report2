@@ -1,5 +1,4 @@
-const Demo = () =>
-  import ('@/pages/dealer_demo')
+
 const Appeal = () =>
   import ('@/pages/dealer_Appeal')
 const AppealFollowUp = () =>
@@ -22,14 +21,7 @@ const EditUser = () =>
   import ('@/pages/admin_editUser')
 const ApplyAuthorized = () =>
   import ('@/pages/business_applyAuthorized')
-export default [{
-    path: '/demo',
-    component: Demo,
-    meta: {
-      title: '经销商demo'
-    },
-
-  },
+export default [
   {
     path: '/appeal',
     component: Appeal,

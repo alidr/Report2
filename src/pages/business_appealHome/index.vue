@@ -13,8 +13,15 @@
     <div class="input inputTitle">
       <span class="title">申诉历史</span>
     </div>
+
+    
     <div class="appealHis">
-      <!-- <appealHisList :historyData="applyHistoryList" v-on:cancel="cancel"></appealHisList> -->
+      <div class="scroll-list-wrap">
+      <cube-scroll
+        ref="scroll"
+        :data="applyHistoryList"
+        :options="options"
+        @pulling-up="onPullingUp">
       <div class="home_content">
       <div class="contentList" v-for="(item,index) in applyHistoryList" :key="index">
         <div class="contentListTop">
@@ -44,7 +51,8 @@
         <a href="javascript:;">查看全部</a>
       </div> -->
     </div>
-
+  </cube-scroll>
+      </div>
     </div>
     <div id="mask" v-show="deleteShopWarn">
       <div class="maskContain">
@@ -76,14 +84,44 @@ export default {
       name:'',
       applyHistoryList: [],
       deleteShopWarn:false,
-      shopID:''
+      shopID:'',
+      pageCount:1,
+      page:1,
+      pullUpLoad: false,
+      pullUpLoadThreshold: 0,
+      pullUpLoadMoreTxt: '--加载更多--',
+      pullUpLoadNoMoreTxt: '--已经到底部了--',
     }
   },
   created () {
     this.getData();
   },
- 
+ computed: {
+    options() {
+    return {
+      pullUpLoad: this.pullUpLoadObj,
+      scrollbar: true
+    }
+  },
+  pullUpLoadObj: function() {
+    return {
+      threshold: parseInt(this.pullUpLoadThreshold),
+      txt: {
+        more: this.pullUpLoadMoreTxt,
+        noMore: this.pullUpLoadNoMoreTxt
+      }
+    }
+  }
+},
   methods: {
+     onPullingUp() {
+          // 更新数据
+           if (this.pageCount>=this.page) {
+             this.getData(this.page)
+           }else{
+             this.$refs.scroll.forceUpdate()
+           }
+        },
     deleteShopMask(bool,ID){
       this.deleteShopWarn = bool;
       this.shopID = ID||""
@@ -142,21 +180,33 @@ export default {
       })
       
     },
-    getData () {
+    getData (page) {
       axios({
         url:this.getHost()+'/Approval/ApplyHistory', 
         method:'post',
         data:qs.stringify({
           // 拿到用户id和token
           UserId:getCookie('UserId'),
-          token:getCookie('token')
+          token:getCookie('token'),
+          page:page||1
         })
       })
       .then(res=>{
         
         if (res.data.Status===1) {
-          console.log(res)
-          this.applyHistoryList = res.data.Data.list;
+            this.pageCount = res.data.Data.pageCount
+                if (this.page==1) {
+                  this.applyHistoryList = res.data.Data.list
+                }else{
+               if (this.applyHistoryList.length>0&&this.page>1) {
+                  // 如果有新数据
+                  // let newPage = _foods.slice(0, 5)
+                  this.applyHistoryList = this.applyHistoryList.concat(res.data.Data.list)
+                  
+                }
+                }
+              this.page++
+          // this.applyHistoryList = res.data.Data.list;
         }else if (res.data.Status<0) {
           this.delCookie("UserId")
           this.delCookie("token")
@@ -210,6 +260,9 @@ export default {
 @import '../../common/focusList.css';
 @import '../../common/mask.css';
 /*  */
+.scroll-list-wrap {
+  height: calc(100vh - 250px);
+}
 .contentListBottom span:nth-child(3){
   color: #666;
   font-size: 12px;

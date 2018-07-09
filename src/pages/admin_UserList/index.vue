@@ -31,6 +31,14 @@
         <div class="mask"></div>
       </ul>
     </div>
+
+
+  <div class="scroll-list-wrap">
+      <cube-scroll
+        ref="scroll"
+        :data="list"
+        :options="options"
+        @pulling-up="onPullingUp">
     <div class="UserListAll">
       <ul>
         <li v-for="(item,index) in list" :key="index">
@@ -59,6 +67,9 @@
       </ul>
       <empty v-if='emptyFlag'></empty>
     </div>
+ </cube-scroll>
+    </div>
+    
     <div id="mask" v-show="deleteShopWarn">
       <div class="maskContain">
         <div class="content">
@@ -115,13 +126,34 @@
         emptyFlag: false,
         dealer:false,
         deleteShopWarn:false,
-        shopID:''
+        shopID:'',
+         pageCount:1,
+        page:1,
+        pullUpLoad: false,
+        pullUpLoadThreshold: 0,
+        pullUpLoadMoreTxt: '--加载更多--',
+        pullUpLoadNoMoreTxt: '--已经到底部了--',
       }
     },
     components:{
       empty
     },
     computed: {
+      options() {
+    return {
+      pullUpLoad: this.pullUpLoadObj,
+      scrollbar: true
+    }
+  },
+  pullUpLoadObj: function() {
+    return {
+      threshold: parseInt(this.pullUpLoadThreshold),
+      txt: {
+        more: this.pullUpLoadMoreTxt,
+        noMore: this.pullUpLoadNoMoreTxt
+      }
+    }
+  },
       ...mapGetters([
         'AccessId'
       ])
@@ -141,6 +173,14 @@
 
     },
     methods: {
+        onPullingUp() {
+          // 更新数据
+           if (this.pageCount>=this.page) {
+             this.getList(this.page)
+           }else{
+             this.$refs.scroll.forceUpdate()
+           }
+        },
       deleteShopMask(bool,ID){
         this.deleteShopWarn = bool;
         this.shopID = ID||""
@@ -209,7 +249,7 @@
         // this.isShow = true
 
       },
-      getList() {
+      getList(page) {
         // console.log(222)
         axios({
             url: this.getHost() + '/UserInfo/GetUserInfoList',
@@ -220,15 +260,27 @@
               Keyword: this.Keyword,
               JobId: this.StatusID,
               Sort: this.TypeID,
+              page:page||1
             })
           })
           .then(res => {
             console.log(res)
             if (res.data.Status === 1) {
-              this.list = res.data.Data.list
-                 if (this.list == '') {
+              this.pageCount = res.data.Data.pageCount
+                if (this.page==1) {
+                  this.list = res.data.Data.list
+                }else{
+               if (this.list.length>0&&this.page>1) {
+                  // 如果有新数据
+                  // let newPage = _foods.slice(0, 5)
+                  this.list = this.list.concat(res.data.Data.list)
+                  
+                }
+                }
+              this.page++
+              if (this.list.length==0) {
                 this.emptyFlag = true
-              } else {
+              }else{
                 this.emptyFlag = false
               }
             } else if (res.data.Status < 0) {
@@ -300,6 +352,9 @@
 <style scoped>
   @import '../../common/filter.css';
   @import '../../common/mask.css';
+  .scroll-list-wrap {
+  height: calc(100vh - 150px);
+}
   .UserList {
     width: 100%;
     overflow: hidden;

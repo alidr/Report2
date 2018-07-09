@@ -125,5 +125,7 @@ export default {
     border-radius: 0 4px 4px 0px;
     color: #fff
  }
-
+.HomeDecoration .cube-pullup-wrapper .before-trigger{
+  padding: 10px 0!important;
+}
 </style>

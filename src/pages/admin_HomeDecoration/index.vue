@@ -45,33 +45,42 @@
         <div class="mask"></div>
       </ul>
     </div>
-    <!-- 公司列表 -->
-    <div class="comList">
-      <focusList :list="List" id="list" v-if="!admin" :Action="active"></focusList>
-       <!-- <companyFilter v-if="admin" :list="List"></companyFilter> -->
-      <empty v-if='emptyFlag'></empty>
-      <div>
-      <div class="contentList" v-for="(item,index) in List" :key="index"  v-if="admin" @click="jump(item.ID)">
-        <div class="contentListTop">
-          <p class="firstLine">
-            <span :class="{red:item.Status==2,yellow:item.Status==1,grey:item.Status==3}">{{item.StatusName}}</span>
-            <span>剩余保护期:{{item.EndDate}}天</span>
-          </p>
-          <p class="twoLine">
-            <a href="javascript:;" class="round" :class="{'active':checkBoxs[index]}" @click.stop="check(index,item.ID)"><b :class="{'active':checkBoxs[index]}"></b></a>
-            <a href="javascript:;" class="name">{{item.Name}}</a>
-            <!-- <a href="javascript:;" class="btn">+行动</a> -->
-          </p>
-          <i v-if="item.IsEmphasis"></i>
-        </div>
-        <div class="contentListBottom">
-           <span>{{item.CreateDate}}</span>
-          <span>{{item.Content}}</span>
-          <span>{{item.UserName}}</span>
-        </div>
-      </div>
+    <div class="scroll-list-wrap">
+      <cube-scroll
+        ref="scroll"
+        :data="List"
+        :options="options"
+        @pulling-up="onPullingUp">
+            <!-- 公司列表 -->
+            <div class="comList">
+              <focusList :list="List" id="list" v-if="!admin" :Action="active"></focusList>
+                <!-- <companyFilter v-if="admin" :list="List"></companyFilter> -->
+              <empty v-if='emptyFlag'></empty>
+              <div>
+              <div class="contentList" v-for="(item,index) in List" :key="index"  v-if="admin" @click="jump(item.ID)">
+                <div class="contentListTop">
+                  <p class="firstLine">
+                    <span :class="{red:item.Status==2,yellow:item.Status==1,grey:item.Status==3}">{{item.StatusName}}</span>
+                    <span>剩余保护期:{{item.EndDate}}天</span>
+                  </p>
+                  <p class="twoLine">
+                    <a href="javascript:;" class="round" :class="{'active':checkBoxs[index]}" @click.stop="check(index,item.ID)"><b :class="{'active':checkBoxs[index]}"></b></a>
+                    <a href="javascript:;" class="name">{{item.Name}}</a>
+                    <!-- <a href="javascript:;" class="btn">+行动</a> -->
+                  </p>
+                  <i v-if="item.IsEmphasis"></i>
+                </div>
+                <div class="contentListBottom">
+                    <span>{{item.CreateDate}}</span>
+                  <span>{{item.Content}}</span>
+                  <span>{{item.UserName}}</span>
+                </div>
+              </div>
+            </div>
+            </div>
+      </cube-scroll>
     </div>
-    </div>
+
 
      <div class="bottom" v-if="admin">
       <span class="round" :class="{active:checkAllBox}" @click="checkAll(List)"><b :class="{active:checkAllBox}"></b></span>
@@ -92,6 +101,12 @@
     name: 'HomeDecoration',
     data() {
       return {
+        pageCount:1,
+        page:1,
+        pullUpLoad: false,
+        pullUpLoadThreshold: 0,
+        pullUpLoadMoreTxt: '--加载更多--',
+        pullUpLoadNoMoreTxt: '--已经到底部了--',
         admin:false,
         keyword: '',
         StatusID: '',
@@ -139,11 +154,27 @@
         checkBoxs:[],
         checkAllBox:false,
         idList:[],
-        active:false
+        active:false,
+        
       }
 
     },
      computed: {
+       options() {
+        return {
+          pullUpLoad: this.pullUpLoadObj,
+          scrollbar: true
+        }
+      },
+      pullUpLoadObj: function() {
+        return {
+          threshold: parseInt(this.pullUpLoadThreshold),
+          txt: {
+            more: this.pullUpLoadMoreTxt,
+            noMore: this.pullUpLoadNoMoreTxt
+          }
+        }
+      },
     ...mapGetters([
       'AccessId'
       ])
@@ -166,6 +197,16 @@
       }
     },
     methods: {
+        onPullingUp() {
+          // 更新数据
+           
+           
+           if (this.pageCount>=this.page) {
+             this.getList(this.page)
+           }else{
+             this.$refs.scroll.forceUpdate()
+           }
+        },
        distribution(){
         if (this.idList.length==0) {
           this.getToast("请选择要分配的公司",'warn')
@@ -308,7 +349,7 @@
           }
         })
       },
-      getList() {
+      getList(page) {
         this.axiosloading()
         axios({
             url: this.getHost() + '/Company/CompanyList',
@@ -320,17 +361,30 @@
               StatusID: this.StatusID,
               TypeID: this.TypeID,
               SaleID: this.SaleID,
+              page:page||1
             })
           })
           .then(res => {
             console.log(res)
             if (res.data.Status === 1) {
-              this.List = res.data.Data.list
+              this.pageCount = res.data.Data.pageCount
+                if (this.page==1) {
+                  this.List = res.data.Data.list
+                }else{
+               if (this.List.length>0&&this.page>1) {
+                  // 如果有新数据
+                  // let newPage = _foods.slice(0, 5)
+                  this.List = this.List.concat(res.data.Data.list)
+                  
+                }
+                }
+              this.page++
               if (this.List.length==0) {
                 this.emptyFlag = true
               }else{
                 this.emptyFlag = false
               }
+              
             } else if (res.data.Status < 0) {
               this.delCookie("UserId")
               this.delCookie("token")
@@ -382,6 +436,7 @@
         this.statusSelect = name
         this.hasMask[0] = false
         this.StatusID = id
+        this.page = 1
         this.getList()
       
       },
@@ -390,6 +445,7 @@
         this.styleSelect = name
         this.hasMask[1] = false
         this.TypeID=id
+        this.page = 1
         this.getList()
              
       },
@@ -398,6 +454,7 @@
         this.personSelect = name
         this.hasMask[2] = false
         this.SaleID=id
+        this.page = 1
         this.getList()
       }
     }
@@ -412,6 +469,9 @@
   height: 100vh;
   overflow: hidden;
 } */
+.scroll-list-wrap {
+  height: calc(100vh - 210px);
+}
 .contentListTop{
   margin-left: 0px;
 }

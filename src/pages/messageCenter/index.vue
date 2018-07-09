@@ -1,7 +1,12 @@
 <template>
 <!-- 消息中心 -->
   <div id="messageCenter">
-    
+       <div class="scroll-list-wrap">
+      <cube-scroll
+        ref="scroll"
+        :data="list"
+        :options="options"
+        @pulling-up="onPullingUp">
       <div class="contentList" v-for="(item,index) in list" :key="index">
         <div class="contentListTop">
           <p class="firstLine">
@@ -23,6 +28,8 @@
           <p v-if="item.TagID!=2"><a href="javascript:;" to="/companyDetail" @click="companyDetail(item.SourceID)">点击进入公司详情页>></a></p>
         </div>
       </div>
+      </cube-scroll>
+    </div>
       <empty v-if='emptyFlag'></empty>
       <!-- <div class="lookMore">
         <a href="javascript:;">查看全部</a>
@@ -41,7 +48,13 @@ export default {
   data(){
     return{
         list:[],
-        emptyFlag:false
+        emptyFlag:false,
+        pageCount:1,
+        page:1,
+        pullUpLoad: false,
+        pullUpLoadThreshold: 0,
+        pullUpLoadMoreTxt: '--加载更多--',
+        pullUpLoadNoMoreTxt: '--已经到底部了--',
       }
   },
   components:{
@@ -51,23 +64,60 @@ export default {
   created(){
     this.getList()
   },
+  computed: {
+    options() {
+    return {
+      pullUpLoad: this.pullUpLoadObj,
+      scrollbar: true
+    }
+  },
+  pullUpLoadObj: function() {
+    return {
+      threshold: parseInt(this.pullUpLoadThreshold),
+      txt: {
+        more: this.pullUpLoadMoreTxt,
+        noMore: this.pullUpLoadNoMoreTxt
+      }
+    }
+  }
+},
   methods:{
-    getList(){
+     onPullingUp() {
+          // 更新数据
+           if (this.pageCount>=this.page) {
+             this.getList(this.page)
+           }else{
+             this.$refs.scroll.forceUpdate()
+           }
+        },
+    getList(page){
       axios({
         url:this.getHost()+'/UserInfo/GetMessageList', 
         method:'post',
         data:qs.stringify({
           UserId:getCookie('UserId'),
-          token:getCookie('token')
+          token:getCookie('token'),
+          page:page||1
         })
       })
       .then(res=>{
         console.log(res)
         if (res.data.Status===1) {
-          this.list = res.data.Data.list
-          if (this.list == '') {
+           this.pageCount = res.data.Data.pageCount
+                if (this.page==1) {
+                  this.list = res.data.Data.list
+                }else{
+               if (this.list.length>0&&this.page>1) {
+                  // 如果有新数据
+                  // let newPage = _foods.slice(0, 5)
+                  this.list = this.list.concat(res.data.Data.list)
+                  
+                }
+                }
+              this.page++
+              if (this.list.length==0) {
                 this.emptyFlag = true
-              } else {
+              }else{
                 this.emptyFlag = false
               }
         }else if (res.data.Status<0) {
@@ -98,6 +148,9 @@ export default {
 
 <style scoped>
 @import '../../common/focusList.css';
+.scroll-list-wrap {
+  height: calc(100vh - 50px);
+}
 #messageCenter{
   padding: 15px;
   box-sizing: border-box;

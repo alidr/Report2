@@ -37,6 +37,12 @@
 
 
     </div>
+<div class="scroll-list-wrap">
+  <cube-scroll
+    ref="scroll"
+    :data="list"
+    :options="options"
+    @pulling-up="onPullingUp">
     <div class="companyList">
       <ul>
         <li v-for="(item,index) in list" :key="index" @click="companyDetail(item.ID)">
@@ -64,6 +70,8 @@
       </ul>
       <empty v-if='emptyFlag'></empty>
     </div>
+  </cube-scroll>
+</div>
 
     <footer v-if="selected">
       <span :class="{active:checkAllBox}" @click="checkAll(list)"></span>
@@ -85,6 +93,12 @@
     name: 'CompanyFollow',
     data(){
       return{
+        pageCount:1,
+        page:1,
+        pullUpLoad: false,
+        pullUpLoadThreshold: 0,
+        pullUpLoadMoreTxt: '--加载更多--',
+        pullUpLoadNoMoreTxt: '--已经到底部了--',
         list:[],
         checkBoxs:[],
         checkAllBox:false,
@@ -142,6 +156,21 @@
       
     },
      computed: {
+        options() {
+        return {
+          pullUpLoad: this.pullUpLoadObj,
+          scrollbar: true
+        }
+      },
+      pullUpLoadObj: function() {
+        return {
+          threshold: parseInt(this.pullUpLoadThreshold),
+          txt: {
+            more: this.pullUpLoadMoreTxt,
+            noMore: this.pullUpLoadNoMoreTxt
+          }
+        }
+      },
       ...mapGetters([
         'AccessId'
       ])
@@ -150,6 +179,20 @@
       empty
     },
     methods:{
+      onPullingUp() {
+          // 更新数据
+      
+           
+           if (this.pageCount>=this.page) {
+                if (this.AccessId==-1) {
+                this.getList()
+              }else if (this.AccessId==5){
+                this.getMyMember()
+              } 
+           }else{
+             this.$refs.scroll.forceUpdate()
+           }
+        },
       getPersonList(){
         axios({
           url:this.getHost()+'/UserInfo/GetGroupUserList', 
@@ -190,6 +233,7 @@
         this.getMyMember()
       },
       search(){
+        this.page = 1
         if (this.AccessId==-1) {
           this.getList()
         }else if (this.AccessId==5){
@@ -248,6 +292,7 @@
         this.statusSelect = name
         this.hasMask[0] = false
         this.StatusID = id
+        this.page = 1
          if (this.AccessId==-1) {
           this.getList()
         }else if (this.AccessId==5){
@@ -260,6 +305,7 @@
         this.styleSelect = name
         this.hasMask[1] = false
         this.TypeID=id
+        this.page = 1
          if (this.AccessId==-1) {
           this.getList()
         }else if (this.AccessId==5){
@@ -294,12 +340,31 @@
         .then(res=>{
           console.log(res)
           if (res.data.Status===1) {
-            this.list  = res.data.Data.list    
-            if (this.list.length==0) {
+            this.pageCount = res.data.Data.pageCount
+                if (this.page==1) {
+                  this.list = res.data.Data.list
+                }else{
+               if (this.list.length>0&&this.page>1) {
+                  // 如果有新数据
+                  // let newPage = _foods.slice(0, 5)
+                  this.list = this.list.concat(res.data.Data.list)
+                  
+                }
+                }
+              this.page++
+              if (this.list.length==0) {
                 this.emptyFlag = true
-            }else{
+              }else{
                 this.emptyFlag = false
-            }      
+              }
+
+
+            // this.list  = res.data.Data.list    
+            // if (this.list.length==0) {
+            //     this.emptyFlag = true
+            // }else{
+            //     this.emptyFlag = false
+            // }      
           }else if (res.data.Status<0) {
             this.delCookie("UserId")
             this.delCookie("token")
@@ -311,7 +376,7 @@
           }
         })
       },
-      getList(){
+      getList(page){
         axios({
           url:this.getHost()+'/Admin/WaitFollowList', 
           method:'post',
@@ -320,16 +385,28 @@
             token:getCookie('token'),
             Status:this.StatusID,
             CompanyTypeID:this.TypeID,
-            Keyword:this.keyword
+            Keyword:this.keyword,
+            page:page||1
           })
         })
         .then(res=>{
           console.log(res)
           if (res.data.Status===1) {
-            this.list  = res.data.Data.list
-            if (this.list == '') {
+           this.pageCount = res.data.Data.pageCount
+                if (this.page==1) {
+                  this.list = res.data.Data.list
+                }else{
+               if (this.list.length>0&&this.page>1) {
+                  // 如果有新数据
+                  // let newPage = _foods.slice(0, 5)
+                  this.list = this.list.concat(res.data.Data.list)
+                  
+                }
+                }
+              this.page++
+              if (this.list.length==0) {
                 this.emptyFlag = true
-              } else {
+              }else{
                 this.emptyFlag = false
               }
             for (let i = 0; i < this.list.length; i++) {
@@ -429,7 +506,9 @@
 <style scoped>
   @import '../../common/filter.css';
 
-
+  .scroll-list-wrap {
+  height: calc(100vh - 150px);
+}
   .FilterConditions {
     padding: 0 10px;
   }

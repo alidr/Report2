@@ -6,6 +6,13 @@
       <span :class="{active:MyAnnounce==2}" @click="announce(2)">我发布的</span>
     </div>
     <div class="announce">
+
+      <div class="scroll-list-wrap">
+      <cube-scroll
+        ref="scroll"
+        :data="list"
+        :options="options"
+        @pulling-up="onPullingUp">
       <div class="announceDetail"  v-if="MyAnnounce==1"
       v-for="(item,index) in list" :key="index"
       >
@@ -24,7 +31,8 @@
         <!-- <span class="line" :class="{active:isExtend}"></span> -->
          <!-- <span class="line" :class="{active:true}"></span> -->
       </div>
-      
+      </cube-scroll>
+    </div> 
         <!-- 我发布的 -->
        <div class="announceDetail" v-if="MyAnnounce==2" v-for="(list,index) in MyList" :key="index">
         <p class="announceInfo" >
@@ -74,10 +82,31 @@ export default {
       deleteShopWarn:false,
       shopID:'',
       infoNull:false,
-      myinfoNull:false
+      myinfoNull:false,
+      pageCount:1,
+      page:1,
+      pullUpLoad: false,
+      pullUpLoadThreshold: 0,
+      pullUpLoadMoreTxt: '--加载更多--',
+      pullUpLoadNoMoreTxt: '--已经到底部了--',
     }
   },
    computed: {
+     options() {
+    return {
+      pullUpLoad: this.pullUpLoadObj,
+      scrollbar: true
+    }
+  },
+  pullUpLoadObj: function() {
+    return {
+      threshold: parseInt(this.pullUpLoadThreshold),
+      txt: {
+        more: this.pullUpLoadMoreTxt,
+        noMore: this.pullUpLoadNoMoreTxt
+      }
+    }
+  },
     ...mapGetters([
       'AccessId'
     ])
@@ -97,6 +126,14 @@ export default {
     }
   },
   methods:{
+     onPullingUp() {
+          // 更新数据
+           if (this.pageCount>=this.page) {
+             this.getAllList(this.page)
+           }else{
+             this.$refs.scroll.forceUpdate()
+           }
+        },
     deleteShopMask(bool,ID){
         this.deleteShopWarn = bool;
         this.shopID = ID||""
@@ -107,20 +144,32 @@ export default {
     announce(num){
       this.MyAnnounce = num
     },
-    getAllList(){
+    getAllList(page){
       this.axiosloading()
       axios({
         url:this.getHost()+'/Notice/NoticeList', 
         method:'post',
         data:qs.stringify({
           UserId:getCookie('UserId'),
-          token:getCookie('token')
+          token:getCookie('token'),
+          page:page||1
         })
       })
       .then(res=>{
         console.log(res)
         if (res.data.Status===1) {
-          this.list = res.data.Data.list
+         this.pageCount = res.data.Data.pageCount
+                if (this.page==1) {
+                  this.list = res.data.Data.list
+                }else{
+               if (this.list.length>0&&this.page>1) {
+                  // 如果有新数据
+                  // let newPage = _foods.slice(0, 5)
+                  this.list = this.list.concat(res.data.Data.list)
+                  
+                }
+                }
+              this.page++
             if (this.list.length==0 ) {
               this.infoNull==true
             }else{
@@ -199,6 +248,9 @@ export default {
 
 <style scoped>
   @import '../../common/mask.css';
+  .scroll-list-wrap {
+  height: 100vh;
+}
 #AnnounceList{
   padding: 15px;
   box-sizing: border-box;
