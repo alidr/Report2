@@ -23,7 +23,7 @@
      <div class="info">
       <div class="input">
         <span>手机号码</span>
-        <input type="text" placeholder="请输入员工手机号" v-model="tel" maxlength="11" readonly>
+        <input type="text" placeholder="请输入员工手机号" v-model="tel" readonly>
       </div>
        <div class="input">
         <span>小组信息</span>

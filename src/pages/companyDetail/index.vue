@@ -778,7 +778,7 @@ export default {
       console.log(src);
       
       this.src =this.getImgHost() + src
-      alert(this.src);
+      // alert(this.src);
       this.isImgMask = true
       this.isShowImg = true
     },

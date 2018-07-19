@@ -87,6 +87,8 @@
               })
               toast.show()
               return
+            }else if (res.data.Status == 403) {
+              window.location.href = res.data.Message
             }
           })
       },

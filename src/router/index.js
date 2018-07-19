@@ -15,6 +15,8 @@ import AppealDetails from "@/pages/manager_appealDetails"
 import Announce from "@/pages/Announce"
 import ApprovalRecord from "@/pages/busniess_ApprovalRecord";
 
+import wx from "@/pages/wx";
+
 
 Vue.use(Router)
 
@@ -99,6 +101,13 @@ let router = new Router({
       component: ApprovalRecord,
       meta: {
         title: '审批记录'
+      },
+    },
+    {
+      path: '/wx',
+      component: wx,
+      meta: {
+        title: '微信授权'
       },
     },
     {

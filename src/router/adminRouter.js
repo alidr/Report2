@@ -16,6 +16,8 @@ const EditUser = () =>import ('@/pages/admin_editUser')
 const EditCompany = () =>import ('@/pages/editCompany')
 const AnnounceStyle = () =>import ('@/pages/admin_announceStyle')
 const EditCompete = () => import('@/pages/busniess_editCompete')
+const ApplyAuthorized = () =>
+  import ('@/pages/business_applyAuthorized')
 export default [{
   path: '/adminIndex',
   name: 'AdminIndex',
@@ -36,6 +38,13 @@ export default [{
       title: '完善信息'
   }
 }, {
+  path: '/applyAuthorized',
+  component: ApplyAuthorized,
+  meta: {
+    title: '查看授权'
+  },
+},
+ {
   path: '/Announce',
   component: Announce,
   meta: {

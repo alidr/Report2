@@ -708,6 +708,7 @@
     position: fixed;
     bottom: 0;
     left: 0;
+    z-index: 999999;
   }
   .bottom .content{
     flex: 1;

@@ -25,7 +25,7 @@
      <div class="info">
       <div class="input">
         <span>手机号码</span>
-        <input type="tel" placeholder="请输入员工手机号" v-model="tel" maxlength="11" >
+        <input type="tel" placeholder="请输入员工手机号" v-model="tel">
       </div>
       <div class="input">
         <span>密码</span>

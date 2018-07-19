@@ -7,13 +7,13 @@
     </div>
     <div class="announce">
 
-      <div class="scroll-list-wrap">
+      <div class="scroll-list-wrap" v-if="MyAnnounce==1">
       <cube-scroll
         ref="scroll"
         :data="list"
         :options="options"
         @pulling-up="onPullingUp">
-      <div class="announceDetail"  v-if="MyAnnounce==1"
+      <div class="announceDetail"  
       v-for="(item,index) in list" :key="index"
       >
       <!-- <div class="announceDetail" @click="extend(index)" v-if="MyAnnounce==1"
@@ -31,6 +31,7 @@
         <!-- <span class="line" :class="{active:isExtend}"></span> -->
          <!-- <span class="line" :class="{active:true}"></span> -->
       </div>
+      
       </cube-scroll>
     </div> 
         <!-- 我发布的 -->
@@ -249,7 +250,7 @@ export default {
 <style scoped>
   @import '../../common/mask.css';
   .scroll-list-wrap {
-  height: 100vh;
+  height: calc(100vh - 100px);
 }
 #AnnounceList{
   padding: 15px;
@@ -259,6 +260,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-bottom: 15px;
 }
 .announceTop span{
   width: 105px;
