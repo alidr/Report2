@@ -228,6 +228,7 @@
           this.hasMask[index] = true
 
         }
+        this.hasMask = this.hasMask.slice()
         this.Mask = this.hasMask[index] ? true : false
       },
 

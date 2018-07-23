@@ -25,7 +25,7 @@
      <div class="info">
       <div class="input">
         <span>手机号码</span>
-        <input type="tel" placeholder="请输入员工手机号" v-model="tel">
+        <input type="text" placeholder="请输入员工手机号" v-model="tel">
       </div>
       <div class="input">
         <span>密码</span>
@@ -191,9 +191,11 @@ export default {
         this.getToast("请输入组织名称",'warn')
       }else if(!this.tel){
         this.getToast("请输入手机号",'warn')
-      }else if(this.tel.length<11){
-        this.getToast("手机号码格式不正确",'warn')
-      }else if (!this.password) {
+       }
+      //else if(this.tel.length<11){
+      //   this.getToast("手机号码格式不正确",'warn')
+      // }
+      else if (!this.password) {
         this.getToast("请输入密码",'warn')
       }else if (this.password !==this.rePassword) {
         this.getToast("两次密码不一致",'warn')
